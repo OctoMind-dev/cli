@@ -45,30 +45,30 @@ octomind-cli tsx src/cli.ts report --json -k xxxx -t e3ad5xxx-f64c-4fb3-83da-26f
 
 ```json
 {
-  "id": "028f4726-4f49-4d0d-abae-32f32693c53b",
-  "testTargetId": "e3ad5aa8-f64c-4fb3-83da-26f3b117e9f7",
-  "environmentId": "da3b539e-456c-462d-b73f-8e0089af90bd",
-  "executionUrl": "https://books.rinke-solutions.com",
+  "id": "028f4726-xxxx-4d0d-abae-32f32693c53b",
+  "testTargetId": "e3ad5aa8-xxxx-4fb3-83da-26f3b117e9f7",
+  "environmentId": "da3b539e-xxxx-462d-b73f-8e0089af90bd",
+  "executionUrl": "https://example.com",
   "context": {
     "source": "manual",
     "description": "manual test run",
     "triggeredBy": {
       "type": "USER",
-      "userId": "d61e8681-4715-40f2-8651-6d7d2c2de211"
+      "userId": "d61e8681-xxxx-40f2-8651-6d7d2c2de211"
     }
   },
   "createdAt": "2024-11-10T17:11:45.949Z",
   "updatedAt": "2024-11-10T17:11:45.949Z",
   "testResults": [
     {
-      "id": "d651f291-5bf1-4614-8013-7fe4a7ea9ca8",
-      "testReportId": "028f4726-4f49-4d0d-abae-32f32693c53b",
+      "id": "d651f291-xxxx-4614-8013-7fe4a7ea9ca8",
+      "testReportId": "028f4726-xxxx-4d0d-abae-32f32693c53b",
       "status": "PASSED",
       "createdAt": "2024-11-10T17:11:45.963Z",
       "updatedAt": "2024-11-10T17:13:10.958Z",
-      "testCaseId": "71854a90-fba6-4ac8-aa88-90a1e5205e1f",
+      "testCaseId": "71854a90-xxxx-4ac8-aa88-90a1e5205e1f",
       "errorMessage": null,
-      "traceUrl": "https://storage.googleapis.com/automagically-traces/c5481e1f-15bd-48b8-92f9-d8d548887c06-trace.zip"
+      "traceUrl": "https://storage.googleapis.com/automagically-traces/c5481e1f-xxxx-48b8-92f9-d8d548887c06-trace.zip"
     }
   ],
   "status": "PASSED"
