@@ -22,7 +22,7 @@ Commands:
 # example get report
 
 ```
-octomind-cli tsx src/cli.ts report -k xxxx -t e3ad5xxx-f64c-4fb3-83da-26f3b117e9f7 -r 028f4726-4f49-4d0d-abae-32f32693xxx
+octomind-cli tsx src/cli.ts report -k <api-key> -t e3ad5xxx-f64c-4fb3-83da-26f3b117e9f7 -r 028f4726-4f49-4d0d-abae-32f32693xxx
 Test Report Details:
 Status: PASSED
 Execution URL: https://example.com
@@ -40,7 +40,7 @@ Test Results:
 
 # or as json output
 ```
-octomind-cli tsx src/cli.ts report --json -k xxxx -t e3ad5xxx-f64c-4fb3-83da-26f3b117e9f7 -r 028f4726-4f49-4d0d-abae-32f32693xxx
+octomind-cli tsx src/cli.ts report --json -k <api-key> -t e3ad5xxx-f64c-4fb3-83da-26f3b117e9f7 -r 028f4726-4f49-4d0d-abae-32f32693xxx
 ```
 
 ```json
