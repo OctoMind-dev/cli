@@ -1,76 +1,162 @@
-# CLI for octomind api
+# Octomind CLI
 
-simple cli to call octominds api from command line
+A command-line interface for interacting with the Octomind API. This CLI allows you to execute tests, retrieve test reports, and manage private locations.
 
-npm / npx cli
+## Installation
+
+1. Clone the repository
+2. Install dependencies:
+```bash
+npm install
 ```
-Usage: octomind-cli [options] [command]
 
-Octomind CLI tool
+## Commands
+
+### Execute Tests
+
+Run test cases against a specified URL.
+
+```bash
+tsx src/cli.ts execute \
+  --api-key <key> \
+  --test-target-id <id> \
+  --url <url> \
+  [--environment <name>] \
+  [--description <text>] \
+  [--json]
+```
 
 Options:
-  -h, --help                     display help for command
+- `-k, --api-key` (required): Your Octomind API key
+- `-t, --test-target-id` (required): Test target ID
+- `-u, --url` (required): URL to test
+- `-e, --environment`: Environment name (default: "default")
+- `-d, --description`: Test description
+- `-j, --json`: Output raw JSON response
 
-Commands:
-  execute [options]              Execute test cases
-  report [options]               Get test report details
-  register-location [options]    Register a private location
-  unregister-location [options]  Unregister a private location
-  help [command]                 display help for command
+### Get Test Report
+
+Retrieve details about a specific test report.
+
+```bash
+tsx src/cli.ts report \
+  --api-key <key> \
+  --test-target-id <id> \
+  --report-id <id> \
+  [--json]
 ```
 
-# example get report
+Options:
+- `-k, --api-key` (required): Your Octomind API key
+- `-t, --test-target-id` (required): Test target ID
+- `-r, --report-id` (required): Test report ID
+- `-j, --json`: Output raw JSON response
 
+Example text output:
 ```
-octomind-cli tsx src/cli.ts report -k <api-key> -t e3ad5xxx-f64c-4fb3-83da-26f3b117e9f7 -r 028f4726-4f49-4d0d-abae-32f32693xxx
 Test Report Details:
 Status: PASSED
 Execution URL: https://example.com
 
 Test Results:
-- Test 71854a90-xxxx-4ac8-aa88-90a1e5205e1f: PASSED
-  Trace: https://storage.googleapis.com/automagically-traces/c5481e1f-xxxx-48b8-92f9-d8d548887c06-trace.zip
-- Test ce29ee7f-xxxx-49b1-93a1-1112886f54ea: PASSED
-  Trace: https://storage.googleapis.com/automagically-traces/8d93266b-xxxx-4804-9ebb-f659040cafa2-trace.zip
-- Test aada5348-xxxx-46a7-935f-9500aa0a8541: PASSED
-  Trace: https://storage.googleapis.com/automagically-traces/4dd46d55-xxxx-41ba-881d-3b11cd34307e-trace.zip
-- Test 8f2a4a12-xxxx-4fd6-a1d3-3fabec37391f: PASSED
-  Trace: https://storage.googleapis.com/automagically-traces/dbcbd126-xxxx-48ca-97ab-d71f66bc518e-trace.zip
+- Test abc-123-456: PASSED
+  Trace: https://storage.googleapis.com/automagically-traces/abc-123-trace.zip
+- Test def-456-789: PASSED
+  Trace: https://storage.googleapis.com/automagically-traces/def-456-trace.zip
 ```
 
-# or as json output
-```
-octomind-cli tsx src/cli.ts report --json -k <api-key> -t e3ad5xxx-f64c-4fb3-83da-26f3b117e9f7 -r 028f4726-4f49-4d0d-abae-32f32693xxx
-```
-
+Example JSON output:
 ```json
 {
-  "id": "028f4726-xxxx-4d0d-abae-32f32693c53b",
-  "testTargetId": "e3ad5aa8-xxxx-4fb3-83da-26f3b117e9f7",
-  "environmentId": "da3b539e-xxxx-462d-b73f-8e0089af90bd",
+  "id": "826c15af-644b-4b28-89b4-f50ff34e46b7",
+  "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
+  "status": "PASSED",
   "executionUrl": "https://example.com",
-  "context": {
-    "source": "manual",
-    "description": "manual test run",
-    "triggeredBy": {
-      "type": "USER",
-      "userId": "d61e8681-xxxx-40f2-8651-6d7d2c2de211"
-    }
-  },
-  "createdAt": "2024-11-10T17:11:45.949Z",
-  "updatedAt": "2024-11-10T17:11:45.949Z",
   "testResults": [
     {
-      "id": "d651f291-xxxx-4614-8013-7fe4a7ea9ca8",
-      "testReportId": "028f4726-xxxx-4d0d-abae-32f32693c53b",
+      "id": "abc-123-456",
+      "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
+      "testCaseId": "test-1",
       "status": "PASSED",
-      "createdAt": "2024-11-10T17:11:45.963Z",
-      "updatedAt": "2024-11-10T17:13:10.958Z",
-      "testCaseId": "71854a90-xxxx-4ac8-aa88-90a1e5205e1f",
-      "errorMessage": null,
-      "traceUrl": "https://storage.googleapis.com/automagically-traces/c5481e1f-xxxx-48b8-92f9-d8d548887c06-trace.zip"
+      "traceUrl": "https://storage.googleapis.com/automagically-traces/abc-123-trace.zip"
+    },
+    {
+      "id": "def-456-789",
+      "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
+      "testCaseId": "test-2",
+      "status": "PASSED",
+      "traceUrl": "https://storage.googleapis.com/automagically-traces/def-456-trace.zip"
     }
-  ],
-  "status": "PASSED"
+  ]
 }
 ```
+
+### Register Private Location
+
+Register a new private location worker.
+
+```bash
+tsx src/cli.ts register-location \
+  --api-key <key> \
+  --name <name> \
+  --proxypass <password> \
+  --proxyuser <user> \
+  --address <address> \
+  [--json]
+```
+
+Options:
+- `-k, --api-key` (required): Your Octomind API key
+- `-n, --name` (required): Location name
+- `-p, --proxypass` (required): Proxy password
+- `-u, --proxyuser` (required): Proxy user
+- `-a, --address` (required): Location address (format: IP:PORT)
+- `-j, --json`: Output raw JSON response
+
+### Unregister Private Location
+
+Remove a registered private location worker.
+
+```bash
+tsx src/cli.ts unregister-location \
+  --api-key <key> \
+  --name <name> \
+  [--json]
+```
+
+Options:
+- `-k, --api-key` (required): Your Octomind API key
+- `-n, --name` (required): Location name
+- `-j, --json`: Output raw JSON response
+
+## Output Formats
+
+By default, the CLI provides formatted text output for better readability. Add the `--json` flag to any command to get the raw JSON response instead. This is useful for scripting or when you need to process the output programmatically.
+
+Example of JSON output:
+```bash
+tsx src/cli.ts report --api-key key123 --test-target-id target123 --report-id report123 --json
+```
+
+## Error Handling
+
+The CLI will:
+- Validate required parameters before making API calls
+- Display clear error messages for missing or invalid parameters
+- Show API error responses with details when available
+- Exit with status code 1 on errors
+
+## Development
+
+The CLI is written in TypeScript and uses the following dependencies:
+- `commander`: For command-line argument parsing
+- `axios`: For making HTTP requests
+
+To build from source:
+```bash
+npm run build
+```
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
