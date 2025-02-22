@@ -1,8 +1,12 @@
 {
   "name": "octomind-cli",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.1",
+  "description": "a command line client for octomind apis",
+  "main": "./dist/index.js",
+  "packageManager": "pnpm@9.5.0+sha256.dbdf5961c32909fb030595a9daa1dae720162e658609a8f92f2fa99835510ca5",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "lint": "eslint src/**/*.ts --max-warnings=0",
     "build": "tsc --project tsconfig.build.json",
