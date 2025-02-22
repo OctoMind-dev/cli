@@ -1,12 +1,21 @@
-import axios from 'axios';
-import { program } from 'commander';
+import axios from "axios";
+import { program } from "commander";
+
+/* eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
+/* eslint i18n-text/no-en: "off" */
 
 // Types based on the OpenAPI schema
 interface ExecutionContext {
-  source: 'manual' | 'github' | 'azureDevOps' | 'discovery' | 'scheduled' | 'proposal';
+  source:
+    | "manual"
+    | "github"
+    | "azureDevOps"
+    | "discovery"
+    | "scheduled"
+    | "proposal";
   description?: string;
   triggeredBy?: {
-    type: 'USER' | 'INITIAL';
+    type: "USER" | "INITIAL";
     userId?: string;
   };
 }
@@ -22,7 +31,7 @@ interface TestResult {
   id: string;
   testTargetId: string;
   testCaseId: string;
-  status: 'WAITING' | 'PASSED' | 'FAILED' | 'ERROR';
+  status: "WAITING" | "PASSED" | "FAILED" | "ERROR";
   errorMessage?: string;
   traceUrl?: string;
 }
@@ -30,7 +39,7 @@ interface TestResult {
 interface TestReport {
   id: string;
   testTargetId: string;
-  status: 'WAITING' | 'PASSED' | 'FAILED';
+  status: "WAITING" | "PASSED" | "FAILED";
   executionUrl: string;
   testResults: TestResult[];
 }
@@ -57,14 +66,45 @@ interface SuccessResponse {
   success: boolean;
 }
 
-const BASE_URL = 'https://app.octomind.dev/api';
+interface ExecuteTestsOptions {
+  apiKey: string;
+  testTargetId: string;
+  url: string;
+  environment?: string;
+  description?: string;
+  json?: boolean;
+}
+
+interface GetTestReportOptions {
+  apiKey: string;
+  testTargetId: string;
+  reportId: string;
+  json?: boolean;
+}
+
+interface RegisterLocationOptions {
+  apiKey: string;
+  name: string;
+  proxypass: string;
+  proxyuser: string;
+  address: string;
+  json?: boolean;
+}
+
+interface UnregisterLocationOptions {
+  apiKey: string;
+  name: string;
+  json?: boolean;
+}
+
+const BASE_URL = "https://app.octomind.dev/api";
 
 // Helper function for API calls
 async function apiCall<T>(
-  method: 'get' | 'post' | 'put',
+  method: "get" | "post" | "put",
   endpoint: string,
   apiKey: string,
-  data?: any
+  data?: any,
 ): Promise<T> {
   try {
     const response = await axios({
@@ -72,16 +112,16 @@ async function apiCall<T>(
       url: `${BASE_URL}${endpoint}`,
       data,
       headers: {
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json'
-      }
+        "X-API-Key": apiKey,
+        "Content-Type": "application/json",
+      },
     });
     return response.data as T;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('API Error:', error.response?.data || error.message);
+      console.error("API Error:", error.response?.data || error.message);
     } else {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
     process.exit(1);
   }
@@ -97,9 +137,9 @@ function outputResult(result: any, json: boolean) {
 }
 
 // Command implementations
-async function executeTests(options: any) {
+async function executeTests(options: ExecuteTestsOptions) {
   if (!options.apiKey) {
-    console.error('API key is required');
+    console.error("API key is required");
     process.exit(1);
   }
 
@@ -107,21 +147,21 @@ async function executeTests(options: any) {
     testTargetId: options.testTargetId,
     url: options.url,
     context: {
-      source: 'manual',
-      description: options.description || 'CLI execution',
+      source: "manual",
+      description: options.description || "CLI execution",
       triggeredBy: {
-        type: 'USER',
-        userId: 'cli-user'
-      }
+        type: "USER",
+        userId: "cli-user",
+      },
     },
-    environmentName: options.environment
+    environmentName: options.environment,
   };
 
   const response = await apiCall<TestReportResponse>(
-    'post',
-    '/apiKey/v2/execute',
+    "post",
+    "/apiKey/v2/execute",
     options.apiKey,
-    requestBody
+    requestBody,
   );
 
   if (options.json) {
@@ -129,13 +169,13 @@ async function executeTests(options: any) {
     return;
   }
 
-  console.log('Test execution started successfully!');
-  console.log('Test Report URL:', response.testReportUrl);
-  console.log('Report Status:', response.testReport.status);
-  
+  console.log("Test execution started successfully!");
+  console.log("Test Report URL:", response.testReportUrl);
+  console.log("Report Status:", response.testReport.status);
+
   if (response.testReport.testResults.length > 0) {
-    console.log('\nTest Results:');
-    response.testReport.testResults.forEach(result => {
+    console.log("\nTest Results:");
+    response.testReport.testResults.forEach((result) => {
       console.log(`- Test ${result.testCaseId}: ${result.status}`);
       if (result.errorMessage) {
         console.log(`  Error: ${result.errorMessage}`);
@@ -147,16 +187,16 @@ async function executeTests(options: any) {
   }
 }
 
-async function getTestReport(options: any) {
+async function getTestReport(options: GetTestReportOptions) {
   if (!options.apiKey) {
-    console.error('API key is required');
+    console.error("API key is required");
     process.exit(1);
   }
 
   const response = await apiCall<TestReport>(
-    'get',
+    "get",
     `/apiKey/v2/test-targets/${options.testTargetId}/test-reports/${options.reportId}`,
-    options.apiKey
+    options.apiKey,
   );
 
   if (options.json) {
@@ -164,13 +204,13 @@ async function getTestReport(options: any) {
     return;
   }
 
-  console.log('Test Report Details:');
-  console.log('Status:', response.status);
-  console.log('Execution URL:', response.executionUrl);
-  
+  console.log("Test Report Details:");
+  console.log("Status:", response.status);
+  console.log("Execution URL:", response.executionUrl);
+
   if (response.testResults.length > 0) {
-    console.log('\nTest Results:');
-    response.testResults.forEach(result => {
+    console.log("\nTest Results:");
+    response.testResults.forEach((result) => {
       console.log(`- Test ${result.testCaseId}: ${result.status}`);
       if (result.errorMessage) {
         console.log(`  Error: ${result.errorMessage}`);
@@ -182,9 +222,9 @@ async function getTestReport(options: any) {
   }
 }
 
-async function registerLocation(options: any) {
+async function registerLocation(options: RegisterLocationOptions) {
   if (!options.apiKey) {
-    console.error('API key is required');
+    console.error("API key is required");
     process.exit(1);
   }
 
@@ -193,15 +233,15 @@ async function registerLocation(options: any) {
     registrationData: {
       proxypass: options.proxypass,
       proxyuser: options.proxyuser,
-      address: options.address
-    }
+      address: options.address,
+    },
   };
 
   const response = await apiCall<SuccessResponse>(
-    'put',
-    '/apiKey/v1/private-location/register',
+    "put",
+    "/apiKey/v1/private-location/register",
     options.apiKey,
-    requestBody
+    requestBody,
   );
 
   if (options.json) {
@@ -209,24 +249,24 @@ async function registerLocation(options: any) {
     return;
   }
 
-  console.log('Registration result:', response.success ? 'Success' : 'Failed');
+  console.log("Registration result:", response.success ? "Success" : "Failed");
 }
 
-async function unregisterLocation(options: any) {
+async function unregisterLocation(options: UnregisterLocationOptions) {
   if (!options.apiKey) {
-    console.error('API key is required');
+    console.error("API key is required");
     process.exit(1);
   }
 
   const requestBody: UnregisterRequest = {
-    name: options.name
+    name: options.name,
   };
 
   const response = await apiCall<SuccessResponse>(
-    'put',
-    '/apiKey/v1/private-location/unregister',
+    "put",
+    "/apiKey/v1/private-location/unregister",
     options.apiKey,
-    requestBody
+    requestBody,
   );
 
   if (options.json) {
@@ -234,45 +274,47 @@ async function unregisterLocation(options: any) {
     return;
   }
 
-  console.log('Unregistration result:', response.success ? 'Success' : 'Failed');
+  console.log(
+    "Unregistration result:",
+    response.success ? "Success" : "Failed",
+  );
 }
 
 function createCommandWithCommonOptions(command: string) {
-  return program.command(command)
-  .requiredOption('-k, --api-key <key>', 'Octomind API key')
-  .option('-j, --json', 'Output raw JSON response');
+  return program
+    .command(command)
+    .requiredOption("-k, --api-key <key>", "Octomind API key")
+    .option("-j, --json", "Output raw JSON response");
 }
 
 // CLI program setup
-program
-  .name('octomind-cli')
-  .description('Octomind CLI tool');
+program.name("octomind-cli").description("Octomind CLI tool");
 
-createCommandWithCommonOptions('execute')
-  .description('Execute test cases')
-  .requiredOption('-t, --test-target-id <id>', 'Test target ID')
-  .requiredOption('-u, --url <url>', 'URL to test')
-  .option('-e, --environment <name>', 'Environment name', 'default')
-  .option('-d, --description <text>', 'Test description')
+createCommandWithCommonOptions("execute")
+  .description("Execute test cases")
+  .requiredOption("-t, --test-target-id <id>", "Test target ID")
+  .requiredOption("-u, --url <url>", "URL to test")
+  .option("-e, --environment <name>", "Environment name", "default")
+  .option("-d, --description <text>", "Test description")
   .action(executeTests);
 
-createCommandWithCommonOptions('report')
-  .description('Get test report details')
-  .requiredOption('-t, --test-target-id <id>', 'Test target ID')
-  .requiredOption('-r, --report-id <id>', 'Test report ID')
+createCommandWithCommonOptions("report")
+  .description("Get test report details")
+  .requiredOption("-t, --test-target-id <id>", "Test target ID")
+  .requiredOption("-r, --report-id <id>", "Test report ID")
   .action(getTestReport);
 
-createCommandWithCommonOptions('register-location')
-  .description('Register a private location')
-  .requiredOption('-n, --name <name>', 'Location name')
-  .requiredOption('-p, --proxypass <password>', 'Proxy password')
-  .requiredOption('-u, --proxyuser <user>', 'Proxy user')
-  .requiredOption('-a, --address <address>', 'Location address')
+createCommandWithCommonOptions("register-location")
+  .description("Register a private location")
+  .requiredOption("-n, --name <name>", "Location name")
+  .requiredOption("-p, --proxypass <password>", "Proxy password")
+  .requiredOption("-u, --proxyuser <user>", "Proxy user")
+  .requiredOption("-a, --address <address>", "Location address")
   .action(registerLocation);
 
-createCommandWithCommonOptions('unregister-location')
-  .description('Unregister a private location')
-  .requiredOption('-n, --name <name>', 'Location name')
+createCommandWithCommonOptions("unregister-location")
+  .description("Unregister a private location")
+  .requiredOption("-n, --name <name>", "Location name")
   .action(unregisterLocation);
 
 program.parse();

@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint src/**/*.ts --max-warnings=0",
     "octomind-cli": "tsx src/cli.ts"
   },
   "keywords": [],
@@ -15,6 +16,14 @@
     "tsx": "^4.19.2"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1"
+    "@types/node": "^22.13.1",
+    "@typescript-eslint/parser": "^8.6.0",
+    "eslint": "^8.38.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-github": "^5.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^28.2.0",
+    "eslint-plugin-prettier": "^5.0.0"
   }
 }
