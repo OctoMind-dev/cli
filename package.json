@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint src/**/*.ts --max-warnings=0",
+    "build": "tsc --project tsconfig.build.json",
     "octomind-cli": "tsx src/cli.ts",
     "test": "jest",
     "test:watch": "jest --watch"
@@ -32,6 +33,7 @@
     "prettier": "^3.0.1",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "tsx": "^4.0.0"
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.4"
   }
 }
