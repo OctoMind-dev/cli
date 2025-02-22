@@ -1,107 +1,33 @@
 import axios from "axios";
 import { program } from "commander";
+import {
+  ExecuteTestsOptions,
+  GetTestReportOptions,
+  RegisterLocationOptions,
+  UnregisterLocationOptions,
+  ListPrivateLocationsOptions,
+  PrivateLocationInfo,
+  ListEnvironmentsOptions,
+  CreateEnvironmentOptions,
+  UpdateEnvironmentOptions,
+  DeleteEnvironmentOptions,
+  TestTargetExecutionRequest,
+  TestReportResponse,
+  RegisterRequest,
+  UnregisterRequest,
+  SuccessResponse,
+  Environment,
+  TestReport,
+} from "./types";
 
 /* eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
 /* eslint i18n-text/no-en: "off" */
-
-// Types based on the OpenAPI schema
-interface ExecutionContext {
-  source:
-    | "manual"
-    | "github"
-    | "azureDevOps"
-    | "discovery"
-    | "scheduled"
-    | "proposal";
-  description?: string;
-  triggeredBy?: {
-    type: "USER" | "INITIAL";
-    userId?: string;
-  };
-}
-
-interface TestTargetExecutionRequest {
-  testTargetId: string;
-  url: string;
-  context: ExecutionContext;
-  environmentName?: string;
-}
-
-interface TestResult {
-  id: string;
-  testTargetId: string;
-  testCaseId: string;
-  status: "WAITING" | "PASSED" | "FAILED" | "ERROR";
-  errorMessage?: string;
-  traceUrl?: string;
-}
-
-interface TestReport {
-  id: string;
-  testTargetId: string;
-  status: "WAITING" | "PASSED" | "FAILED";
-  executionUrl: string;
-  testResults: TestResult[];
-}
-
-interface TestReportResponse {
-  testReportUrl: string;
-  testReport: TestReport;
-}
-
-interface RegisterRequest {
-  name: string;
-  registrationData: {
-    proxypass: string;
-    proxyuser: string;
-    address: string;
-  };
-}
-
-interface UnregisterRequest {
-  name: string;
-}
-
-interface SuccessResponse {
-  success: boolean;
-}
-
-interface ExecuteTestsOptions {
-  apiKey: string;
-  testTargetId: string;
-  url: string;
-  environment?: string;
-  description?: string;
-  json?: boolean;
-}
-
-interface GetTestReportOptions {
-  apiKey: string;
-  testTargetId: string;
-  reportId: string;
-  json?: boolean;
-}
-
-interface RegisterLocationOptions {
-  apiKey: string;
-  name: string;
-  proxypass: string;
-  proxyuser: string;
-  address: string;
-  json?: boolean;
-}
-
-interface UnregisterLocationOptions {
-  apiKey: string;
-  name: string;
-  json?: boolean;
-}
 
 const BASE_URL = "https://app.octomind.dev/api";
 
 // Helper function for API calls
 async function apiCall<T>(
-  method: "get" | "post" | "put",
+  method: "get" | "post" | "put" | "delete" | "patch",
   endpoint: string,
   apiKey: string,
   data?: any,
@@ -137,7 +63,7 @@ function outputResult(result: any, json: boolean) {
 }
 
 // Command implementations
-async function executeTests(options: ExecuteTestsOptions) {
+export async function executeTests(options: ExecuteTestsOptions) {
   if (!options.apiKey) {
     console.error("API key is required");
     process.exit(1);
@@ -187,7 +113,7 @@ async function executeTests(options: ExecuteTestsOptions) {
   }
 }
 
-async function getTestReport(options: GetTestReportOptions) {
+export async function getTestReport(options: GetTestReportOptions) {
   if (!options.apiKey) {
     console.error("API key is required");
     process.exit(1);
@@ -222,7 +148,7 @@ async function getTestReport(options: GetTestReportOptions) {
   }
 }
 
-async function registerLocation(options: RegisterLocationOptions) {
+export async function registerLocation(options: RegisterLocationOptions) {
   if (!options.apiKey) {
     console.error("API key is required");
     process.exit(1);
@@ -252,7 +178,7 @@ async function registerLocation(options: RegisterLocationOptions) {
   console.log("Registration result:", response.success ? "Success" : "Failed");
 }
 
-async function unregisterLocation(options: UnregisterLocationOptions) {
+export async function unregisterLocation(options: UnregisterLocationOptions) {
   if (!options.apiKey) {
     console.error("API key is required");
     process.exit(1);
@@ -280,6 +206,145 @@ async function unregisterLocation(options: UnregisterLocationOptions) {
   );
 }
 
+export async function listPrivateLocations(options: ListPrivateLocationsOptions) {
+  if (!options.apiKey) {
+    console.error("API key is required");
+    process.exit(1);
+  }
+
+  const response = await apiCall<PrivateLocationInfo[]>(
+    "get",
+    "/apiKey/v1/private-location",
+    options.apiKey,
+  );
+
+  if (options.json) {
+    outputResult(response, true);
+    return;
+  }
+
+  console.log("Private Locations:");
+  response.forEach((location) => {
+    console.log(`- Name: ${location.name}`);
+    console.log(`  Status: ${location.status}`);
+    console.log(`  Address: ${location.address}`);
+  });
+}
+
+export async function listEnvironments(options: ListEnvironmentsOptions) {
+  if (!options.apiKey) {
+    console.error("API key is required");
+    process.exit(1);
+  }
+
+  const response = await apiCall<Environment[]>(
+    "get",
+    `/apiKey/v2/test-targets/${options.testTargetId}/environments`,
+    options.apiKey,
+  );
+
+  if (options.json) {
+    outputResult(response, true);
+    return;
+  }
+
+  console.log("Environments:");
+  response.forEach((environment) => {
+    console.log(`- Name: ${environment.name}`);
+    console.log(`  ID: ${environment.id}`);
+    console.log(`  Discovery URL: ${environment.discoveryUrl}`);
+    console.log(`  Updated At: ${environment.updatedAt}`);
+  });
+}
+
+export async function createEnvironment(options: CreateEnvironmentOptions) {
+  if (!options.apiKey) {
+    console.error("API key is required");
+    process.exit(1);
+  }
+
+  const requestBody = {
+    name: options.name,
+    discoveryUrl: options.discoveryUrl,
+    testAccount: options.testAccount,
+    basicAuth: options.basicAuth,
+    privateLocationName: options.privateLocationName,
+    additionalHeaderFields: options.additionalHeaderFields,
+  };
+
+  const response = await apiCall<Environment>(
+    "post",
+    `/apiKey/v2/test-targets/${options.testTargetId}/environments`,
+    options.apiKey,
+    requestBody,
+  );
+
+  if (options.json) {
+    outputResult(response, true);
+    return;
+  }
+
+  console.log("Environment created successfully!");
+  console.log(`- Name: ${response.name}`);
+  console.log(`  ID: ${response.id}`);
+  console.log(`  Discovery URL: ${response.discoveryUrl}`);
+  console.log(`  Updated At: ${response.updatedAt}`);
+}
+
+export async function updateEnvironment(options: UpdateEnvironmentOptions) {
+  if (!options.apiKey) {
+    console.error("API key is required");
+    process.exit(1);
+  }
+
+  const requestBody = {
+    name: options.name,
+    discoveryUrl: options.discoveryUrl,
+    testAccount: options.testAccount,
+    basicAuth: options.basicAuth,
+    privateLocationName: options.privateLocationName,
+    additionalHeaderFields: options.additionalHeaderFields,
+  };
+
+  const response = await apiCall<Environment>(
+    "patch",
+    `/apiKey/v2/test-targets/${options.testTargetId}/environments/${options.environmentId}`,
+    options.apiKey,
+    requestBody,
+  );
+
+  if (options.json) {
+    outputResult(response, true);
+    return;
+  }
+
+  console.log("Environment updated successfully!");
+  console.log(`- Name: ${response.name}`);
+  console.log(`  ID: ${response.id}`);
+  console.log(`  Discovery URL: ${response.discoveryUrl}`);
+  console.log(`  Updated At: ${response.updatedAt}`);
+}
+
+export async function deleteEnvironment(options: DeleteEnvironmentOptions) {
+  if (!options.apiKey) {
+    console.error("API key is required");
+    process.exit(1);
+  }
+
+  await apiCall<void>(
+    "delete",
+    `/apiKey/v2/test-targets/${options.testTargetId}/environments/${options.environmentId}`,
+    options.apiKey,
+  );
+
+  if (options.json) {
+    outputResult({ success: true }, true);
+    return;
+  }
+
+  console.log("Environment deleted successfully!");
+}
+
 function createCommandWithCommonOptions(command: string) {
   return program
     .command(command)
@@ -287,6 +352,7 @@ function createCommandWithCommonOptions(command: string) {
     .option("-j, --json", "Output raw JSON response");
 }
 
+export function run() {
 // CLI program setup
 program.name("octomind-cli").description("Octomind CLI tool");
 
@@ -317,4 +383,50 @@ createCommandWithCommonOptions("unregister-location")
   .requiredOption("-n, --name <name>", "Location name")
   .action(unregisterLocation);
 
+createCommandWithCommonOptions("list-private-locations")
+  .description("List all private locations")
+  .action(listPrivateLocations);
+
+createCommandWithCommonOptions("list-environments")
+  .description("List all environments")
+  .requiredOption("-t, --test-target-id <id>", "Test target ID")
+  .action(listEnvironments);
+
+createCommandWithCommonOptions("create-environment")
+  .description("Create a new environment")
+  .requiredOption("-t, --test-target-id <id>", "Test target ID")
+  .requiredOption("-n, --name <name>", "Environment name")
+  .requiredOption("-d, --discovery-url <url>", "Discovery URL")
+  .option("--test-account-username <username>", "Test account username")
+  .option("--test-account-password <password>", "Test account password")
+  .option("--test-account-otp-initializer-key <key>", "Test account OTP initializer key")
+  .option("--basic-auth-username <username>", "Basic auth username")
+  .option("--basic-auth-password <password>", "Basic auth password")
+  .option("--private-location-name <name>", "Private location name")
+  .option("--additional-header-fields <fields>", "Additional header fields")
+  .action(createEnvironment);
+
+createCommandWithCommonOptions("update-environment")
+  .description("Update an existing environment")
+  .requiredOption("-t, --test-target-id <id>", "Test target ID")
+  .requiredOption("-e, --environment-id <id>", "Environment ID")
+  .option("-n, --name <name>", "Environment name")
+  .option("-d, --discovery-url <url>", "Discovery URL")
+  .option("--test-account-username <username>", "Test account username")
+  .option("--test-account-password <password>", "Test account password")
+  .option("--test-account-otp-initializer-key <key>", "Test account OTP initializer key")
+  .option("--basic-auth-username <username>", "Basic auth username")
+  .option("--basic-auth-password <password>", "Basic auth password")
+  .option("--private-location-name <name>", "Private location name")
+  .option("--additional-header-fields <fields>", "Additional header fields")
+  .action(updateEnvironment);
+
+createCommandWithCommonOptions("delete-environment")
+  .description("Delete an environment")
+  .requiredOption("-t, --test-target-id <id>", "Test target ID")
+  .requiredOption("-e, --environment-id <id>", "Environment ID")
+  .action(deleteEnvironment);
+
 program.parse();
+
+}
