@@ -22,6 +22,7 @@ import {
 
 /* eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
 /* eslint i18n-text/no-en: "off" */
+/* eslint github/array-foreach: "off" */
 
 const BASE_URL = "https://app.octomind.dev/api";
 
