@@ -206,7 +206,9 @@ export async function unregisterLocation(options: UnregisterLocationOptions) {
   );
 }
 
-export async function listPrivateLocations(options: ListPrivateLocationsOptions) {
+export async function listPrivateLocations(
+  options: ListPrivateLocationsOptions,
+) {
   if (!options.apiKey) {
     console.error("API key is required");
     process.exit(1);
@@ -353,80 +355,85 @@ function createCommandWithCommonOptions(command: string) {
 }
 
 export function run() {
-// CLI program setup
-program.name("octomind-cli").description("Octomind CLI tool");
+  // CLI program setup
+  program.name("octomind-cli").description("Octomind CLI tool");
 
-createCommandWithCommonOptions("execute")
-  .description("Execute test cases")
-  .requiredOption("-t, --test-target-id <id>", "Test target ID")
-  .requiredOption("-u, --url <url>", "URL to test")
-  .option("-e, --environment <name>", "Environment name", "default")
-  .option("-d, --description <text>", "Test description")
-  .action(executeTests);
+  createCommandWithCommonOptions("execute")
+    .description("Execute test cases")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .requiredOption("-u, --url <url>", "URL to test")
+    .option("-e, --environment <name>", "Environment name", "default")
+    .option("-d, --description <text>", "Test description")
+    .action(executeTests);
 
-createCommandWithCommonOptions("report")
-  .description("Get test report details")
-  .requiredOption("-t, --test-target-id <id>", "Test target ID")
-  .requiredOption("-r, --report-id <id>", "Test report ID")
-  .action(getTestReport);
+  createCommandWithCommonOptions("report")
+    .description("Get test report details")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .requiredOption("-r, --report-id <id>", "Test report ID")
+    .action(getTestReport);
 
-createCommandWithCommonOptions("register-location")
-  .description("Register a private location")
-  .requiredOption("-n, --name <name>", "Location name")
-  .requiredOption("-p, --proxypass <password>", "Proxy password")
-  .requiredOption("-u, --proxyuser <user>", "Proxy user")
-  .requiredOption("-a, --address <address>", "Location address")
-  .action(registerLocation);
+  createCommandWithCommonOptions("register-location")
+    .description("Register a private location")
+    .requiredOption("-n, --name <name>", "Location name")
+    .requiredOption("-p, --proxypass <password>", "Proxy password")
+    .requiredOption("-u, --proxyuser <user>", "Proxy user")
+    .requiredOption("-a, --address <address>", "Location address")
+    .action(registerLocation);
 
-createCommandWithCommonOptions("unregister-location")
-  .description("Unregister a private location")
-  .requiredOption("-n, --name <name>", "Location name")
-  .action(unregisterLocation);
+  createCommandWithCommonOptions("unregister-location")
+    .description("Unregister a private location")
+    .requiredOption("-n, --name <name>", "Location name")
+    .action(unregisterLocation);
 
-createCommandWithCommonOptions("list-private-locations")
-  .description("List all private locations")
-  .action(listPrivateLocations);
+  createCommandWithCommonOptions("list-private-locations")
+    .description("List all private locations")
+    .action(listPrivateLocations);
 
-createCommandWithCommonOptions("list-environments")
-  .description("List all environments")
-  .requiredOption("-t, --test-target-id <id>", "Test target ID")
-  .action(listEnvironments);
+  createCommandWithCommonOptions("list-environments")
+    .description("List all environments")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .action(listEnvironments);
 
-createCommandWithCommonOptions("create-environment")
-  .description("Create a new environment")
-  .requiredOption("-t, --test-target-id <id>", "Test target ID")
-  .requiredOption("-n, --name <name>", "Environment name")
-  .requiredOption("-d, --discovery-url <url>", "Discovery URL")
-  .option("--test-account-username <username>", "Test account username")
-  .option("--test-account-password <password>", "Test account password")
-  .option("--test-account-otp-initializer-key <key>", "Test account OTP initializer key")
-  .option("--basic-auth-username <username>", "Basic auth username")
-  .option("--basic-auth-password <password>", "Basic auth password")
-  .option("--private-location-name <name>", "Private location name")
-  .option("--additional-header-fields <fields>", "Additional header fields")
-  .action(createEnvironment);
+  createCommandWithCommonOptions("create-environment")
+    .description("Create a new environment")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .requiredOption("-n, --name <name>", "Environment name")
+    .requiredOption("-d, --discovery-url <url>", "Discovery URL")
+    .option("--test-account-username <username>", "Test account username")
+    .option("--test-account-password <password>", "Test account password")
+    .option(
+      "--test-account-otp-initializer-key <key>",
+      "Test account OTP initializer key",
+    )
+    .option("--basic-auth-username <username>", "Basic auth username")
+    .option("--basic-auth-password <password>", "Basic auth password")
+    .option("--private-location-name <name>", "Private location name")
+    .option("--additional-header-fields <fields>", "Additional header fields")
+    .action(createEnvironment);
 
-createCommandWithCommonOptions("update-environment")
-  .description("Update an existing environment")
-  .requiredOption("-t, --test-target-id <id>", "Test target ID")
-  .requiredOption("-e, --environment-id <id>", "Environment ID")
-  .option("-n, --name <name>", "Environment name")
-  .option("-d, --discovery-url <url>", "Discovery URL")
-  .option("--test-account-username <username>", "Test account username")
-  .option("--test-account-password <password>", "Test account password")
-  .option("--test-account-otp-initializer-key <key>", "Test account OTP initializer key")
-  .option("--basic-auth-username <username>", "Basic auth username")
-  .option("--basic-auth-password <password>", "Basic auth password")
-  .option("--private-location-name <name>", "Private location name")
-  .option("--additional-header-fields <fields>", "Additional header fields")
-  .action(updateEnvironment);
+  createCommandWithCommonOptions("update-environment")
+    .description("Update an existing environment")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .requiredOption("-e, --environment-id <id>", "Environment ID")
+    .option("-n, --name <name>", "Environment name")
+    .option("-d, --discovery-url <url>", "Discovery URL")
+    .option("--test-account-username <username>", "Test account username")
+    .option("--test-account-password <password>", "Test account password")
+    .option(
+      "--test-account-otp-initializer-key <key>",
+      "Test account OTP initializer key",
+    )
+    .option("--basic-auth-username <username>", "Basic auth username")
+    .option("--basic-auth-password <password>", "Basic auth password")
+    .option("--private-location-name <name>", "Private location name")
+    .option("--additional-header-fields <fields>", "Additional header fields")
+    .action(updateEnvironment);
 
-createCommandWithCommonOptions("delete-environment")
-  .description("Delete an environment")
-  .requiredOption("-t, --test-target-id <id>", "Test target ID")
-  .requiredOption("-e, --environment-id <id>", "Environment ID")
-  .action(deleteEnvironment);
+  createCommandWithCommonOptions("delete-environment")
+    .description("Delete an environment")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .requiredOption("-e, --environment-id <id>", "Environment ID")
+    .action(deleteEnvironment);
 
-program.parse();
-
+  program.parse();
 }
