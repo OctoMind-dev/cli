@@ -7,7 +7,7 @@ A command-line interface for interacting with the Octomind API. This CLI allows 
 1. Clone the repository
 2. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 ## Commands
@@ -17,7 +17,7 @@ npm install
 Run test cases against a specified URL.
 
 ```bash
-tsx src/cli.ts execute \
+tsx src/index.ts execute \
   --api-key <key> \
   --test-target-id <id> \
   --url <url> \
@@ -39,7 +39,7 @@ Options:
 Retrieve details about a specific test report.
 
 ```bash
-tsx src/cli.ts report \
+tsx src/index.ts report \
   --api-key <key> \
   --test-target-id <id> \
   --report-id <id> \
@@ -96,7 +96,7 @@ Example JSON output:
 Register a new private location worker.
 
 ```bash
-tsx src/cli.ts register-location \
+tsx src/index.ts register-location \
   --api-key <key> \
   --name <name> \
   --proxypass <password> \
@@ -118,7 +118,7 @@ Options:
 Remove a registered private location worker.
 
 ```bash
-tsx src/cli.ts unregister-location \
+tsx src/index.ts unregister-location \
   --api-key <key> \
   --name <name> \
   [--json]
@@ -129,13 +129,142 @@ Options:
 - `-n, --name` (required): Location name
 - `-j, --json`: Output raw JSON response
 
+### List Private Locations
+
+Liste alle registrierten privaten Standorte auf.
+
+```bash
+tsx src/index.ts list-private-locations \
+  --api-key <key> \
+  [--json]
+```
+
+Optionen:
+- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
+- `-j, --json`: Ausgabe als Raw-JSON-Response
+
+Beispiel Textausgabe:
+```
+Private Locations:
+- Name: location-1
+  Status: ONLINE
+  Address: https://location-1.example.com
+- Name: location-2
+  Status: OFFLINE
+  Address: https://location-2.example.com
+```
+
+### List Environments
+
+Liste alle verfügbaren Umgebungen für einen Test-Target auf.
+
+```bash
+tsx src/index.ts list-environments \
+  --api-key <key> \
+  --test-target-id <id> \
+  [--json]
+```
+
+Optionen:
+- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
+- `-t, --test-target-id` (erforderlich): Test-Target ID
+- `-j, --json`: Ausgabe als Raw-JSON-Response
+
+### Create Environment
+
+Erstelle eine neue Umgebung für einen Test-Target.
+
+```bash
+tsx src/index.ts create-environment \
+  --api-key <key> \
+  --test-target-id <id> \
+  --name <name> \
+  --discovery-url <url> \
+  [--test-account-username <username>] \
+  [--test-account-password <password>] \
+  [--test-account-otp-initializer-key <key>] \
+  [--basic-auth-username <username>] \
+  [--basic-auth-password <password>] \
+  [--private-location-name <name>] \
+  [--additional-header-fields <fields>] \
+  [--json]
+```
+
+Optionen:
+- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
+- `-t, --test-target-id` (erforderlich): Test-Target ID
+- `-n, --name` (erforderlich): Name der Umgebung
+- `-d, --discovery-url` (erforderlich): Discovery URL
+- `--test-account-username`: Benutzername für Test-Account
+- `--test-account-password`: Passwort für Test-Account
+- `--test-account-otp-initializer-key`: OTP Initializer Key für Test-Account
+- `--basic-auth-username`: Basic Auth Benutzername
+- `--basic-auth-password`: Basic Auth Passwort
+- `--private-location-name`: Name des privaten Standorts
+- `--additional-header-fields`: Zusätzliche Header-Felder (JSON-String)
+- `-j, --json`: Ausgabe als Raw-JSON-Response
+
+### Update Environment
+
+Aktualisiere eine bestehende Umgebung.
+
+```bash
+tsx src/index.ts update-environment \
+  --api-key <key> \
+  --test-target-id <id> \
+  --environment-id <id> \
+  [--name <name>] \
+  [--discovery-url <url>] \
+  [--test-account-username <username>] \
+  [--test-account-password <password>] \
+  [--test-account-otp-initializer-key <key>] \
+  [--basic-auth-username <username>] \
+  [--basic-auth-password <password>] \
+  [--private-location-name <name>] \
+  [--additional-header-fields <fields>] \
+  [--json]
+```
+
+Optionen:
+- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
+- `-t, --test-target-id` (erforderlich): Test-Target ID
+- `-e, --environment-id` (erforderlich): Environment ID
+- `-n, --name`: Neuer Name der Umgebung
+- `-d, --discovery-url`: Neue Discovery URL
+- `--test-account-username`: Neuer Benutzername für Test-Account
+- `--test-account-password`: Neues Passwort für Test-Account
+- `--test-account-otp-initializer-key`: Neuer OTP Initializer Key für Test-Account
+- `--basic-auth-username`: Neuer Basic Auth Benutzername
+- `--basic-auth-password`: Neues Basic Auth Passwort
+- `--private-location-name`: Neuer Name des privaten Standorts
+- `--additional-header-fields`: Neue zusätzliche Header-Felder (JSON-String)
+- `-j, --json`: Ausgabe als Raw-JSON-Response
+
+### Delete Environment
+
+Lösche eine bestehende Umgebung.
+
+```bash
+tsx src/index.ts delete-environment \
+  --api-key <key> \
+  --test-target-id <id> \
+  --environment-id <id> \
+  [--json]
+```
+
+Optionen:
+- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
+- `-t, --test-target-id` (erforderlich): Test-Target ID
+- `-e, --environment-id` (erforderlich): Environment ID
+- `-j, --json`: Ausgabe als Raw-JSON-Response
+
 ## Output Formats
 
 By default, the CLI provides formatted text output for better readability. Add the `--json` flag to any command to get the raw JSON response instead. This is useful for scripting or when you need to process the output programmatically.
 
 Example of JSON output:
 ```bash
-tsx src/cli.ts report --api-key key123 --test-target-id target123 --report-id report123 --json
+tsx src/index.ts report --api-key key123 --test-target-id target123 --report-id report123 --json
 ```
 
 ## Error Handling
