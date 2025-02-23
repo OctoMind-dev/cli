@@ -1,6 +1,8 @@
 # Octomind CLI
 
-A command-line interface for interacting with the Octomind API. This CLI allows you to execute tests, retrieve test reports, and manage private locations.
+A command-line interface for interacting with the Octomind API. 
+This CLI allows you to execute tests, retrieve test reports, and manage private locations as well as environments.
+See [API documentation](https://octomind.dev/docs/api-reference/)
 
 ## Installation
 
