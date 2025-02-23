@@ -357,7 +357,11 @@ function createCommandWithCommonOptions(command: string) {
 
 export function run() {
   // CLI program setup
-  program.name("octomind-cli").description("Octomind CLI tool. see https://octomind.dev/docs/api-reference/");
+  program
+    .name("octomind-cli")
+    .description(
+      "Octomind CLI tool. see https://octomind.dev/docs/api-reference/",
+    );
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
