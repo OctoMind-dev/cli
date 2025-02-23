@@ -18,6 +18,7 @@ export interface TestTargetExecutionRequest {
   url: string;
   context: ExecutionContext;
   environmentName?: string;
+  tags?: string[];
 }
 
 export interface TestResult {
@@ -66,6 +67,7 @@ export interface ExecuteTestsOptions {
   environment?: string;
   description?: string;
   json?: boolean;
+  tags?: string[];
 }
 
 export interface GetTestReportOptions {
