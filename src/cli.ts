@@ -1,5 +1,5 @@
 import axios from "axios";
-import { program } from "commander";
+import { program, Option } from "commander";
 import {
   ExecuteTestsOptions,
   GetTestReportOptions,
@@ -82,6 +82,7 @@ export async function executeTests(options: ExecuteTestsOptions) {
       },
     },
     environmentName: options.environment,
+    tags: options.tags,
   };
 
   const response = await apiCall<TestReportResponse>(
@@ -348,10 +349,12 @@ export async function deleteEnvironment(options: DeleteEnvironmentOptions) {
   console.log("Environment deleted successfully!");
 }
 
+const apiKeyOption = new Option("-k, --api-key <key>", "the api key for authentication").env("API_KEY").makeOptionMandatory();
+
 function createCommandWithCommonOptions(command: string) {
   return program
     .command(command)
-    .requiredOption("-k, --api-key <key>", "Octomind API key")
+    .addOption(apiKeyOption)
     .option("-j, --json", "Output raw JSON response");
 }
 
@@ -359,7 +362,7 @@ export function run() {
   // CLI program setup
   program
     .name("octomind-cli")
-    .description(
+      .description(
       "Octomind CLI tool. see https://octomind.dev/docs/api-reference/",
     );
 
@@ -369,6 +372,7 @@ export function run() {
     .requiredOption("-u, --url <url>", "URL to test")
     .option("-e, --environment <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
+    .option("-g --tags <tags>", "comma separated list of tags")
     .action(executeTests);
 
   createCommandWithCommonOptions("report")
