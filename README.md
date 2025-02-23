@@ -1,6 +1,8 @@
 # Octomind CLI
 
-A command-line interface for interacting with the Octomind API. This CLI allows you to execute tests, retrieve test reports, and manage private locations.
+A command-line interface for interacting with the Octomind API. 
+This CLI allows you to execute tests, retrieve test reports, and manage private locations as well as environments.
+See [API documentation](https://octomind.dev/docs/api-reference/)
 
 ## Installation
 
@@ -93,7 +95,7 @@ Example JSON output:
 
 ### Register Private Location
 
-Register a new private location worker.
+Register a new private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) is will register itself on startup automatically.
 
 ```bash
 tsx src/index.ts register-location \
@@ -115,7 +117,7 @@ Options:
 
 ### Unregister Private Location
 
-Remove a registered private location worker.
+Remove a registered private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) is will unregister itself when going offline automatically.
 
 ```bash
 tsx src/index.ts unregister-location \
@@ -263,8 +265,29 @@ Optionen:
 By default, the CLI provides formatted text output for better readability. Add the `--json` flag to any command to get the raw JSON response instead. This is useful for scripting or when you need to process the output programmatically.
 
 Example of JSON output:
-```bash
-tsx src/index.ts report --api-key key123 --test-target-id target123 --report-id report123 --json
+```json
+{
+  "id": "826c15af-644b-4b28-89b4-f50ff34e46b7",
+  "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
+  "status": "PASSED",
+  "executionUrl": "https://example.com",
+  "testResults": [
+    {
+      "id": "abc-123-456",
+      "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
+      "testCaseId": "test-1",
+      "status": "PASSED",
+      "traceUrl": "https://storage.googleapis.com/automagically-traces/abc-123-trace.zip"
+    },
+    {
+      "id": "def-456-789",
+      "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
+      "testCaseId": "test-2",
+      "status": "PASSED",
+      "traceUrl": "https://storage.googleapis.com/automagically-traces/def-456-trace.zip"
+    }
+  ]
+}
 ```
 
 ## Error Handling

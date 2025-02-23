@@ -22,6 +22,7 @@ import {
 
 /* eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
 /* eslint i18n-text/no-en: "off" */
+/* eslint github/array-foreach: "off" */
 
 const BASE_URL = "https://app.octomind.dev/api";
 
@@ -356,7 +357,11 @@ function createCommandWithCommonOptions(command: string) {
 
 export function run() {
   // CLI program setup
-  program.name("octomind-cli").description("Octomind CLI tool");
+  program
+    .name("octomind-cli")
+    .description(
+      "Octomind CLI tool. see https://octomind.dev/docs/api-reference/",
+    );
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
