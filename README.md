@@ -95,7 +95,7 @@ Example JSON output:
 
 ### Register Private Location
 
-Register a new private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) is will register itself on startup automatically.
+Register a new private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) it will register itself on startup automatically.
 
 ```bash
 tsx src/index.ts register-location \
@@ -117,7 +117,7 @@ Options:
 
 ### Unregister Private Location
 
-Remove a registered private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) is will unregister itself when going offline automatically.
+Remove a registered private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) it will unregister itself when going offline automatically.
 
 ```bash
 tsx src/index.ts unregister-location \
@@ -133,7 +133,7 @@ Options:
 
 ### List Private Locations
 
-Liste alle registrierten privaten Standorte auf.
+List all registered private locations.
 
 ```bash
 tsx src/index.ts list-private-locations \
@@ -141,11 +141,11 @@ tsx src/index.ts list-private-locations \
   [--json]
 ```
 
-Optionen:
-- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
-- `-j, --json`: Ausgabe als Raw-JSON-Response
+Options:
+- `-k, --api-key` (required): Your Octomind API key
+- `-j, --json`: Output raw JSON response
 
-Beispiel Textausgabe:
+Example text output:
 ```
 Private Locations:
 - Name: location-1
@@ -158,7 +158,7 @@ Private Locations:
 
 ### List Environments
 
-Liste alle verfügbaren Umgebungen für einen Test-Target auf.
+List all available environments.
 
 ```bash
 tsx src/index.ts list-environments \
@@ -167,14 +167,14 @@ tsx src/index.ts list-environments \
   [--json]
 ```
 
-Optionen:
-- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
-- `-t, --test-target-id` (erforderlich): Test-Target ID
-- `-j, --json`: Ausgabe als Raw-JSON-Response
+Options:
+- `-k, --api-key` (required): Your Octomind API key
+- `-t, --test-target-id` (required): Test target ID
+- `-j, --json`: Output raw JSON response
 
 ### Create Environment
 
-Erstelle eine neue Umgebung für einen Test-Target.
+Create a new environment for a test target.
 
 ```bash
 tsx src/index.ts create-environment \
@@ -192,23 +192,23 @@ tsx src/index.ts create-environment \
   [--json]
 ```
 
-Optionen:
-- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
-- `-t, --test-target-id` (erforderlich): Test-Target ID
-- `-n, --name` (erforderlich): Name der Umgebung
-- `-d, --discovery-url` (erforderlich): Discovery URL
-- `--test-account-username`: Benutzername für Test-Account
-- `--test-account-password`: Passwort für Test-Account
-- `--test-account-otp-initializer-key`: OTP Initializer Key für Test-Account
-- `--basic-auth-username`: Basic Auth Benutzername
-- `--basic-auth-password`: Basic Auth Passwort
-- `--private-location-name`: Name des privaten Standorts
-- `--additional-header-fields`: Zusätzliche Header-Felder (JSON-String)
-- `-j, --json`: Ausgabe als Raw-JSON-Response
+Options:
+- `-k, --api-key` (required): Your Octomind API key
+- `-t, --test-target-id` (required): Test target ID
+- `-n, --name` (required): Environment name
+- `-d, --discovery-url` (required): Discovery URL
+- `--test-account-username`: Test account username
+- `--test-account-password`: Test account password
+- `--test-account-otp-initializer-key`: OTP initializer key for test account
+- `--basic-auth-username`: Basic auth username
+- `--basic-auth-password`: Basic auth password
+- `--private-location-name`: Private location name
+- `--additional-header-fields`: Additional header fields (JSON string)
+- `-j, --json`: Output raw JSON response
 
 ### Update Environment
 
-Aktualisiere eine bestehende Umgebung.
+Update an existing environment.
 
 ```bash
 tsx src/index.ts update-environment \
@@ -227,24 +227,24 @@ tsx src/index.ts update-environment \
   [--json]
 ```
 
-Optionen:
-- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
-- `-t, --test-target-id` (erforderlich): Test-Target ID
-- `-e, --environment-id` (erforderlich): Environment ID
-- `-n, --name`: Neuer Name der Umgebung
-- `-d, --discovery-url`: Neue Discovery URL
-- `--test-account-username`: Neuer Benutzername für Test-Account
-- `--test-account-password`: Neues Passwort für Test-Account
-- `--test-account-otp-initializer-key`: Neuer OTP Initializer Key für Test-Account
-- `--basic-auth-username`: Neuer Basic Auth Benutzername
-- `--basic-auth-password`: Neues Basic Auth Passwort
-- `--private-location-name`: Neuer Name des privaten Standorts
-- `--additional-header-fields`: Neue zusätzliche Header-Felder (JSON-String)
-- `-j, --json`: Ausgabe als Raw-JSON-Response
+Options:
+- `-k, --api-key` (required): Your Octomind API key
+- `-t, --test-target-id` (required): Test target ID
+- `-e, --environment-id` (required): Environment ID
+- `-n, --name`: New environment name
+- `-d, --discovery-url`: New discovery URL
+- `--test-account-username`: New test account username
+- `--test-account-password`: New test account password
+- `--test-account-otp-initializer-key`: New OTP initializer key for test account
+- `--basic-auth-username`: New basic auth username
+- `--basic-auth-password`: New basic auth password
+- `--private-location-name`: New private location name
+- `--additional-header-fields`: New additional header fields (JSON string)
+- `-j, --json`: Output raw JSON response
 
 ### Delete Environment
 
-Lösche eine bestehende Umgebung.
+Delete an existing environment.
 
 ```bash
 tsx src/index.ts delete-environment \
@@ -254,11 +254,11 @@ tsx src/index.ts delete-environment \
   [--json]
 ```
 
-Optionen:
-- `-k, --api-key` (erforderlich): Ihr Octomind API-Schlüssel
-- `-t, --test-target-id` (erforderlich): Test-Target ID
-- `-e, --environment-id` (erforderlich): Environment ID
-- `-j, --json`: Ausgabe als Raw-JSON-Response
+Options:
+- `-k, --api-key` (required): Your Octomind API key
+- `-t, --test-target-id` (required): Test target ID
+- `-e, --environment-id` (required): Environment ID
+- `-j, --json`: Output raw JSON response
 
 ## Output Formats
 
