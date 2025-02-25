@@ -1,34 +1,29 @@
-import axios, { AxiosStatic } from "axios";
+import axios from "axios";
 import {
+  createEnvironment,
+  deleteEnvironment,
   executeTests,
   getTestReport,
+  listEnvironments,
+  listPrivateLocations,
   registerLocation,
   unregisterLocation,
-  listPrivateLocations,
-  listEnvironments,
-  createEnvironment,
   updateEnvironment,
-  deleteEnvironment,
 } from "../src/api";
 import {
+  CreateEnvironmentOptions,
+  DeleteEnvironmentOptions,
   ExecuteTestsOptions,
   GetTestReportOptions,
+  ListEnvironmentsOptions,
+  ListPrivateLocationsOptions,
   RegisterLocationOptions,
   UnregisterLocationOptions,
-  ListPrivateLocationsOptions,
-  ListEnvironmentsOptions,
-  CreateEnvironmentOptions,
   UpdateEnvironmentOptions,
-  DeleteEnvironmentOptions,
 } from "../src/types";
 
-interface AxiosMock extends AxiosStatic {
-  mockResolvedValue: Function;
-  mockRejectedValue: Function;
-}
-
 jest.mock("axios");
-const mockedAxios = axios as AxiosMock;
+const mockedAxios = jest.mocked(axios);
 
 describe("CLI Commands", () => {
   const apiKey = "test-api-key";

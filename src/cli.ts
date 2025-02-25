@@ -1,4 +1,4 @@
-import { program, Option } from "commander";
+import { program, Option, Command } from "commander";
 import {
   createEnvironment,
   deleteEnvironment,
@@ -18,15 +18,14 @@ const apiKeyOption = new Option(
   .env("API_KEY")
   .makeOptionMandatory();
 
-function createCommandWithCommonOptions(command: string) {
+const createCommandWithCommonOptions = (command: string): Command => {
   return program
     .command(command)
     .addOption(apiKeyOption)
     .option("-j, --json", "Output raw JSON response");
-}
+};
 
-export function run() {
-  // CLI program setup
+export const run = (): void => {
   program
     .name("octomind-cli")
     .description(
@@ -112,4 +111,4 @@ export function run() {
     .action(deleteEnvironment);
 
   program.parse();
-}
+};
