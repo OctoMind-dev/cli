@@ -24,6 +24,7 @@ npx @octomind/cli execute \
   --url <url> \
   [--environment <name>] \
   [--description <text>] \
+  [--tags <tags> ] \
   [--json]
 ```
 
@@ -34,6 +35,7 @@ Options:
 - `-e, --environment`: Environment name (default: "default")
 - `-d, --description`: Test description
 - `-j, --json`: Output raw JSON response
+- `-g, --tags <tags>`: comma separated list of tags
 
 ### Get Test Report
 
