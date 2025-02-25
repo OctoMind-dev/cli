@@ -1,9 +1,9 @@
 {
-  "name": "octomind-cli",
-  "version": "1.0.1",
+  "name": "@octomind/cli",
+  "version": "1.0.0",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
-  "packageManager": "pnpm@9.5.0+sha256.dbdf5961c32909fb030595a9daa1dae720162e658609a8f92f2fa99835510ca5",
+  "packageManager": "pnpm@9.15.6+sha512.139cab068fdf0b751268179ac5f909b5be72afb4a75c513d1905d151befc8977b593d3cf8671ed83d4d6637c5c94b98ffbce108125de4a5a27a31233601a99de",
   "engines": {
     "node": ">=20.0.0"
   },
@@ -16,7 +16,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.7.9",
     "commander": "^13.1.0",

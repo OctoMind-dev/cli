@@ -1,16 +1,15 @@
 # Octomind CLI
 
+![Continuous Integration](https://github.com/octomind-dev/cli/actions/workflows/ts.yml/badge.svg)
+
 A command-line interface for interacting with the Octomind API. 
 This CLI allows you to execute tests, retrieve test reports, and manage private locations as well as environments.
 See [API documentation](https://octomind.dev/docs/api-reference/)
 
-## Installation
+## Usage
 
-1. Clone the repository
-2. Install dependencies:
-```bash
-pnpm install
-```
+1. Install the package - `npm i -g @octomind/cli` and use it directly e.g. `@octomind/cli -h`
+2. Use the cli through npx e.g. `npx @octomind/cli -h`
 
 ## Commands
 
@@ -19,7 +18,7 @@ pnpm install
 Run test cases against a specified URL.
 
 ```bash
-tsx src/index.ts execute \
+npx @octomind/cli execute \
   --api-key <key> \
   --test-target-id <id> \
   --url <url> \
@@ -41,7 +40,7 @@ Options:
 Retrieve details about a specific test report.
 
 ```bash
-tsx src/index.ts report \
+npx @octomind/cli  report \
   --api-key <key> \
   --test-target-id <id> \
   --report-id <id> \
@@ -98,7 +97,7 @@ Example JSON output:
 Register a new private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) it will register itself on startup automatically.
 
 ```bash
-tsx src/index.ts register-location \
+npx @octomind/cli register-location \
   --api-key <key> \
   --name <name> \
   --proxypass <password> \
@@ -120,7 +119,7 @@ Options:
 Remove a registered private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) it will unregister itself when going offline automatically.
 
 ```bash
-tsx src/index.ts unregister-location \
+npx @octomind/cli unregister-location \
   --api-key <key> \
   --name <name> \
   [--json]
@@ -136,7 +135,7 @@ Options:
 List all registered private locations.
 
 ```bash
-tsx src/index.ts list-private-locations \
+npx @octomind/cli list-private-locations \
   --api-key <key> \
   [--json]
 ```
@@ -161,7 +160,7 @@ Private Locations:
 List all available environments.
 
 ```bash
-tsx src/index.ts list-environments \
+npx @octomind/cli list-environments \
   --api-key <key> \
   --test-target-id <id> \
   [--json]
@@ -177,7 +176,7 @@ Options:
 Create a new environment for a test target.
 
 ```bash
-tsx src/index.ts create-environment \
+npx @octomind/cli create-environment \
   --api-key <key> \
   --test-target-id <id> \
   --name <name> \
@@ -211,7 +210,7 @@ Options:
 Update an existing environment.
 
 ```bash
-tsx src/index.ts update-environment \
+npx @octomind/cli update-environment \
   --api-key <key> \
   --test-target-id <id> \
   --environment-id <id> \
@@ -247,7 +246,7 @@ Options:
 Delete an existing environment.
 
 ```bash
-tsx src/index.ts delete-environment \
+npx @octomind/cli delete-environment \
   --api-key <key> \
   --test-target-id <id> \
   --environment-id <id> \
@@ -290,15 +289,13 @@ Example of JSON output:
 }
 ```
 
-## Error Handling
-
-The CLI will:
-- Validate required parameters before making API calls
-- Display clear error messages for missing or invalid parameters
-- Show API error responses with details when available
-- Exit with status code 1 on errors
-
 ## Development
+
+1. Clone the repository
+2. Install dependencies:
+```bash
+pnpm install
+```
 
 The CLI is written in TypeScript and uses the following dependencies:
 - `commander`: For command-line argument parsing
@@ -306,9 +303,5 @@ The CLI is written in TypeScript and uses the following dependencies:
 
 To build from source:
 ```bash
-npm run build
+pnpm run build
 ```
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
