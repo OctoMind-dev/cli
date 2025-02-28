@@ -83,6 +83,7 @@ export async function executeTests(options: ExecuteTestsOptions) {
     },
     environmentName: options.environment,
     tags: options.tags,
+    variablesToOverwrite: options.variablesToOverwrite,
   };
 
   const response = await apiCall<TestReportResponse>(
@@ -373,6 +374,10 @@ export function run() {
     .option("-e, --environment <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
     .option("-g --tags <tags>", "comma separated list of tags")
+    .option(
+      "-v, --variables-to-overwrite <variables>",
+      "JSON object of variables to overwrite",
+    )
     .action(executeTests);
 
   createCommandWithCommonOptions("report")
