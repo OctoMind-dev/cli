@@ -1,14 +1,17 @@
 {
-  "name": "octomind-cli",
-  "version": "1.0.1",
+  "name": "@octomind/cli",
+  "version": "1.0.2",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
-  "packageManager": "pnpm@9.5.0+sha256.dbdf5961c32909fb030595a9daa1dae720162e658609a8f92f2fa99835510ca5",
+  "packageManager": "pnpm@9.15.6+sha512.139cab068fdf0b751268179ac5f909b5be72afb4a75c513d1905d151befc8977b593d3cf8671ed83d4d6637c5c94b98ffbce108125de4a5a27a31233601a99de",
   "engines": {
     "node": ">=20.0.0"
   },
+  "bin": {
+    "cli": "./dist/index.js"
+  },
   "scripts": {
-    "lint": "eslint src/**/*.ts --max-warnings=0",
+    "lint": "eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
     "build": "tsc --project tsconfig.build.json",
     "octomind-cli": "tsx src/cli.ts",
     "test": "jest",
@@ -16,16 +19,16 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.7.9",
     "commander": "^13.1.0",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.3"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.5",
     "@types/jest": "^29.5.1",
-    "@typescript-eslint/parser": "^8.6.0",
+    "@typescript-eslint/parser": "^8.25.0",
     "eslint": "8.57.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-import-resolver-typescript": "^3.5.5",
@@ -35,9 +38,9 @@
     "eslint-plugin-prettier": "^5.0.0",
     "jest": "^29.5.0",
     "prettier": "^3.0.1",
-    "ts-jest": "^29.1.0",
+    "ts-jest": "^29.2.6",
     "ts-node": "^10.9.1",
-    "tsx": "^4.0.0",
+    "tsx": "^4.19.3",
     "typescript": "^5.0.4"
   }
 }
