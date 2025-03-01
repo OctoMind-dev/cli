@@ -14,7 +14,8 @@ import {
 const apiKeyOption = new Option(
   "-k, --api-key <key>",
   "the api key for authentication",
-).env("APIKEY")
+)
+  .env("APIKEY")
   .makeOptionMandatory();
 
 const createCommandWithCommonOptions = (command: string): Command => {
