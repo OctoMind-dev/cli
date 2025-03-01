@@ -15,7 +15,7 @@ const apiKeyOption = new Option(
   "-k, --api-key <key>",
   "the api key for authentication",
 )
-  .env("API_KEY")
+  .env("APIKEY")
   .makeOptionMandatory();
 
 const createCommandWithCommonOptions = (command: string): Command => {
@@ -38,7 +38,11 @@ export const run = (): void => {
     .requiredOption("-u, --url <url>", "URL to test")
     .option("-e, --environment <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
-    .option("-g, --tags <tags>", "comma separated list of tags")
+    .option("-g --tags <tags>", "comma separated list of tags")
+    .option(
+      "-v, --variables-to-overwrite <variables>",
+      "JSON object of variables to overwrite",
+    )
     .action(executeTests);
 
   createCommandWithCommonOptions("report")

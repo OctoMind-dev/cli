@@ -23,6 +23,8 @@ npx @octomind/cli execute \
   --test-target-id <id> \
   --url <url> \
   [--environment <name>] \
+  [--tags <list of tags>] \
+  [-v, --variables-to-overwrite <variables>] \
   [--description <text>] \
   [--tags <tags> ] \
   [--json]
@@ -34,6 +36,8 @@ Options:
 - `-u, --url` (required): URL to test
 - `-e, --environment`: Environment name (default: "default")
 - `-d, --description`: Test description
+- `-g, --tags`: comma separated list of tags for tests to execute
+- `-v, --variables-to-overwrite`: JSON object for variables to override for this run e.g. `{ "key": ["v1", "v2"]}`
 - `-j, --json`: Output raw JSON response
 - `-g, --tags <tags>`: comma separated list of tags
 
