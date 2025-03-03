@@ -1,225 +1,50 @@
-import axios, { AxiosStatic } from 'axios';
-import { executeTests, getTestReport, registerLocation, unregisterLocation, listPrivateLocations, listEnvironments, createEnvironment, updateEnvironment, deleteEnvironment } from '../src/cli';
-import { ExecuteTestsOptions, GetTestReportOptions, RegisterLocationOptions, UnregisterLocationOptions, ListPrivateLocationsOptions, ListEnvironmentsOptions, CreateEnvironmentOptions, UpdateEnvironmentOptions, DeleteEnvironmentOptions } from '../src/types';
+import { program } from "commander";
+import { run } from "../src/cli";
+import { executeTests } from "../src/api";
+import { env } from "process";
 
-interface AxiosMock extends AxiosStatic {
-  mockResolvedValue: Function
-  mockRejectedValue: Function
-}
+jest.mock("../src/api");
 
-jest.mock('axios')
-const mockedAxios = axios as AxiosMock
+describe("CLI Commands parsing options", () => {
+  const stdArgs = [
+    "node",
+    "cli.js",
+    "execute",
+    "--api-key",
+    "test-api-key",
+    "--test-target-id",
+    "test-target-id",
+    "--url",
+    "https://example.com",
+  ];
 
-describe('CLI Commands', () => {
-  const apiKey = 'test-api-key';
-  const BASE_URL = 'https://app.octomind.dev';
-  afterEach(() => {
-    jest.clearAllMocks();
+  beforeAll(() => {
+    run();
   });
 
-  it('executeTests', async () => {
-    const options: ExecuteTestsOptions = {
-      apiKey,
-      testTargetId: 'test-target-id',
-      url: 'https://example.com',
-      environment: 'default',
-      description: 'Test description',
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: { testReportUrl: 'https://example.com', testReport: { status: 'PASSED', testResults: [] } } });
-
-    await executeTests(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'post',
-      url: `${BASE_URL}/api/apiKey/v2/execute`,
-      data: expect.any(Object),
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
+  it("should parse executeTests tags option with comma", () => {
+    program.exitOverride((err) => {
+      throw err;
+    });
+    program.parse([...stdArgs, "--tags", "tag1,tags2"]);
+    expect(executeTests).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tags: ["tag1", "tags2"],
       }),
-    }));
+      expect.anything(),
+    );
   });
 
-  it('getTestReport', async () => {
-    const options: GetTestReportOptions = {
-      apiKey,
-      testTargetId: 'test-target-id',
-      reportId: 'test-report-id',
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: { status: 'PASSED', executionUrl: 'https://example.com', testResults: [] } });
-
-    await getTestReport(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'get',
-      url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/test-reports/test-report-id`,
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
+  it("should parse executeTests tags option with space", () => {
+    program.exitOverride((err) => {
+      throw err;
+    });
+    program.parse([...stdArgs, "--tags", "tag1 tags2"]);
+    expect(executeTests).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tags: ["tag1", "tags2"],
       }),
-    }));
-  });
-
-  it('registerLocation', async () => {
-    const options: RegisterLocationOptions = {
-      apiKey,
-      name: 'test-location',
-      proxypass: 'password',
-      proxyuser: 'user',
-      address: 'address',
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: { success: true } });
-
-    await registerLocation(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'put',
-      url: `${BASE_URL}/api/apiKey/v1/private-location/register`,
-      data: expect.any(Object),
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      }),
-    }));
-  });
-
-  it('unregisterLocation', async () => {
-    const options: UnregisterLocationOptions = {
-      apiKey,
-      name: 'test-location',
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: { success: true } });
-
-    await unregisterLocation(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'put',
-      url: `${BASE_URL}/api/apiKey/v1/private-location/unregister`,
-      data: expect.any(Object),
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      }),
-    }));
-  });
-
-  it('listPrivateLocations', async () => {
-    const options: ListPrivateLocationsOptions = {
-      apiKey,
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: [{ name: 'location1', status: 'ONLINE', address: 'address1' }] });
-
-    await listPrivateLocations(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'get',
-      url: `${BASE_URL}/api/apiKey/v1/private-location`,
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      }),
-    }));
-  });
-
-  it('listEnvironments', async () => {
-    const options: ListEnvironmentsOptions = {
-      apiKey,
-      testTargetId: 'test-target-id',
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: [{ id: 'env1', name: 'env1', discoveryUrl: 'https://example.com', updatedAt: '2023-01-01' }] });
-
-    await listEnvironments(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'get',
-      url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/environments`,
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      }),
-    }));
-  });
-
-  it('createEnvironment', async () => {
-    const options: CreateEnvironmentOptions = {
-      apiKey,
-      testTargetId: 'test-target-id',
-      name: 'env1',
-      discoveryUrl: 'https://example.com',
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: { id: 'env1', name: 'env1', discoveryUrl: 'https://example.com', updatedAt: '2023-01-01' } });
-
-    await createEnvironment(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'post',
-      url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/environments`,
-      data: expect.any(Object),
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      }),
-    }));
-  });
-
-  it('updateEnvironment', async () => {
-    const options: UpdateEnvironmentOptions = {
-      apiKey,
-      testTargetId: 'test-target-id',
-      environmentId: 'env1',
-      name: 'env1-updated',
-      discoveryUrl: 'https://example.com',
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: { id: 'env1', name: 'env1-updated', discoveryUrl: 'https://example.com', updatedAt: '2023-01-01' } });
-
-    await updateEnvironment(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'patch',
-      url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/environments/env1`,
-      data: expect.any(Object),
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      }),
-    }));
-  });
-
-  it('deleteEnvironment', async () => {
-    const options: DeleteEnvironmentOptions = {
-      apiKey,
-      testTargetId: 'test-target-id',
-      environmentId: 'env1',
-      json: true,
-    };
-
-    mockedAxios.mockResolvedValue({ data: { success: true } });
-
-    await deleteEnvironment(options);
-
-    expect(mockedAxios).toHaveBeenCalledWith(expect.objectContaining({
-      method: 'delete',
-      url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/environments/env1`,
-      headers: expect.objectContaining({
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      }),
-    }));
+      expect.anything(),
+    );
   });
 });

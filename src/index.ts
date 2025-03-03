@@ -1,2 +1,3 @@
 import { run } from "./cli";
-run();
+const program = run();
+program.parse();
