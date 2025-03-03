@@ -41,7 +41,7 @@ export function run() {
     .requiredOption("-u, --url <url>", "URL to test")
     .option("-e, --environment <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
-    .option("-g --tags <tags>", "list of tags", splitter)
+    .option("-g --tags <tags>", "comma spe. list of tags", splitter)
     .action(executeTests);
 
   createCommandWithCommonOptions("report")
