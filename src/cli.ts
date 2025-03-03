@@ -25,7 +25,9 @@ const createCommandWithCommonOptions = (command: string): Command => {
     .option("-j, --json", "Output raw JSON response");
 };
 
-export const run = (): void => {
+const splitter = (value: string): string[] => value.split(/,| /);
+
+export const buildCmd = (): Command => {
   program
     .name("octomind-cli")
     .description(
@@ -38,7 +40,7 @@ export const run = (): void => {
     .requiredOption("-u, --url <url>", "URL to test")
     .option("-e, --environment <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
-    .option("-g, --tags <tags>", "comma separated list of tags")
+    .option("-g, --tags <tags>", "comma separated list of tags", splitter)
     .action(executeTests);
 
   createCommandWithCommonOptions("report")
@@ -109,6 +111,5 @@ export const run = (): void => {
     .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
     .action(deleteEnvironment);
-
-  program.parse();
+  return program;
 };
