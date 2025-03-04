@@ -72,5 +72,4 @@ describe("CLI Commands parsing options", () => {
       expect.anything(),
     );
   });
-
 });
