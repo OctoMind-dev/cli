@@ -26,6 +26,7 @@ const createCommandWithCommonOptions = (command: string): Command => {
 };
 
 const splitter = (value: string): string[] => value.split(/,| /);
+const toJSON = (value: string): object => JSON.parse(value);
 
 export const buildCmd = (): Command => {
   program
@@ -44,6 +45,7 @@ export const buildCmd = (): Command => {
     .option(
       "-v, --variables-to-overwrite <variables>",
       "JSON object of variables to overwrite",
+      toJSON,
     )
     .action(executeTests);
 
