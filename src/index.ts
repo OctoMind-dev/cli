@@ -1,3 +1,4 @@
 #!/usr/bin/env node
-import { run } from "./cli";
-run();
+import { buildCmd } from "./cli";
+const cmd = buildCmd();
+cmd.parse();
