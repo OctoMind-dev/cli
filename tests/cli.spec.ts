@@ -46,4 +46,31 @@ describe("CLI Commands parsing options", () => {
       expect.anything(),
     );
   });
+
+  it("should parse executeTests tags option with |", () => {
+    program.exitOverride((err) => {
+      throw err;
+    });
+    program.parse([...stdArgs, "--tags", "tag1|tags2"]);
+    expect(executeTests).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tags: ["tag1", "tags2"],
+      }),
+      expect.anything(),
+    );
+  });
+
+  it("should parse executeTests tags option always as array", () => {
+    program.exitOverride((err) => {
+      throw err;
+    });
+    program.parse([...stdArgs, "--tags", "tag1"]);
+    expect(executeTests).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tags: ["tag1"],
+      }),
+      expect.anything(),
+    );
+  });
+
 });
