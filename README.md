@@ -8,8 +8,8 @@ See [API documentation](https://octomind.dev/docs/api-reference/)
 
 ## Usage
 
-1. Install the package - `npm i -g @octomind/cli` and use it directly e.g. `@octomind/cli -h`
-2. Use the cli through npx e.g. `npx @octomind/cli -h`
+1. Install the package - `npm i -g @octomind/octomind` and use it directly e.g. `octomind -h`
+2. Use the cli through npx e.g. `npx @octomind/octomind -h`
 
 ## Commands
 
@@ -18,7 +18,7 @@ See [API documentation](https://octomind.dev/docs/api-reference/)
 Run test cases against a specified URL.
 
 ```bash
-npx @octomind/cli execute \
+octomind execute \
   --api-key <key> \
   --test-target-id <id> \
   --url <url> \
@@ -46,7 +46,7 @@ Options:
 Retrieve details about a specific test report.
 
 ```bash
-npx @octomind/cli  report \
+octomind report \
   --api-key <key> \
   --test-target-id <id> \
   --report-id <id> \
@@ -103,7 +103,7 @@ Example JSON output:
 Register a new private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) it will register itself on startup automatically.
 
 ```bash
-npx @octomind/cli register-location \
+octomind register-location \
   --api-key <key> \
   --name <name> \
   --proxypass <password> \
@@ -125,7 +125,7 @@ Options:
 Remove a registered private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) it will unregister itself when going offline automatically.
 
 ```bash
-npx @octomind/cli unregister-location \
+octomind unregister-location \
   --api-key <key> \
   --name <name> \
   [--json]
@@ -141,7 +141,7 @@ Options:
 List all registered private locations.
 
 ```bash
-npx @octomind/cli list-private-locations \
+octomind list-private-locations \
   --api-key <key> \
   [--json]
 ```
@@ -166,7 +166,7 @@ Private Locations:
 List all available environments.
 
 ```bash
-npx @octomind/cli list-environments \
+octomind list-environments \
   --api-key <key> \
   --test-target-id <id> \
   [--json]
@@ -182,7 +182,7 @@ Options:
 Create a new environment for a test target.
 
 ```bash
-npx @octomind/cli create-environment \
+octomind create-environment \
   --api-key <key> \
   --test-target-id <id> \
   --name <name> \
@@ -216,7 +216,7 @@ Options:
 Update an existing environment.
 
 ```bash
-npx @octomind/cli update-environment \
+octomind update-environment \
   --api-key <key> \
   --test-target-id <id> \
   --environment-id <id> \
@@ -252,7 +252,7 @@ Options:
 Delete an existing environment.
 
 ```bash
-npx @octomind/cli delete-environment \
+octomind delete-environment \
   --api-key <key> \
   --test-target-id <id> \
   --environment-id <id> \
