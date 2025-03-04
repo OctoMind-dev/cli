@@ -15,7 +15,7 @@ const apiKeyOption = new Option(
   "-k, --api-key <key>",
   "the api key for authentication",
 )
-  .env("API_KEY")
+  .env("APIKEY")
   .makeOptionMandatory();
 
 const createCommandWithCommonOptions = (command: string): Command => {
@@ -26,6 +26,7 @@ const createCommandWithCommonOptions = (command: string): Command => {
 };
 
 const splitter = (value: string): string[] => value.split(/,| /);
+const toJSON = (value: string): object => JSON.parse(value);
 
 export const buildCmd = (): Command => {
   program
@@ -41,6 +42,11 @@ export const buildCmd = (): Command => {
     .option("-e, --environment <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
     .option("-g, --tags <tags>", "comma separated list of tags", splitter)
+    .option(
+      "-v, --variables-to-overwrite <variables>",
+      "JSON object of variables to overwrite",
+      toJSON,
+    )
     .action(executeTests);
 
   createCommandWithCommonOptions("report")

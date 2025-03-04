@@ -19,6 +19,7 @@ export interface TestTargetExecutionRequest {
   context: ExecutionContext;
   environmentName?: string;
   tags?: string[];
+  variablesToOverwrite?: Record<string, string[]>;
 }
 
 export interface TestResult {
@@ -68,6 +69,7 @@ export interface ExecuteTestsOptions {
   description?: string;
   json?: boolean;
   tags?: string[];
+  variablesToOverwrite?: Record<string, string[]>;
 }
 
 export interface GetTestReportOptions {
