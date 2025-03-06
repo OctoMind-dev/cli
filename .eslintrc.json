@@ -19,6 +19,7 @@
     "@typescript-eslint/no-floating-promises": "warn",
     "prettier/prettier": "warn",
     "no-console": "off",
+    "import/extensions": "off",
     "no-unused-vars": "off",
     "github/array-foreach": "off",
     "i18n-text/no-en": "off",
