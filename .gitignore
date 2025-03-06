@@ -1,4 +1,5 @@
 notes.txt
 dist/
+src/version.ts
 node_modules/
 .idea

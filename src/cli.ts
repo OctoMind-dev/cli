@@ -1,5 +1,5 @@
 import { program, Option, Command } from "commander";
-import { version } from "../package.json";
+import { version } from "./version";
 import {
   createEnvironment,
   deleteEnvironment,

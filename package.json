@@ -12,7 +12,7 @@
   },
   "scripts": {
     "lint": "eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
-    "build": "tsc --project tsconfig.build.json",
+    "build": "npx genversion -e src/version.ts && tsc --project tsconfig.build.json",
     "octomind-cli": "tsx src/cli.ts",
     "test": "jest",
     "test:watch": "jest --watch"
