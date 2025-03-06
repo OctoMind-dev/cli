@@ -74,8 +74,9 @@ export const executeTests = async (
     },
     environmentName: options.environment,
     tags: options.tags,
+    variablesToOverwrite: options.variablesToOverwrite
   };
-
+  
   const response = await apiCall<TestReportResponse>(
     "post",
     "/apiKey/v2/execute",
