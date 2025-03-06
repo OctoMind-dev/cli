@@ -11,11 +11,11 @@
     "octomind": "./dist/index.js"
   },
   "scripts": {
-    "lint": "eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
+    "lint": "npx genversion -e src/version.ts && eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
     "build": "npx genversion -e src/version.ts && tsc --project tsconfig.build.json",
-    "octomind-cli": "tsx src/cli.ts",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "octomind": "tsx src/cli.ts",
+    "test": "npx genversion -e src/version.ts && jest",
+    "test:watch": "npx genversion -e src/version.ts && jest --watch"
   },
   "keywords": [],
   "author": "",
