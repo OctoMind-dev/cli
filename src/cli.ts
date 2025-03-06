@@ -1,4 +1,5 @@
 import { program, Option, Command } from "commander";
+import { version } from "./version";
 import {
   createEnvironment,
   deleteEnvironment,
@@ -32,8 +33,9 @@ export const buildCmd = (): Command => {
   program
     .name("octomind-cli")
     .description(
-      "Octomind CLI tool. see https://octomind.dev/docs/api-reference/",
-    );
+      `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`,
+    )
+    .version(version);
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
