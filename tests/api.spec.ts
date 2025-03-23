@@ -9,6 +9,9 @@ import {
   registerLocation,
   unregisterLocation,
   updateEnvironment,
+  getNotifications,
+  getTestCase,
+  createDiscovery,
 } from "../src/api";
 import {
   CreateEnvironmentOptions,
@@ -20,6 +23,9 @@ import {
   RegisterLocationOptions,
   UnregisterLocationOptions,
   UpdateEnvironmentOptions,
+  GetNotificationsOptions,
+  GetTestCaseOptions,
+  CreateDiscoveryOptions,
 } from "../src/types";
 
 jest.mock("axios");
@@ -284,6 +290,153 @@ describe("CLI Commands", () => {
       expect.objectContaining({
         method: "delete",
         url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/environments/env1`,
+        headers: expect.objectContaining({
+          "X-API-Key": apiKey,
+          "Content-Type": "application/json",
+        }),
+      }),
+    );
+  });
+
+  it("getNotifications", async () => {
+    const options: GetNotificationsOptions = {
+      apiKey,
+      testTargetId: "test-target-id",
+      json: true,
+    };
+
+    mockedAxios.mockResolvedValue({
+      data: [
+        {
+          id: "notification1",
+          testTargetId: "test-target-id",
+          createdAt: "2025-03-23T10:58:23.479Z",
+          updatedAt: "2025-03-23T10:58:23.479Z",
+          payload: {
+            failed: false,
+            context: {
+              source: "manual",
+              description: "manual test run",
+              triggeredBy: {
+                type: "USER",
+                userId: "user-id",
+              },
+            },
+            testReportId: "report-id",
+          },
+          type: "REPORT_EXECUTION_FINISHED",
+          ack: null,
+        },
+      ],
+    });
+
+    await getNotifications(options);
+
+    expect(mockedAxios).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: "get",
+        url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/notifications`,
+        headers: expect.objectContaining({
+          "X-API-Key": apiKey,
+          "Content-Type": "application/json",
+        }),
+      }),
+    );
+  });
+
+  it("getTestCase", async () => {
+    const options: GetTestCaseOptions = {
+      apiKey,
+      testTargetId: "test-target-id",
+      testCaseId: "test-case-id",
+      json: true,
+    };
+
+    mockedAxios.mockResolvedValue({
+      data: {
+        id: "test-case-id",
+        testTargetId: "test-target-id",
+        type: null,
+        elements: [
+          {
+            id: "element1",
+            index: 0,
+            interaction: {
+              id: "interaction1",
+              action: "CLICK",
+              testCaseElementId: "element1",
+            },
+            selectors: [
+              {
+                id: "selector1",
+                index: 0,
+                selector: "button",
+                selectorType: "ROLE",
+                options: { name: "Submit" },
+                testCaseElementId: "element1",
+                scrollStateId: null,
+              },
+            ],
+            testCaseId: "test-case-id",
+            ignoreFailure: false,
+          },
+        ],
+        createdAt: "2025-03-20T21:44:49.186Z",
+        updatedAt: "2025-03-22T14:09:46.078Z",
+        description: "Test case description",
+        status: "ENABLED",
+        externalId: null,
+        entryPointUrlPath: null,
+        tags: [],
+        createdBy: "EDIT",
+        runStatus: "ON",
+      },
+    });
+
+    await getTestCase(options);
+
+    expect(mockedAxios).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: "get",
+        url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/test-cases/test-case-id`,
+        headers: expect.objectContaining({
+          "X-API-Key": apiKey,
+          "Content-Type": "application/json",
+        }),
+      }),
+    );
+  });
+
+  it("createDiscovery", async () => {
+    const options: CreateDiscoveryOptions = {
+      apiKey,
+      testTargetId: "test-target-id",
+      name: "discovery1",
+      prompt: "make sure current time is visible",
+      entryPointUrlPath: "/path",
+      assignedTagIds: ["tag1", "tag2"],
+      json: true,
+    };
+
+    mockedAxios.mockResolvedValue({
+      data: {
+        discoveryId: "discovery-id",
+        testCaseId: "test-case-id",
+      },
+    });
+
+    await createDiscovery(options);
+
+    expect(mockedAxios).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: "post",
+        url: `${BASE_URL}/api/apiKey/v2/test-targets/test-target-id/discoveries`,
+        data: expect.objectContaining({
+          name: "discovery1",
+          prompt: "make sure current time is visible",
+          entryPointUrlPath: "/path",
+          assignedTagIds: ["tag1", "tag2"],
+        }),
         headers: expect.objectContaining({
           "X-API-Key": apiKey,
           "Content-Type": "application/json",

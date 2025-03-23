@@ -17,6 +17,12 @@ import {
   SuccessResponse,
   Environment,
   TestReport,
+  GetNotificationsOptions,
+  Notification,
+  GetTestCaseOptions,
+  TestCase,
+  CreateDiscoveryOptions,
+  DiscoveryResponse,
 } from "./types";
 
 const BASE_URL = "https://app.octomind.dev/api";
@@ -353,4 +359,134 @@ export const deleteEnvironment = async (
   }
 
   console.log("Environment deleted successfully!");
+};
+
+export const getNotifications = async (
+  options: GetNotificationsOptions,
+): Promise<void> => {
+  if (!options.apiKey) {
+    console.error("API key is required");
+    process.exit(1);
+  }
+
+  const response = await apiCall<Notification[]>(
+    "get",
+    `/apiKey/v2/test-targets/${options.testTargetId}/notifications`,
+    options.apiKey,
+  );
+
+  if (options.json) {
+    outputResult(response);
+    return;
+  }
+
+  console.log("Notifications:");
+  response.forEach((notification) => {
+    console.log(`\nID: ${notification.id}`);
+    console.log(`Type: ${notification.type}`);
+    console.log(`Created At: ${notification.createdAt}`);
+    if (notification.payload.testReportId) {
+      console.log(`Test Report ID: ${notification.payload.testReportId}`);
+    }
+    if (notification.payload.testCaseId) {
+      console.log(`Test Case ID: ${notification.payload.testCaseId}`);
+    }
+    if (notification.payload.failed !== undefined) {
+      console.log(`Failed: ${notification.payload.failed}`);
+    }
+    if (notification.ack) {
+      console.log(`Acknowledged: ${notification.ack}`);
+    }
+  });
+};
+
+export const getTestCase = async (
+  options: GetTestCaseOptions,
+): Promise<void> => {
+  if (!options.apiKey) {
+    console.error("API key is required");
+    process.exit(1);
+  }
+
+  const response = await apiCall<TestCase>(
+    "get",
+    `/apiKey/v2/test-targets/${options.testTargetId}/test-cases/${options.testCaseId}`,
+    options.apiKey,
+  );
+
+  if (options.json) {
+    outputResult(response);
+    return;
+  }
+
+  console.log("Test Case Details:");
+  console.log(`ID: ${response.id}`);
+  console.log(`Description: ${response.description}`);
+  console.log(`Status: ${response.status}`);
+  console.log(`Run Status: ${response.runStatus}`);
+  console.log(`Created At: ${response.createdAt}`);
+  console.log(`Updated At: ${response.updatedAt}`);
+
+  if (response.elements.length > 0) {
+    console.log("\nElements:");
+    response.elements.forEach((element, index) => {
+      console.log(`\nElement ${index + 1}:`);
+      if (element.interaction) {
+        console.log(`  Action: ${element.interaction.action}`);
+        if (element.interaction.calledWith) {
+          console.log(`  Called With: ${element.interaction.calledWith}`);
+        }
+      }
+      if (element.assertion) {
+        console.log(`  Expectation: ${element.assertion.expectation}`);
+        if (element.assertion.calledWith) {
+          console.log(`  Called With: ${element.assertion.calledWith}`);
+        }
+      }
+      console.log("  Selectors:");
+      element.selectors.forEach((selector) => {
+        console.log(`    - ${selector.selectorType}: ${selector.selector}`);
+        if (selector.options?.name) {
+          console.log(`      Name: ${selector.options.name}`);
+        }
+      });
+    });
+  }
+};
+
+export const createDiscovery = async (
+  options: CreateDiscoveryOptions,
+): Promise<void> => {
+  if (!options.apiKey) {
+    console.error("API key is required");
+    process.exit(1);
+  }
+
+  const requestBody = {
+    name: options.name,
+    prompt: options.prompt,
+    ...(options.entryPointUrlPath && {
+      entryPointUrlPath: options.entryPointUrlPath,
+    }),
+    ...(options.prerequisiteId && { prerequisiteId: options.prerequisiteId }),
+    ...(options.externalId && { externalId: options.externalId }),
+    ...(options.assignedTagIds && { assignedTagIds: options.assignedTagIds }),
+    ...(options.folderId && { folderId: options.folderId }),
+  };
+
+  const response = await apiCall<DiscoveryResponse>(
+    "post",
+    `/apiKey/v2/test-targets/${options.testTargetId}/discoveries`,
+    options.apiKey,
+    requestBody,
+  );
+
+  if (options.json) {
+    outputResult(response);
+    return;
+  }
+
+  console.log("Discovery created successfully!");
+  console.log(`Discovery ID: ${response.discoveryId}`);
+  console.log(`Test Case ID: ${response.testCaseId}`);
 };

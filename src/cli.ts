@@ -10,6 +10,9 @@ import {
   registerLocation,
   unregisterLocation,
   updateEnvironment,
+  getNotifications,
+  getTestCase,
+  createDiscovery,
 } from "./api";
 
 const apiKeyOption = new Option(
@@ -119,5 +122,33 @@ export const buildCmd = (): Command => {
     .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
     .action(deleteEnvironment);
+
+  createCommandWithCommonOptions("notifications")
+    .description("Get notifications for a test target")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .action(getNotifications);
+
+  createCommandWithCommonOptions("test-case")
+    .description("Get details of a specific test case")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .action(getTestCase);
+
+  createCommandWithCommonOptions("create-discovery")
+    .description("Create a new test case discovery")
+    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .requiredOption("-n, --name <name>", "Discovery name")
+    .requiredOption("-p, --prompt <prompt>", "Discovery prompt")
+    .option("-e, --entry-point-url-path <path>", "Entry point URL path")
+    .option("--prerequisite-id <id>", "Prerequisite test case ID")
+    .option("--external-id <id>", "External identifier")
+    .option(
+      "--assigned-tag-ids <ids>",
+      "Comma-separated list of tag IDs",
+      splitter,
+    )
+    .option("--folder-id <id>", "Folder ID")
+    .action(createDiscovery);
+
   return program;
 };
