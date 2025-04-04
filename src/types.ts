@@ -183,3 +183,155 @@ export interface DeleteEnvironmentOptions {
   environmentId: string;
   json?: boolean;
 }
+
+export interface Notification {
+  id: string;
+  testTargetId: string;
+  createdAt: string;
+  updatedAt: string;
+  payload: {
+    failed?: boolean;
+    context?: ExecutionContext;
+    testReportId?: string;
+    testCaseId?: string;
+  };
+  type: "REPORT_EXECUTION_FINISHED" | "VALIDATION_PASSED";
+  ack?: "IN_WEB_APP" | null;
+}
+
+export interface TestCase {
+  id: string;
+  testTargetId: string;
+  type: string | null;
+  elements: Array<{
+    id: string;
+    index: number;
+    interaction?: {
+      id: string;
+      action:
+        | "EXTRACT"
+        | "ENTER_TEXT"
+        | "CLICK"
+        | "SELECT_OPTION"
+        | "TYPE_TEXT"
+        | "KEY_PRESS"
+        | "HOVER"
+        | "UPLOAD"
+        | "GO_TO"
+        | "DRAG_AND_DROP"
+        | "CLOSE_PAGE"
+        | "OPEN_EMAIL";
+      calledWith?: string | null;
+      testCaseElementId: string;
+    } | null;
+    assertion?: {
+      id: string;
+      expectation:
+        | "VISIBLE"
+        | "NOT_VISIBLE"
+        | "TO_BE_CHECKED"
+        | "NOT_TO_BE_CHECKED"
+        | "TO_HAVE_VALUE"
+        | "TO_CONTAIN_TEXT"
+        | "TO_HAVE_STYLE";
+      calledWith?: string | null;
+      testCaseElementId: string;
+    } | null;
+    scrollState: null;
+    selectors: Array<{
+      id: string;
+      index: number;
+      selector: string;
+      selectorType: "TEXT" | "LABEL" | "PLACEHOLDER" | "ROLE";
+      options?: { name?: string } | null;
+      testCaseElementId: string;
+      scrollStateId: string | null;
+    }>;
+    testCaseId: string;
+    ignoreFailure: boolean;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+  description: string;
+  status: "ENABLED" | "DRAFT";
+  externalId: string | null;
+  entryPointUrlPath: string | null;
+  tags: string[];
+  createdBy: "EDIT";
+  runStatus: "ON" | "OFF";
+  prerequisiteId: string | null;
+  proposalRunId: string | null;
+  folderId: string | null;
+  discovery?: {
+    id: string;
+    freePrompt: string;
+    traceUrl: string | null;
+    traceJsonManifestUrl: string | null;
+    status: "OUTDATED";
+    abortCause: string | null;
+    message: string | null;
+    testCaseId: string;
+    lastJobExecutionName: string | null;
+    createdAt: string;
+    updatedAt: string;
+    executedTestCaseElements: string[];
+    testCase: {
+      id: string;
+      testTargetId: string;
+      description: string;
+      createdAt: string;
+      updatedAt: string;
+      entryPointUrlPath: string | null;
+      type: string | null;
+      status: "ENABLED";
+      runStatus: "ON";
+      interactionStatus: "NEW";
+      createdBy: "EDIT";
+      proposalRunId: string | null;
+      externalId: string | null;
+      folderId: string | null;
+      prerequisiteId: string | null;
+      predecessorId: string;
+      testTarget: {
+        id: string;
+        app: string;
+        createdAt: string;
+        updatedAt: string;
+        orgId: string;
+        testIdAttribute: string | null;
+        timeoutPerStep: number;
+      };
+    };
+  };
+}
+
+export interface GetNotificationsOptions {
+  apiKey: string;
+  testTargetId: string;
+  json?: boolean;
+}
+
+export interface GetTestCaseOptions {
+  apiKey: string;
+  testTargetId: string;
+  testCaseId: string;
+  json?: boolean;
+}
+
+export interface CreateDiscoveryOptions {
+  apiKey: string;
+  testTargetId: string;
+  name: string;
+  prompt: string;
+  entryPointUrlPath?: string;
+  prerequisiteId?: string;
+  externalId?: string;
+  assignedTagIds?: string[];
+  folderId?: string;
+  json?: boolean;
+}
+
+export interface DiscoveryResponse {
+  discoveryId: string;
+  testCaseId: string;
+}
