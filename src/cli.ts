@@ -20,7 +20,7 @@ const createCommandWithCommonOptions = (command: string): Command => {
     .option("-j, --json", "Output raw JSON response");
 };
 
-const splitter = (value: string): string[] => value.split(/,| /);
+const splitter = (value: string): string[] => value.split(/,| |\|/);
 const toJSON = (value: string): object => JSON.parse(value);
 
 export const buildCmd = (): Command => {
@@ -111,12 +111,26 @@ export const buildCmd = (): Command => {
       "JSON object of variables to overwrite",
       toJSON,
     )
-    .action((_, options) =>
-      executeTests({
-        ...options,
-        testTargetId: resolveTestTargetId(options.testTargetId),
-      }),
-    );
+    .action(async (command, options) => {
+      const testTargetId = await resolveTestTargetId(options.testTargetId);
+      await executeTests({
+        url: command.url,
+        testTargetId,
+        environmentName: command.environmentName,
+        description: command.description,
+        tags: command.tags,
+        variablesToOverwrite: command.variablesToOverwrite,
+        json: command.json,
+        context: {
+          source: "manual",
+          description: command.description || "CLI execution",
+          triggeredBy: {
+            type: "USER",
+            userId: "cli-user",
+          },
+        },
+      });
+    });
 
   createCommandWithCommonOptions("test-report")
     .description("Get test report details")
