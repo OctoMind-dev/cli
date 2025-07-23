@@ -9,8 +9,6 @@ describe("CLI Commands parsing options", () => {
     "node",
     "cli.js",
     "execute",
-    "--api-key",
-    "test-api-key",
     "--test-target-id",
     "test-target-id",
     "--url",
