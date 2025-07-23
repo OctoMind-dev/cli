@@ -249,7 +249,15 @@ export const listPrivateLocations = async (options: {
 };
 
 export const createEnvironment = async (
-  options: EnvironmentRequest & { json?: boolean },
+  options: EnvironmentRequest & {
+    json?: boolean;
+    testAccountUsername?: string;
+    testAccountPassword?: string;
+    basicAuthUsername?: string;
+    basicAuthPassword?: string;
+    privateLocationName?: string;
+    testAccountOtpInitializerKey?: string;
+  },
 ): Promise<void> => {
   const { data, error } = await client.POST(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -260,8 +268,15 @@ export const createEnvironment = async (
       body: {
         name: options.name,
         discoveryUrl: options.discoveryUrl,
-        testAccount: options.testAccount,
-        basicAuth: options.basicAuth,
+        testAccount: {
+          username: options.testAccountUsername,
+          password: options.testAccountPassword,
+        },
+        basicAuth: {
+          username: options.basicAuthUsername,
+          password: options.basicAuthPassword,
+        },
+        testAccountOtpInitializerKey: options.testAccountOtpInitializerKey,
         privateLocationName: options.privateLocationName,
         additionalHeaderFields: options.additionalHeaderFields,
       },
@@ -289,6 +304,12 @@ export const updateEnvironment = async (
     testTargetId: string;
     environmentId: string;
     json?: boolean;
+    testAccountUsername?: string;
+    testAccountPassword?: string;
+    basicAuthUsername?: string;
+    basicAuthPassword?: string;
+    privateLocationName?: string;
+    testAccountOtpInitializerKey?: string;
   },
 ): Promise<void> => {
   const { data, error } = await client.PATCH(
@@ -303,10 +324,16 @@ export const updateEnvironment = async (
       body: {
         name: options.name,
         discoveryUrl: options.discoveryUrl,
-        testAccount: options.testAccount,
-        basicAuth: options.basicAuth,
+        testAccount: {
+          username: options.testAccountUsername,
+          password: options.testAccountPassword,
+        },
+        otpInitializerKey: options.testAccountOtpInitializerKey,
+        basicAuth: {
+          username: options.basicAuthUsername,
+          password: options.basicAuthPassword,
+        },
         privateLocationName: options.privateLocationName,
-        additionalHeaderFields: options.additionalHeaderFields,
       },
     },
   );
