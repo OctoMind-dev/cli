@@ -27,7 +27,6 @@ const client = createClient<paths>({ baseUrl: BASE_URL });
 
 const authMiddleware: Middleware = {
   async onRequest({ request }) {
-    // set "foo" header
     const apiKey = process.env.APIKEY;
     if (!apiKey) {
       throw new Error("APIKEY environment variable is not set");
