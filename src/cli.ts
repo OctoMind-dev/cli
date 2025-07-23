@@ -51,7 +51,7 @@ export const buildCmd = (): Command => {
     )
     .action(executeTests);
 
-  createCommandWithCommonOptions("report")
+  createCommandWithCommonOptions("test-report")
     .description("Get test report details")
     .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-r, --test-report-id <id>", "Test report ID")

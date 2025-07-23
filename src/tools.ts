@@ -5,16 +5,16 @@ export type listEnvironmentsOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments"]["get"]["parameters"]["path"];
 export type executeTestsBody =
   components["schemas"]["TestTargetExecutionRequest"];
-export type gettestReportParams =
+export type getTestReportParams =
   paths["/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}"]["get"]["parameters"]["path"];
 export type TestReport = components["schemas"]["TestReport"];
 export type SuccessResponse = components["schemas"]["SuccessResponse"];
 export type PrivateLocationInfo = components["schemas"]["PrivateLocationInfo"];
-export type EnvironmentRequest =
+export type PostEnvironmentOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments"]["post"]["requestBody"]["content"]["application/json"] & {
     testTargetId: string;
   };
-export type Environment = components["schemas"]["EnvironmentResponse"];
+
 export type UpdateEnvironmentOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}"]["patch"]["requestBody"]["content"]["application/json"];
 export type EnvironmentResponse = components["schemas"]["EnvironmentResponse"];
@@ -127,7 +127,7 @@ export const executeTests = async (
 };
 
 export const getTestReport = async (
-  options: gettestReportParams & { json?: boolean },
+  options: getTestReportParams & { json?: boolean },
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}",
@@ -249,7 +249,7 @@ export const listPrivateLocations = async (options: {
 };
 
 export const createEnvironment = async (
-  options: EnvironmentRequest & {
+  options: PostEnvironmentOptions & {
     json?: boolean;
     testAccountUsername?: string;
     testAccountPassword?: string;
@@ -285,7 +285,7 @@ export const createEnvironment = async (
 
   handleError(error);
 
-  const response = data as Environment;
+  const response = data as EnvironmentResponse;
 
   if (options.json) {
     outputResult(response);
@@ -358,7 +358,6 @@ export const deleteEnvironment = async (options: {
   testTargetId: string;
   environmentId: string;
   json?: boolean;
-  apiKey?: string;
 }): Promise<void> => {
   const { error } = await client.DELETE(
     "/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}",
