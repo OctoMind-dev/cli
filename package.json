@@ -3,7 +3,7 @@
   "version": "1.0.4",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
-  "packageManager": "pnpm@9.15.6+sha512.139cab068fdf0b751268179ac5f909b5be72afb4a75c513d1905d151befc8977b593d3cf8671ed83d4d6637c5c94b98ffbce108125de4a5a27a31233601a99de",
+  "packageManager": "pnpm@10.13.1",
   "engines": {
     "node": ">=20.0.0"
   },
@@ -12,7 +12,8 @@
   },
   "scripts": {
     "lint": "npx genversion -des src/version.ts && eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
-    "build": "npx genversion -des src/version.ts && tsc --project tsconfig.build.json",
+    "apigen": "openapi-typescript ./openapi.yaml --output src/api.ts",
+    "build": "npx genversion -des src/version.ts && pnpm apigen && tsc --project tsconfig.build.json",
     "octomind": "tsx src/cli.ts",
     "test": "npx genversion -des src/version.ts && jest",
     "test:watch": "npx genversion -e src/version.ts && jest --watch"
@@ -21,13 +22,13 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.9",
     "commander": "^14.0.0",
+    "openapi-fetch": "^0.14.0",
     "tsx": "^4.19.3"
   },
   "devDependencies": {
-    "@types/node": "^24.0.1",
     "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.1",
     "@typescript-eslint/parser": "^8.25.0",
     "eslint": "8.57.1",
     "eslint-config-prettier": "^10.0.1",
@@ -37,6 +38,7 @@
     "eslint-plugin-jest": "^29.0.1",
     "eslint-plugin-prettier": "^5.0.0",
     "jest": "^30.0.0",
+    "openapi-typescript": "^7.8.0",
     "prettier": "^3.0.1",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.1",
