@@ -34,59 +34,70 @@ export const buildCmd = (): Command => {
   program
     .command("init")
     .description("Initialize configuration by setting up API key")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .option("-k, --api-key <key>", "the api key for authentication")
     .option("-f, --force", "Force overwrite existing configuration")
-    .action(async (options: { force?: boolean }) => {
-      try {
-        console.log("🚀 Initializing configuration...\n");
+    .action(
+      async (options: {
+        testTargetId?: string;
+        apiKey: string;
+        force?: boolean;
+      }) => {
+        try {
+          console.log("🚀 Initializing configuration...\n");
 
-        const existingConfig = await loadConfig();
+          const existingConfig = await loadConfig();
 
-        if (existingConfig.apiKey && !options.force) {
-          console.log("⚠️  Configuration already exists.");
-          const overwrite = await promptUser(
-            "Do you want to overwrite it? (y/N): ",
-          );
+          if (existingConfig.apiKey && !options.force) {
+            console.log("⚠️  Configuration already exists.");
+            const overwrite = await promptUser(
+              "Do you want to overwrite it? (y/N): ",
+            );
 
-          if (
-            overwrite.toLowerCase() !== "y" &&
-            overwrite.toLowerCase() !== "yes"
-          ) {
-            console.log("Configuration unchanged.");
-            return;
+            if (
+              overwrite.toLowerCase() !== "y" &&
+              overwrite.toLowerCase() !== "yes"
+            ) {
+              console.log("Configuration unchanged.");
+              return;
+            }
           }
-        }
 
-        // Prompt for API key
-        const apiKey = await promptUser(
-          "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: ",
-        );
+          let apiKey;
+          if (!options.apiKey) {
+            apiKey = await promptUser(
+              "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: ",
+            );
+            if (!apiKey) {
+              console.log("❌ API key is required.");
+              process.exit(1);
+            }
+          }
+          let testTargetId;
+          if (!options.testTargetId) {
+            testTargetId = await promptUser(
+              "Enter test target id (optional, press Enter to skip): ",
+            );
+          }
 
-        if (!apiKey) {
-          console.log("❌ API key is required.");
+          const newConfig: Config = {
+            ...existingConfig,
+            apiKey: options.apiKey ?? apiKey,
+            testTargetId: options.testTargetId ?? testTargetId,
+          };
+
+          await saveConfig(newConfig);
+
+          console.log("\n✨ Initialization complete!");
+        } catch (error) {
+          console.error(
+            "❌ Error during initialization:",
+            (error as Error).message,
+          );
           process.exit(1);
         }
-
-        const testTargetId = await promptUser(
-          "Enter test target id (optional, press Enter to skip): ",
-        );
-
-        const newConfig: Config = {
-          ...existingConfig,
-          apiKey,
-          ...(testTargetId && { testTargetId }),
-        };
-
-        await saveConfig(newConfig);
-
-        console.log("\n✨ Initialization complete!");
-      } catch (error) {
-        console.error(
-          "❌ Error during initialization:",
-          (error as Error).message,
-        );
-        process.exit(1);
-      }
-    });
+      },
+    );
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
