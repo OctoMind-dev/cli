@@ -2,7 +2,7 @@
 
 ![Continuous Integration](https://github.com/octomind-dev/cli/actions/workflows/ts.yml/badge.svg)
 
-A command-line interface for interacting with the Octomind API.
+A command-line interface for interacting with the Octomind API. 
 This CLI allows you to execute tests, retrieve test reports, and manage private locations as well as environments.
 See [API documentation](https://octomind.dev/docs/api-reference/)
 
@@ -25,12 +25,11 @@ octomind init \
 ```
 
 Options:
-
 - `-k, --api-key`: Your Octomind API key (will prompt if not provided)
 - `-t, --test-target-id`: Test target ID (optional)
 - `-f, --force`: Force overwrite existing configuration
 
-If you don't provide the API key via the command line option, the CLI will prompt you to enter it interactively. Read the [docs](https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key) to learn how to generate an api key.
+If you don't provide the API key via the command line option, the CLI will prompt you to enter it interactively. You can get your API key from https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key.
 
 ### Execute Tests
 
@@ -49,7 +48,6 @@ octomind execute \
 ```
 
 Options:
-
 - `-u, --url` (required): URL to test
 - `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-t, --test-target-id`: Test target ID (optional if configured via `init`)
@@ -72,14 +70,12 @@ octomind report \
 ```
 
 Options:
-
 - `-r, --report-id` (required): Test report ID
 - `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-t, --test-target-id`: Test target ID (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
 
 Example text output:
-
 ```
 Test Report Details:
 Status: PASSED
@@ -93,7 +89,6 @@ Test Results:
 ```
 
 Example JSON output:
-
 ```json
 {
   "id": "826c15af-644b-4b28-89b4-f50ff34e46b7",
@@ -134,7 +129,6 @@ octomind register-location \
 ```
 
 Options:
-
 - `-n, --name` (required): Location name
 - `-p, --proxypass` (required): Proxy password
 - `-u, --proxyuser` (required): Proxy user
@@ -154,7 +148,6 @@ octomind unregister-location \
 ```
 
 Options:
-
 - `-n, --name` (required): Location name
 - `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
@@ -170,12 +163,10 @@ octomind list-private-locations \
 ```
 
 Options:
-
 - `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
 
 Example text output:
-
 ```
 Private Locations:
 - Name: location-1
@@ -198,7 +189,6 @@ octomind list-environments \
 ```
 
 Options:
-
 - `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-t, --test-target-id`: Test target ID (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
@@ -224,7 +214,6 @@ octomind create-environment \
 ```
 
 Options:
-
 - `-n, --name` (required): Environment name
 - `-d, --discovery-url` (required): Discovery URL
 - `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
@@ -260,7 +249,6 @@ octomind update-environment \
 ```
 
 Options:
-
 - `-e, --environment-id` (required): Environment ID
 - `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-t, --test-target-id`: Test target ID (optional if configured via `init`)
@@ -288,7 +276,6 @@ octomind delete-environment \
 ```
 
 Options:
-
 - `-e, --environment-id` (required): Environment ID
 - `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-t, --test-target-id`: Test target ID (optional if configured via `init`)
@@ -299,7 +286,6 @@ Options:
 By default, the CLI provides formatted text output for better readability. Add the `--json` flag to any command to get the raw JSON response instead. This is useful for scripting or when you need to process the output programmatically.
 
 Example of JSON output:
-
 ```json
 {
   "id": "826c15af-644b-4b28-89b4-f50ff34e46b7",
@@ -329,18 +315,14 @@ Example of JSON output:
 
 1. Clone the repository
 2. Install dependencies:
-
 ```bash
 pnpm install
 ```
 
 The CLI is written in TypeScript and uses the following dependencies:
-
 - `commander`: For command-line argument parsing
-- `axios`: For making HTTP requests
 
 To build from source:
-
 ```bash
 pnpm run build
 ```
