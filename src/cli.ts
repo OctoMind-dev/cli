@@ -93,10 +93,6 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .option(
-      "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key",
-    )
     .action(createEnvironment);
 
   createCommandWithCommonOptions("update-environment")
