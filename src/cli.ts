@@ -11,18 +11,12 @@ import {
   unregisterLocation,
   updateEnvironment,
 } from "./api";
-
-const apiKeyOption = new Option(
-  "-k, --api-key <key>",
-  "the api key for authentication",
-)
-  .env("APIKEY")
-  .makeOptionMandatory();
+import { Config, loadConfig, saveConfig } from "./config";
+import { promptUser } from "./consoleActions";
 
 const createCommandWithCommonOptions = (command: string): Command => {
   return program
     .command(command)
-    .addOption(apiKeyOption)
     .option("-j, --json", "Output raw JSON response");
 };
 
@@ -33,9 +27,67 @@ export const buildCmd = (): Command => {
   program
     .name("octomind-cli")
     .description(
-      `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`,
+      `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`
     )
     .version(version);
+
+  program
+    .command("init")
+    .description("Initialize configuration by setting up API key")
+    .option("-f, --force", "Force overwrite existing configuration")
+    .action(async (options: { force?: boolean }) => {
+      try {
+        console.log("🚀 Initializing configuration...\n");
+
+        const existingConfig = await loadConfig();
+
+        if (existingConfig.apiKey && !options.force) {
+          console.log("⚠️  Configuration already exists.");
+          const overwrite = await promptUser(
+            "Do you want to overwrite it? (y/N): "
+          );
+
+          if (
+            overwrite.toLowerCase() !== "y" &&
+            overwrite.toLowerCase() !== "yes"
+          ) {
+            console.log("Configuration unchanged.");
+            return;
+          }
+        }
+
+        // Prompt for API key
+        const apiKey = await promptUser(
+          "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: "
+        );
+
+        if (!apiKey) {
+          console.log("❌ API key is required.");
+          process.exit(1);
+        }
+
+        // Optional: Prompt for additional configuration
+        const baseUrl = await promptUser(
+          "Enter base URL (optional, press Enter to skip): "
+        );
+
+        const newConfig: Config = {
+          ...existingConfig,
+          apiKey,
+          ...(baseUrl && { baseUrl }),
+        };
+
+        await saveConfig(newConfig);
+
+        console.log("\n✨ Initialization complete!");
+      } catch (error) {
+        console.error(
+          "❌ Error during initialization:",
+          (error as Error).message
+        );
+        process.exit(1);
+      }
+    });
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
@@ -47,7 +99,7 @@ export const buildCmd = (): Command => {
     .option(
       "-v, --variables-to-overwrite <variables>",
       "JSON object of variables to overwrite",
-      toJSON,
+      toJSON
     )
     .action(executeTests);
 
@@ -88,7 +140,7 @@ export const buildCmd = (): Command => {
     .option("--test-account-password <password>", "Test account password")
     .option(
       "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key",
+      "Test account OTP initializer key"
     )
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
@@ -106,7 +158,7 @@ export const buildCmd = (): Command => {
     .option("--test-account-password <password>", "Test account password")
     .option(
       "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key",
+      "Test account OTP initializer key"
     )
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")

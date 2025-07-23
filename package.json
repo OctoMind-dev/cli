@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "npx genversion -des src/version.ts && eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
     "build": "npx genversion -des src/version.ts && tsc --project tsconfig.build.json",
-    "octomind": "tsx src/cli.ts",
+    "octomind": "tsx src/index.ts",
     "test": "npx genversion -des src/version.ts && jest",
     "test:watch": "npx genversion -e src/version.ts && jest --watch"
   },
@@ -26,8 +26,8 @@
     "tsx": "^4.19.3"
   },
   "devDependencies": {
-    "@types/node": "^24.0.1",
     "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.1",
     "@typescript-eslint/parser": "^8.25.0",
     "eslint": "8.57.1",
     "eslint-config-prettier": "^10.0.1",

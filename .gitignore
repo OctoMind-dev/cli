@@ -3,3 +3,4 @@ dist/
 src/version.ts
 node_modules/
 .idea
+octomind.config.json
