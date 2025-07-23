@@ -1,8 +1,7 @@
 import { program } from "commander";
 import { buildCmd } from "../src/cli";
-import { executeTests } from "../src/api";
-
-jest.mock("../src/api");
+import { executeTests } from "../src/tools";
+jest.mock("../src/tools");
 
 describe("CLI Commands parsing options", () => {
   const stdArgs = ["node", "cli.js", "execute", "--url", "https://example.com"];

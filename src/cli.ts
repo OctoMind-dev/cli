@@ -10,7 +10,7 @@ import {
   registerLocation,
   unregisterLocation,
   updateEnvironment,
-} from "./api";
+} from "./tools";
 import { Config, loadConfig, saveConfig } from "./config";
 import { promptUser } from "./helpers";
 
@@ -103,7 +103,7 @@ export const buildCmd = (): Command => {
     .description("Execute test cases")
     .requiredOption("-u, --url <url>", "URL to test")
     .option("-t, --test-target-id <id>", "Test target ID")
-    .option("-e, --environment <name>", "Environment name", "default")
+    .option("-e, --environmentName <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
     .option("-g, --tags <tags>", "comma separated list of tags", splitter)
     .option(
@@ -113,17 +113,17 @@ export const buildCmd = (): Command => {
     )
     .action(executeTests);
 
-  createCommandWithCommonOptions("report")
+  createCommandWithCommonOptions("test-report")
     .description("Get test report details")
-    .requiredOption("-r, --report-id <id>", "Test report ID")
+    .requiredOption("-r, --test-report-id <id>", "Test report ID")
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(getTestReport);
 
   createCommandWithCommonOptions("register-location")
     .description("Register a private location")
     .requiredOption("-n, --name <name>", "Location name")
-    .requiredOption("-p, --proxypass <password>", "Proxy password")
-    .requiredOption("-u, --proxyuser <user>", "Proxy user")
+    .requiredOption("-p, --password <password>", "Proxy password")
+    .requiredOption("-u, --username <user>", "Proxy user")
     .requiredOption("-a, --address <address>", "Location address")
     .action(registerLocation);
 
@@ -155,7 +155,6 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .option("--additional-header-fields <fields>", "Additional header fields")
     .action(createEnvironment);
 
   createCommandWithCommonOptions("update-environment")
@@ -173,7 +172,6 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .option("--additional-header-fields <fields>", "Additional header fields")
     .action(updateEnvironment);
 
   createCommandWithCommonOptions("delete-environment")
