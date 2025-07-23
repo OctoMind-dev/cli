@@ -19,6 +19,8 @@ export type UpdateEnvironmentOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}"]["patch"]["requestBody"]["content"]["application/json"];
 export type EnvironmentResponse = components["schemas"]["EnvironmentResponse"];
 
+export type ErrorResponse = components["schemas"]["ZodResponse"] | undefined;
+
 const BASE_URL = "https://app.octomind.dev/api";
 
 const client = createClient<paths>({ baseUrl: BASE_URL });
@@ -36,7 +38,7 @@ const authMiddleware: Middleware = {
 };
 client.use(authMiddleware);
 
-const handleError = (error: any) => {
+const handleError = (error: ErrorResponse) => {
   if (error) {
     console.error(error);
     process.exit(1);
