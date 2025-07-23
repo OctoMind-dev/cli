@@ -27,7 +27,7 @@ const apiCall = async <T>(
   method: "get" | "post" | "put" | "delete" | "patch",
   endpoint: string,
   apiKey: string,
-  data?: unknown
+  data?: unknown,
 ): Promise<T> => {
   try {
     const response = await axios({
@@ -55,7 +55,7 @@ const outputResult = (result: unknown): void => {
 };
 
 export const executeTests = async (
-  options: ExecuteTestsOptions
+  options: ExecuteTestsOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -83,7 +83,7 @@ export const executeTests = async (
     "post",
     "/apiKey/v2/execute",
     config.apiKey,
-    requestBody
+    requestBody,
   );
 
   if (options.json) {
@@ -110,7 +110,7 @@ export const executeTests = async (
 };
 
 export const getTestReport = async (
-  options: GetTestReportOptions
+  options: GetTestReportOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -121,7 +121,7 @@ export const getTestReport = async (
   const response = await apiCall<TestReport>(
     "get",
     `/apiKey/v2/test-targets/${options.testTargetId}/test-reports/${options.reportId}`,
-    config.apiKey
+    config.apiKey,
   );
 
   if (options.json) {
@@ -148,7 +148,7 @@ export const getTestReport = async (
 };
 
 export const registerLocation = async (
-  options: RegisterLocationOptions
+  options: RegisterLocationOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -169,7 +169,7 @@ export const registerLocation = async (
     "put",
     "/apiKey/v1/private-location/register",
     config.apiKey,
-    requestBody
+    requestBody,
   );
 
   if (options.json) {
@@ -181,7 +181,7 @@ export const registerLocation = async (
 };
 
 export const unregisterLocation = async (
-  options: UnregisterLocationOptions
+  options: UnregisterLocationOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -197,7 +197,7 @@ export const unregisterLocation = async (
     "put",
     "/apiKey/v1/private-location/unregister",
     config.apiKey,
-    requestBody
+    requestBody,
   );
 
   if (options.json) {
@@ -207,12 +207,12 @@ export const unregisterLocation = async (
 
   console.log(
     "Unregistration result:",
-    response.success ? "Success" : "Failed"
+    response.success ? "Success" : "Failed",
   );
 };
 
 export const listPrivateLocations = async (
-  options: ListPrivateLocationsOptions
+  options: ListPrivateLocationsOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -223,7 +223,7 @@ export const listPrivateLocations = async (
   const response = await apiCall<PrivateLocationInfo[]>(
     "get",
     "/apiKey/v1/private-location",
-    config.apiKey
+    config.apiKey,
   );
 
   if (options.json) {
@@ -240,7 +240,7 @@ export const listPrivateLocations = async (
 };
 
 export const listEnvironments = async (
-  options: ListEnvironmentsOptions
+  options: ListEnvironmentsOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -251,7 +251,7 @@ export const listEnvironments = async (
   const response = await apiCall<Environment[]>(
     "get",
     `/apiKey/v2/test-targets/${options.testTargetId}/environments`,
-    config.apiKey
+    config.apiKey,
   );
 
   if (options.json) {
@@ -269,7 +269,7 @@ export const listEnvironments = async (
 };
 
 export const createEnvironment = async (
-  options: CreateEnvironmentOptions
+  options: CreateEnvironmentOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -290,7 +290,7 @@ export const createEnvironment = async (
     "post",
     `/apiKey/v2/test-targets/${options.testTargetId}/environments`,
     config.apiKey,
-    requestBody
+    requestBody,
   );
 
   if (options.json) {
@@ -306,7 +306,7 @@ export const createEnvironment = async (
 };
 
 export const updateEnvironment = async (
-  options: UpdateEnvironmentOptions
+  options: UpdateEnvironmentOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -327,7 +327,7 @@ export const updateEnvironment = async (
     "patch",
     `/apiKey/v2/test-targets/${options.testTargetId}/environments/${options.environmentId}`,
     config.apiKey,
-    requestBody
+    requestBody,
   );
 
   if (options.json) {
@@ -343,7 +343,7 @@ export const updateEnvironment = async (
 };
 
 export const deleteEnvironment = async (
-  options: DeleteEnvironmentOptions
+  options: DeleteEnvironmentOptions,
 ): Promise<void> => {
   const config = await loadConfig();
   if (!config.apiKey) {
@@ -354,7 +354,7 @@ export const deleteEnvironment = async (
   await apiCall(
     "delete",
     `/apiKey/v2/test-targets/${options.testTargetId}/environments/${options.environmentId}`,
-    config.apiKey
+    config.apiKey,
   );
 
   if (options.json) {

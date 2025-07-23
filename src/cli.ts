@@ -1,4 +1,4 @@
-import { program, Option, Command } from "commander";
+import { program, Command } from "commander";
 import { version } from "./version";
 import {
   createEnvironment,
@@ -27,7 +27,7 @@ export const buildCmd = (): Command => {
   program
     .name("octomind-cli")
     .description(
-      `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`
+      `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`,
     )
     .version(version);
 
@@ -44,7 +44,7 @@ export const buildCmd = (): Command => {
         if (existingConfig.apiKey && !options.force) {
           console.log("⚠️  Configuration already exists.");
           const overwrite = await promptUser(
-            "Do you want to overwrite it? (y/N): "
+            "Do you want to overwrite it? (y/N): ",
           );
 
           if (
@@ -58,7 +58,7 @@ export const buildCmd = (): Command => {
 
         // Prompt for API key
         const apiKey = await promptUser(
-          "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: "
+          "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: ",
         );
 
         if (!apiKey) {
@@ -68,7 +68,7 @@ export const buildCmd = (): Command => {
 
         // Optional: Prompt for additional configuration
         const baseUrl = await promptUser(
-          "Enter base URL (optional, press Enter to skip): "
+          "Enter base URL (optional, press Enter to skip): ",
         );
 
         const newConfig: Config = {
@@ -83,7 +83,7 @@ export const buildCmd = (): Command => {
       } catch (error) {
         console.error(
           "❌ Error during initialization:",
-          (error as Error).message
+          (error as Error).message,
         );
         process.exit(1);
       }
@@ -99,7 +99,7 @@ export const buildCmd = (): Command => {
     .option(
       "-v, --variables-to-overwrite <variables>",
       "JSON object of variables to overwrite",
-      toJSON
+      toJSON,
     )
     .action(executeTests);
 
@@ -140,7 +140,7 @@ export const buildCmd = (): Command => {
     .option("--test-account-password <password>", "Test account password")
     .option(
       "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key"
+      "Test account OTP initializer key",
     )
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
@@ -158,7 +158,7 @@ export const buildCmd = (): Command => {
     .option("--test-account-password <password>", "Test account password")
     .option(
       "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key"
+      "Test account OTP initializer key",
     )
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
