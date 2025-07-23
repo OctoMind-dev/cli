@@ -29,13 +29,21 @@ const apiCall = async <T>(
   apiKey: string,
   data?: unknown,
 ): Promise<T> => {
+  const config = await loadConfig();
+  if (!apiKey && !config.apiKey) {
+    console.error(
+      "API key is required. Please set it in your config via init command or pass it as an option.",
+    );
+    process.exit(1);
+  }
+
   try {
     const response = await axios({
       method,
       url: `${BASE_URL}${endpoint}`,
       data,
       headers: {
-        "X-API-Key": apiKey,
+        "X-API-Key": apiKey ?? config.apiKey,
         "Content-Type": "application/json",
       },
     });
@@ -57,12 +65,6 @@ const outputResult = (result: unknown): void => {
 export const executeTests = async (
   options: ExecuteTestsOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   const requestBody: TestTargetExecutionRequest = {
     testTargetId: options.testTargetId,
     url: options.url,
@@ -82,7 +84,7 @@ export const executeTests = async (
   const response = await apiCall<TestReportResponse>(
     "post",
     "/apiKey/v2/execute",
-    config.apiKey,
+    options.apiKey,
     requestBody,
   );
 
@@ -112,16 +114,10 @@ export const executeTests = async (
 export const getTestReport = async (
   options: GetTestReportOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   const response = await apiCall<TestReport>(
     "get",
     `/apiKey/v2/test-targets/${options.testTargetId}/test-reports/${options.reportId}`,
-    config.apiKey,
+    options.apiKey,
   );
 
   if (options.json) {
@@ -150,12 +146,6 @@ export const getTestReport = async (
 export const registerLocation = async (
   options: RegisterLocationOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   const requestBody: RegisterRequest = {
     name: options.name,
     registrationData: {
@@ -168,7 +158,7 @@ export const registerLocation = async (
   const response = await apiCall<SuccessResponse>(
     "put",
     "/apiKey/v1/private-location/register",
-    config.apiKey,
+    options.apiKey,
     requestBody,
   );
 
@@ -183,12 +173,6 @@ export const registerLocation = async (
 export const unregisterLocation = async (
   options: UnregisterLocationOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   const requestBody: UnregisterRequest = {
     name: options.name,
   };
@@ -196,7 +180,7 @@ export const unregisterLocation = async (
   const response = await apiCall<SuccessResponse>(
     "put",
     "/apiKey/v1/private-location/unregister",
-    config.apiKey,
+    options.apiKey,
     requestBody,
   );
 
@@ -214,16 +198,10 @@ export const unregisterLocation = async (
 export const listPrivateLocations = async (
   options: ListPrivateLocationsOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   const response = await apiCall<PrivateLocationInfo[]>(
     "get",
     "/apiKey/v1/private-location",
-    config.apiKey,
+    options.apiKey,
   );
 
   if (options.json) {
@@ -242,16 +220,10 @@ export const listPrivateLocations = async (
 export const listEnvironments = async (
   options: ListEnvironmentsOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   const response = await apiCall<Environment[]>(
     "get",
     `/apiKey/v2/test-targets/${options.testTargetId}/environments`,
-    config.apiKey,
+    options.apiKey,
   );
 
   if (options.json) {
@@ -271,12 +243,6 @@ export const listEnvironments = async (
 export const createEnvironment = async (
   options: CreateEnvironmentOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   const requestBody = {
     name: options.name,
     discoveryUrl: options.discoveryUrl,
@@ -289,7 +255,7 @@ export const createEnvironment = async (
   const response = await apiCall<Environment>(
     "post",
     `/apiKey/v2/test-targets/${options.testTargetId}/environments`,
-    config.apiKey,
+    options.apiKey,
     requestBody,
   );
 
@@ -308,12 +274,6 @@ export const createEnvironment = async (
 export const updateEnvironment = async (
   options: UpdateEnvironmentOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   const requestBody = {
     name: options.name,
     discoveryUrl: options.discoveryUrl,
@@ -326,7 +286,7 @@ export const updateEnvironment = async (
   const response = await apiCall<Environment>(
     "patch",
     `/apiKey/v2/test-targets/${options.testTargetId}/environments/${options.environmentId}`,
-    config.apiKey,
+    options.apiKey,
     requestBody,
   );
 
@@ -345,16 +305,10 @@ export const updateEnvironment = async (
 export const deleteEnvironment = async (
   options: DeleteEnvironmentOptions,
 ): Promise<void> => {
-  const config = await loadConfig();
-  if (!config.apiKey) {
-    console.error("API key is required");
-    process.exit(1);
-  }
-
   await apiCall(
     "delete",
     `/apiKey/v2/test-targets/${options.testTargetId}/environments/${options.environmentId}`,
-    config.apiKey,
+    options.apiKey,
   );
 
   if (options.json) {
