@@ -12,7 +12,7 @@ import {
   updateEnvironment,
 } from "./tools";
 import { Config, loadConfig, saveConfig } from "./config";
-import { promptUser } from "./helpers";
+import { promptUser, resolveTestTargetId } from "./helpers";
 
 const createCommandWithCommonOptions = (command: string): Command => {
   return program
@@ -111,7 +111,12 @@ export const buildCmd = (): Command => {
       "JSON object of variables to overwrite",
       toJSON,
     )
-    .action(executeTests);
+    .action((_, options) =>
+      executeTests({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
 
   createCommandWithCommonOptions("test-report")
     .description("Get test report details")
@@ -139,7 +144,12 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("list-environments")
     .description("List all environments")
     .option("-t, --test-target-id <id>", "Test target ID")
-    .action(listEnvironments);
+    .action((_, options) =>
+      listEnvironments({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
 
   createCommandWithCommonOptions("create-environment")
     .description("Create a new environment")
