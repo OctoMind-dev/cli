@@ -385,14 +385,15 @@ export const deleteEnvironment = async (options: {
   console.log("Environment deleted successfully!");
 };
 
-export const getPlaywrightConfig = async (
-  options: { testTargetId: string; environmentId?: string; json?: boolean },
-): Promise<string | undefined> => {
-
+export const getPlaywrightConfig = async (options: {
+  testTargetId: string;
+  environmentId?: string;
+  json?: boolean;
+}): Promise<string | undefined> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/config",
     {
-      params: { 
+      params: {
         path: {
           testTargetId: options.testTargetId,
         },
@@ -403,20 +404,21 @@ export const getPlaywrightConfig = async (
     },
   );
 
-  handleError(error); 
+  handleError(error);
 
   if (options.json) {
     outputResult(data);
     return;
   }
 
-  return(data);
+  return data;
 };
 
-export const getPlaywrightCode = async (
-  options: { testTargetId: string; testCaseId: string;  json?: boolean },
-): Promise<string | undefined> => {
-
+export const getPlaywrightCode = async (options: {
+  testTargetId: string;
+  testCaseId: string;
+  json?: boolean;
+}): Promise<string | undefined> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
     {
@@ -424,41 +426,42 @@ export const getPlaywrightCode = async (
         path: {
           testTargetId: options.testTargetId,
           testCaseId: options.testCaseId,
-        }
-      },    
+        },
+      },
     },
   );
 
-  handleError(error); 
+  handleError(error);
 
   if (options.json) {
     outputResult(data);
     return;
-  } 
+  }
 
-  return(data?.testCode);
+  return data?.testCode;
 };
 
-export const getTestCases = async (
-  options: { testTargetId: string; json?: boolean },
-): Promise<TestCasesResponse|undefined> => {
+export const getTestCases = async (options: {
+  testTargetId: string;
+  json?: boolean;
+}): Promise<TestCasesResponse | undefined> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases",
     {
       params: {
         path: {
           testTargetId: options.testTargetId,
-        }
+        },
       },
     },
   );
 
-  handleError(error); 
+  handleError(error);
 
   if (options.json) {
     outputResult(data);
     return;
-  } 
+  }
 
-  return(data); 
+  return data;
 };
