@@ -15,6 +15,10 @@ export type PostEnvironmentOptions =
     testTargetId: string;
   };
 
+export type TestCaseResponse = components["schemas"]["TestCaseResponse"];
+
+export type TestCasesResponse = components["schemas"]["TestCasesResponse"];
+
 export type UpdateEnvironmentOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}"]["patch"]["requestBody"]["content"]["application/json"];
 export type EnvironmentResponse = components["schemas"]["EnvironmentResponse"];
@@ -379,4 +383,82 @@ export const deleteEnvironment = async (options: {
   }
 
   console.log("Environment deleted successfully!");
+};
+
+export const getPlaywrightConfig = async (
+  options: { testTargetId: string; environmentId?: string; json?: boolean },
+): Promise<string | undefined> => {
+
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/config",
+    {
+      params: { 
+        path: {
+          testTargetId: options.testTargetId,
+        },
+        query: {
+          environmentId: options.environmentId,
+        },
+      },
+    },
+  );
+
+  handleError(error); 
+
+  if (options.json) {
+    outputResult(data);
+    return;
+  }
+
+  return(data);
+};
+
+export const getPlaywrightCode = async (
+  options: { testTargetId: string; testCaseId: string;  json?: boolean },
+): Promise<string | undefined> => {
+
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+          testCaseId: options.testCaseId,
+        }
+      },    
+    },
+  );
+
+  handleError(error); 
+
+  if (options.json) {
+    outputResult(data);
+    return;
+  } 
+
+  return(data?.testCode);
+};
+
+export const getTestCases = async (
+  options: { testTargetId: string; json?: boolean },
+): Promise<TestCasesResponse|undefined> => {
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        }
+      },
+    },
+  );
+
+  handleError(error); 
+
+  if (options.json) {
+    outputResult(data);
+    return;
+  } 
+
+  return(data); 
 };
