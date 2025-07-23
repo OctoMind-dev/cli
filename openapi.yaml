@@ -632,6 +632,9 @@ components:
                       nullable: true
                     timeoutPerStep:
                       type: integer
+      required:
+        - id
+        - testTargetId
 
     SuccessResponse:
       type: object
@@ -732,7 +735,12 @@ components:
               type: string
             type:
               type: string
-
+      required:
+        - id
+        - name
+        - testTargetId
+        - type
+        
     TestSuiteRequestCommons:
       type: object
       properties:
@@ -1427,6 +1435,20 @@ paths:
             type: string
             format: uuid
           description: The ID of the test case
+        - name: environmentId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional ID of the environment to use for the test case code
+        - name: executionUrl
+          in: query
+          required: true
+          schema:
+            type: string
+            format: url
+          description: URL of the app to test
       responses:
         '200':
           description: Code for the test case
@@ -1438,6 +1460,8 @@ paths:
                   testCode:
                     type: string
                     description: The code representation of the test case
+                required:
+                  - testCode
         '404':
           description: Test case not found
 
@@ -1523,6 +1547,25 @@ paths:
             type: string
             format: uuid
           description: Optional ID of the environment to use for the test target configuration
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+            format: url
+          description: URL of the app to test
+        - name: outputDir
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Directory to write the playwright output to
+        - name: headless
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Whether to run the test in headless mode
       responses:
         "200":
           description: Test target configuration
@@ -1531,6 +1574,7 @@ paths:
               schema:
                 type: string
                 example: "Test target configuration details"
+
   /apiKey/v2/test-targets/{testTargetId}/discoveries:
     post:
       summary: Create a discovery

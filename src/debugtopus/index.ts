@@ -6,12 +6,11 @@ import path, { dirname } from "path";
 import fs from "fs/promises";
 import { ensureChromiumIsInstalled } from "./installation";
 import {
+  getEnvironments,
   getPlaywrightCode,
   getPlaywrightConfig,
   getTestCases,
-  getTestTarget,
-  TestCase,
-} from "./octomind-api";
+} from "../tools";
 
 type DebugtopusOptions = {
   id?: string;
@@ -21,14 +20,6 @@ type DebugtopusOptions = {
   octomindUrl: string;
   environmentId?: string;
   headless?: boolean;
-};
-
-type BasicAuth = { username: string; password: string };
-
-type Environment = {
-  id: string;
-  basicAuth?: BasicAuth;
-  type: "DEFAULT" | "ADDITIONAL";
 };
 
 const getPackageRootLevel = (appDir: string): string => {
@@ -59,9 +50,9 @@ type TestDirectories = {
   packageRootDir: string;
 };
 
-type TestCaseWithCode = TestCase & { code: string };
+type TestCaseCodeWithId = { id: string; description?: string; code: string };
 
-const getUniqueFilename = (tempDir: string, testCase: TestCaseWithCode) => {
+const getUniqueFilename = (tempDir: string, testCase: TestCaseCodeWithId) => {
   const fileNameUUID = randomUUID();
   const name = testCase.description
     ? testCase.description.replaceAll(path.sep, "-")
@@ -108,7 +99,7 @@ const writeConfigAndTests = ({
   config,
   dirs,
 }: {
-  testCasesWithCode: TestCaseWithCode[];
+  testCasesWithCode: TestCaseCodeWithId[];
   config: string;
   dirs: TestDirectories;
 }): string[] => {
@@ -179,30 +170,29 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     environmentId: options.environmentId,
   };
 
-  const testTarget = await getTestTarget({
-    testTargetId: options.testTargetId,
-    token: options.token,
-    octomindUrl: options.octomindUrl,
-  });
-
-  let testCasesWithCode: TestCaseWithCode[] = [];
+  let testCasesWithCode: TestCaseCodeWithId[] = [];
   if (options.id) {
     testCasesWithCode = [
       {
         id: options.id,
         code: await getPlaywrightCode({
           testCaseId: options.id,
+          executionUrl: options.url,
           ...baseApiOptions,
         }),
       },
     ];
   } else {
     const testCases = await getTestCases(baseApiOptions);
+    if (!testCases) {
+      throw new Error("no test cases found");
+    }
 
     testCasesWithCode = await Promise.all(
       testCases.map(async (testCase) => ({
         code: await getPlaywrightCode({
           testCaseId: testCase.id,
+          executionUrl: options.url,
           ...baseApiOptions,
         }),
         ...testCase,
@@ -210,22 +200,29 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     );
   }
 
+  const environments = await getEnvironments(baseApiOptions);
+
   const environmentIdForConfig = options.environmentId
     ? options.environmentId
-    : testTarget.environments.find((env: Environment) => env.type === "DEFAULT")
-        .id;
+    : (environments ?? []).find((env) => env.type === "DEFAULT")?.id;
+
+  if (!environmentIdForConfig) {
+    throw new Error("no environment found");
+  }
 
   const dirs = await prepareDirectories();
 
   const config = await getPlaywrightConfig({
     testTargetId: options.testTargetId,
-    token: options.token,
-    octomindUrl: options.octomindUrl,
     url: options.url,
     outputDir: dirs.outputDir,
     environmentId: environmentIdForConfig,
     headless: options.headless,
   });
+
+  if (!config) {
+    throw new Error("no config found");
+  }
 
   writeConfigAndTests({
     testCasesWithCode,

@@ -78,6 +78,31 @@ export const listEnvironments = async (
   }
 };
 
+export const getEnvironments = async (
+  options: listEnvironmentsOptions & { json?: boolean },
+): Promise<EnvironmentResponse[]> => {
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/environments",
+    {
+      params: {
+        path: { testTargetId: options.testTargetId },
+      },
+    },
+  );
+
+  handleError(error);
+
+  if (!data) {
+    throw new Error("no environments found");
+  }
+
+  if (options.json) {
+    outputResult(data);
+  }
+
+  return data;
+};
+
 const outputResult = (result: unknown): void => {
   console.log(JSON.stringify(result, null, 2));
 };
@@ -388,8 +413,11 @@ export const deleteEnvironment = async (options: {
 export const getPlaywrightConfig = async (options: {
   testTargetId: string;
   environmentId?: string;
+  url: string;
+  outputDir: string;
+  headless?: boolean;
   json?: boolean;
-}): Promise<string | undefined> => {
+}): Promise<string> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/config",
     {
@@ -399,16 +427,25 @@ export const getPlaywrightConfig = async (options: {
         },
         query: {
           environmentId: options.environmentId,
+          url: options.url,
+          outputDir: options.outputDir,
+          headless: options.headless,
         },
       },
+      parseAs: "text",
     },
   );
 
+  console.log({ data, error });
+
   handleError(error);
+
+  if (!data) {
+    throw new Error("no config found");
+  }
 
   if (options.json) {
     outputResult(data);
-    return;
   }
 
   return data;
@@ -417,8 +454,10 @@ export const getPlaywrightConfig = async (options: {
 export const getPlaywrightCode = async (options: {
   testTargetId: string;
   testCaseId: string;
+  environmentId?: string;
+  executionUrl: string;
   json?: boolean;
-}): Promise<string | undefined> => {
+}): Promise<string> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
     {
@@ -427,24 +466,32 @@ export const getPlaywrightCode = async (options: {
           testTargetId: options.testTargetId,
           testCaseId: options.testCaseId,
         },
+        query: {
+          environmentId: options.environmentId,
+          executionUrl: options.executionUrl,
+        },
       },
     },
   );
 
   handleError(error);
 
-  if (options.json) {
-    outputResult(data);
-    return;
+  if (!data) {
+    console.log({ data, error });
+    throw new Error("no test code found");
   }
 
-  return data?.testCode;
+  if (options.json) {
+    outputResult(data);
+  }
+
+  return data.testCode;
 };
 
 export const getTestCases = async (options: {
   testTargetId: string;
   json?: boolean;
-}): Promise<TestCasesResponse | undefined> => {
+}): Promise<TestCasesResponse> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases",
     {
@@ -458,9 +505,12 @@ export const getTestCases = async (options: {
 
   handleError(error);
 
+  if (!data) {
+    throw new Error("no test cases found");
+  }
+
   if (options.json) {
     outputResult(data);
-    return;
   }
 
   return data;

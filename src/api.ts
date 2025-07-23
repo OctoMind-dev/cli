@@ -4,1184 +4,1134 @@
  */
 
 export interface paths {
-  "/apiKey/v2/test-suites": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve test suites
-     * @description get a list of all defined test suites.
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description test suites */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TestSuitesResponse"];
-          };
+    "/apiKey/v2/test-suites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    put?: never;
-    /** Create a test suite */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["TestSuiteCreateRequest"];
-        };
-      };
-      responses: {
-        /** @description test suites */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TestSuiteResponse"];
-          };
-        };
-        /** @description Invalid request parameters */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ZodResponse"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-suites/{testSuiteId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete a test suite */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description test suites */
-        204: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SuccessResponse"];
-          };
-        };
-        /** @description test suite not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update a test suite */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["TestSuitePatchRequest"];
-        };
-      };
-      responses: {
-        /** @description test suites */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TestSuiteResponse"];
-          };
-        };
-        /** @description Invalid request parameters */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ZodResponse"];
-          };
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/apiKey/v2/execute": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Execute tests of the given test target
-     * @description This endpoint triggers a test execution by sending an test target id, an URL and optionally tags, an environment and variables.
-     *
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["TestTargetExecutionRequest"];
-        };
-      };
-      responses: {
-        /** @description Test executed successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TestReportResponse"];
-          };
-        };
-        /** @description Invalid request parameters */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ZodResponse"];
-          };
-        };
-        /** @description Invalid or missing API key */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Internal server error */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete an environment */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the test target to which the test report belongs to */
-          testTargetId: string;
-          /** @description ID of the environment to update */
-          environmentId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Environment deleted successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    /** Update an environment */
-    patch: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the test target to which the environment belongs to */
-          testTargetId: string;
-          /** @description ID of the environment to update */
-          environmentId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            name?: string | null;
-            /** Format: url */
-            discoveryUrl?: string | null;
-            testAccount?: {
-              username?: string;
-              password?: string;
-              otpInitializerKey?: string | null;
-            } | null;
-            basicAuth?: {
-              username?: string;
-              password?: string;
-            } | null;
-            /** @description name of the private location */
-            privateLocationName?: string | null;
-            additionalHeaderFields?: {
-              [key: string]: string;
-            } | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Environment updated successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["EnvironmentResponse"];
-          };
-        };
-      };
-    };
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/environments": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve environments
-     * @description get a list of all defined environments.
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the test target to which the test report belongs to */
-          testTargetId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description environments */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["EnvironmentsResponse"];
-          };
-        };
-      };
-    };
-    put?: never;
-    /**
-     * Create an environment
-     * @description Create a custom environment.
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the test target to which the environment belongs to */
-          testTargetId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            name?: string;
-            /** Format: url */
-            discoveryUrl?: string;
-            testAccount?: {
-              username?: string;
-              password?: string;
-              otpInitializerKey?: string | null;
-            } | null;
-            basicAuth?: {
-              username?: string;
-              password?: string;
-            } | null;
-            /** @description name of the private location */
-            privateLocationName?: string;
-            additionalHeaderFields?: {
-              [key: string]: string;
-            } | null;
-          };
-        };
-      };
-      responses: {
-        /** @description environment created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["EnvironmentResponse"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve information about a test report
-     * @description Poll from within a CI-pipeline to wait for the completion of a report.
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description ID of the test target to which the test report belongs to */
-          testTargetId: string;
-          /** @description ID of the test report to fetch */
-          testReportId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Test Report information */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TestReport"];
-          };
-        };
-        /** @description Invalid request parameters */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ZodResponse"];
-          };
-        };
-        /** @description Invalid or missing API key */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Internal server error */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/test-reports": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve paginated information about test reports
-     * @description Allow fetching the history of test reports for your test target.
-     */
-    get: {
-      parameters: {
-        query?: {
-          key?: {
-            /**
-             * Format: date-time
-             * @description The timestamp of the key of the next page to fetch - See [Keyset Pagination](https://use-the-index-luke.com/no-offset)
-             * @example 2024-09-06T13:01:51.686Z
-             */
-            createdAt?: string;
-          };
-          filter?: {
-            /**
-             * @description The name of the property to filter for, e.g. an environmentId
-             * @example environmentId
-             */
-            key?: string;
-            /**
-             * @description How to compare the property in question, only EQUALS is supported so far.
-             * @enum {string}
-             */
-            operator?: "EQUALS";
-            /**
-             * Format: uuid
-             * @description The value to compare with to find matches.
-             * @example 3435918b-3d29-4ebd-8c68-9a540532f45a
-             */
-            value?: string;
-          }[];
-        };
-        header?: never;
-        path: {
-          /** @description ID of the test target for which to fetch the history for */
-          testTargetId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Test Reports information */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              data?: components["schemas"]["TestReport"][];
-              key?: {
-                /**
-                 * Format: date-time
-                 * @description The timestamp of the key of the next page to fetch - use this in the query when fetching the next page of reports - See [Keyset Pagination](https://use-the-index-luke.com/no-offset)
-                 * @example 2024-09-06T13:01:51.686Z
-                 */
-                createdAt?: string;
-              };
-              /** @description If the query in question has another page to retrieve */
-              hasNextPage?: boolean;
+        /**
+         * Retrieve test suites
+         * @description get a list of all defined test suites.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-          };
-        };
-        /** @description Invalid request parameters */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ZodResponse"];
-          };
-        };
-        /** @description Invalid or missing API key */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Internal server error */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/notifications": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve notifications
-     * @description Get a list of notifications for a specific test target.
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description The ID of the test target */
-          testTargetId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description List of notifications */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** Format: uuid */
-              id?: string;
-              /** Format: uuid */
-              testTargetId?: string;
-              /** Format: date-time */
-              createdAt?: string;
-              /** Format: date-time */
-              updatedAt?: string;
-              payload?: {
-                failed?: boolean;
-                context?: components["schemas"]["ExecutionContext"];
-                /** Format: uuid */
-                testReportId?: string;
-                /** Format: uuid */
-                testCaseId?: string;
-              };
-              /** @enum {string} */
-              type?: "REPORT_EXECUTION_FINISHED" | "VALIDATION_PASSED";
-              /** @enum {string|null} */
-              ack?: "IN_WEB_APP" | null;
-            }[];
-          };
-        };
-        /** @description Unauthorized - Invalid or missing API key */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Test target not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v1/private-location": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve all private locations
-     * @description gets a list of private location workers
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["PrivateLocationInfo"];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v1/private-location/register": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    /**
-     * Register a private location
-     * @description registers a private location worker
-     */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["RegisterRequest"];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SuccessResponse"];
-          };
-        };
-        /** @description private location of that name not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Internal server error */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v1/private-location/unregister": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    /**
-     * Unregister a private location
-     * @description Unregisters a private location worker.
-     */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["UnregisterRequest"];
-        };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SuccessResponse"];
-          };
-        };
-        /** @description private location of that name not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Internal server error */
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve code for a test case
-     * @description Get the code representation of a specific test case
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description The ID of the test target */
-          testTargetId: string;
-          /** @description The ID of the test case */
-          testCaseId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Code for the test case */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @description The code representation of the test case */
-              testCode?: string;
+            requestBody?: never;
+            responses: {
+                /** @description test suites */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TestSuitesResponse"];
+                    };
+                };
             };
-          };
         };
-        /** @description Test case not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/test-cases": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve test cases
-     * @description Get a list of test cases for a specific test target
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description The ID of the test target */
-          testTargetId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description List of test cases */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TestCasesResponse"];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve a test case
-     * @description Get detailed information about a specific test case
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description The ID of the test target */
-          testTargetId: string;
-          /** @description The ID of the test case */
-          testCaseId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Test case details */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TestCaseResponse"];
-          };
-        };
-        /** @description Unauthorized - Invalid or missing API key */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Test target or test case not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/config": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Retrieve test target configuration
-     * @description Get the configuration of a specific test target
-     */
-    get: {
-      parameters: {
-        query?: {
-          /** @description Optional ID of the environment to use for the test target configuration */
-          environmentId?: string;
-        };
-        header?: never;
-        path: {
-          /** @description The ID of the test target */
-          testTargetId: string;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Test target configuration */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": string;
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/apiKey/v2/test-targets/{testTargetId}/discoveries": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Create a discovery
-     * @description Create a new test case discovery with a given name and prompt
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          /** @description The ID of the test target */
-          testTargetId: string;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            /**
-             * @description Name of the discovery
-             * @example foo
-             */
-            name: string;
-            /**
-             * @description The prompt describing what to discover
-             * @example make sure current time is visible
-             */
-            prompt: string;
-            /** @description Optional URL path for the entry point */
-            entryPointUrlPath?: string | null;
-            /**
-             * Format: uuid
-             * @description Optional ID of a prerequisite test case
-             */
-            prerequisiteId?: string | null;
-            /** @description Optional external identifier */
-            externalId?: string | null;
-            /** @description Optional list of tag IDs to assign */
-            assignedTagIds?: string[] | null;
-            /**
-             * Format: uuid
-             * @description Optional ID of the folder to place the discovery in
-             */
-            folderId?: string | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Discovery created successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /**
-               * Format: uuid
-               * @description The ID of the created discovery
-               */
-              discoveryId: string;
-              /**
-               * Format: uuid
-               * @description The ID of the associated test case
-               */
-              testCaseId: string;
+        put?: never;
+        /** Create a test suite */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-          };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TestSuiteCreateRequest"];
+                };
+            };
+            responses: {
+                /** @description test suites */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TestSuiteResponse"];
+                    };
+                };
+                /** @description Invalid request parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ZodResponse"];
+                    };
+                };
+            };
         };
-        /** @description Invalid request body */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Unauthorized - Invalid or missing API key */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description Test target not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/apiKey/v2/test-suites/{testSuiteId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a test suite */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description test suites */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SuccessResponse"];
+                    };
+                };
+                /** @description test suite not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update a test suite */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TestSuitePatchRequest"];
+                };
+            };
+            responses: {
+                /** @description test suites */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TestSuiteResponse"];
+                    };
+                };
+                /** @description Invalid request parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ZodResponse"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/apiKey/v2/execute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Execute tests of the given test target
+         * @description This endpoint triggers a test execution by sending an test target id, an URL and optionally tags, an environment and variables.
+         *
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TestTargetExecutionRequest"];
+                };
+            };
+            responses: {
+                /** @description Test executed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TestReportResponse"];
+                    };
+                };
+                /** @description Invalid request parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ZodResponse"];
+                    };
+                };
+                /** @description Invalid or missing API key */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an environment */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the test target to which the test report belongs to */
+                    testTargetId: string;
+                    /** @description ID of the environment to update */
+                    environmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Environment deleted successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update an environment */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the test target to which the environment belongs to */
+                    testTargetId: string;
+                    /** @description ID of the environment to update */
+                    environmentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string | null;
+                        /** Format: url */
+                        discoveryUrl?: string | null;
+                        testAccount?: {
+                            username?: string;
+                            password?: string;
+                            otpInitializerKey?: string | null;
+                        } | null;
+                        basicAuth?: {
+                            username?: string;
+                            password?: string;
+                        } | null;
+                        /** @description name of the private location */
+                        privateLocationName?: string | null;
+                        additionalHeaderFields?: {
+                            [key: string]: string;
+                        } | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Environment updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EnvironmentResponse"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/environments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve environments
+         * @description get a list of all defined environments.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the test target to which the test report belongs to */
+                    testTargetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description environments */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EnvironmentsResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create an environment
+         * @description Create a custom environment.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the test target to which the environment belongs to */
+                    testTargetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        /** Format: url */
+                        discoveryUrl?: string;
+                        testAccount?: {
+                            username?: string;
+                            password?: string;
+                            otpInitializerKey?: string | null;
+                        } | null;
+                        basicAuth?: {
+                            username?: string;
+                            password?: string;
+                        } | null;
+                        /** @description name of the private location */
+                        privateLocationName?: string;
+                        additionalHeaderFields?: {
+                            [key: string]: string;
+                        } | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description environment created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EnvironmentResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve information about a test report
+         * @description Poll from within a CI-pipeline to wait for the completion of a report.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description ID of the test target to which the test report belongs to */
+                    testTargetId: string;
+                    /** @description ID of the test report to fetch */
+                    testReportId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Test Report information */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TestReport"];
+                    };
+                };
+                /** @description Invalid request parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ZodResponse"];
+                    };
+                };
+                /** @description Invalid or missing API key */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/test-reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve paginated information about test reports
+         * @description Allow fetching the history of test reports for your test target.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    key?: {
+                        /**
+                         * Format: date-time
+                         * @description The timestamp of the key of the next page to fetch - See [Keyset Pagination](https://use-the-index-luke.com/no-offset)
+                         * @example 2024-09-06T13:01:51.686Z
+                         */
+                        createdAt?: string;
+                    };
+                    filter?: {
+                        /**
+                         * @description The name of the property to filter for, e.g. an environmentId
+                         * @example environmentId
+                         */
+                        key?: string;
+                        /**
+                         * @description How to compare the property in question, only EQUALS is supported so far.
+                         * @enum {string}
+                         */
+                        operator?: "EQUALS";
+                        /**
+                         * Format: uuid
+                         * @description The value to compare with to find matches.
+                         * @example 3435918b-3d29-4ebd-8c68-9a540532f45a
+                         */
+                        value?: string;
+                    }[];
+                };
+                header?: never;
+                path: {
+                    /** @description ID of the test target for which to fetch the history for */
+                    testTargetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Test Reports information */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: components["schemas"]["TestReport"][];
+                            key?: {
+                                /**
+                                 * Format: date-time
+                                 * @description The timestamp of the key of the next page to fetch - use this in the query when fetching the next page of reports - See [Keyset Pagination](https://use-the-index-luke.com/no-offset)
+                                 * @example 2024-09-06T13:01:51.686Z
+                                 */
+                                createdAt?: string;
+                            };
+                            /** @description If the query in question has another page to retrieve */
+                            hasNextPage?: boolean;
+                        };
+                    };
+                };
+                /** @description Invalid request parameters */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ZodResponse"];
+                    };
+                };
+                /** @description Invalid or missing API key */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve notifications
+         * @description Get a list of notifications for a specific test target.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The ID of the test target */
+                    testTargetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of notifications */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id?: string;
+                            /** Format: uuid */
+                            testTargetId?: string;
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            updatedAt?: string;
+                            payload?: {
+                                failed?: boolean;
+                                context?: components["schemas"]["ExecutionContext"];
+                                /** Format: uuid */
+                                testReportId?: string;
+                                /** Format: uuid */
+                                testCaseId?: string;
+                            };
+                            /** @enum {string} */
+                            type?: "REPORT_EXECUTION_FINISHED" | "VALIDATION_PASSED";
+                            /** @enum {string|null} */
+                            ack?: "IN_WEB_APP" | null;
+                        }[];
+                    };
+                };
+                /** @description Unauthorized - Invalid or missing API key */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Test target not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v1/private-location": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve all private locations
+         * @description gets a list of private location workers
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PrivateLocationInfo"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v1/private-location/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Register a private location
+         * @description registers a private location worker
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RegisterRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SuccessResponse"];
+                    };
+                };
+                /** @description private location of that name not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v1/private-location/unregister": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Unregister a private location
+         * @description Unregisters a private location worker.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UnregisterRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SuccessResponse"];
+                    };
+                };
+                /** @description private location of that name not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve code for a test case
+         * @description Get the code representation of a specific test case
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Optional ID of the environment to use for the test case code */
+                    environmentId?: string;
+                    /** @description URL of the app to test */
+                    executionUrl: string;
+                };
+                header?: never;
+                path: {
+                    /** @description The ID of the test target */
+                    testTargetId: string;
+                    /** @description The ID of the test case */
+                    testCaseId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Code for the test case */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description The code representation of the test case */
+                            testCode: string;
+                        };
+                    };
+                };
+                /** @description Test case not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve test cases
+         * @description Get a list of test cases for a specific test target
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The ID of the test target */
+                    testTargetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of test cases */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TestCasesResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve a test case
+         * @description Get detailed information about a specific test case
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The ID of the test target */
+                    testTargetId: string;
+                    /** @description The ID of the test case */
+                    testCaseId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Test case details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TestCaseResponse"];
+                    };
+                };
+                /** @description Unauthorized - Invalid or missing API key */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Test target or test case not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieve test target configuration
+         * @description Get the configuration of a specific test target
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Optional ID of the environment to use for the test target configuration */
+                    environmentId?: string;
+                    /** @description URL of the app to test */
+                    url: string;
+                    /** @description Directory to write the playwright output to */
+                    outputDir: string;
+                    /** @description Whether to run the test in headless mode */
+                    headless?: boolean;
+                };
+                header?: never;
+                path: {
+                    /** @description The ID of the test target */
+                    testTargetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Test target configuration */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/apiKey/v2/test-targets/{testTargetId}/discoveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a discovery
+         * @description Create a new test case discovery with a given name and prompt
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The ID of the test target */
+                    testTargetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Name of the discovery
+                         * @example foo
+                         */
+                        name: string;
+                        /**
+                         * @description The prompt describing what to discover
+                         * @example make sure current time is visible
+                         */
+                        prompt: string;
+                        /** @description Optional URL path for the entry point */
+                        entryPointUrlPath?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description Optional ID of a prerequisite test case
+                         */
+                        prerequisiteId?: string | null;
+                        /** @description Optional external identifier */
+                        externalId?: string | null;
+                        /** @description Optional list of tag IDs to assign */
+                        assignedTagIds?: string[] | null;
+                        /**
+                         * Format: uuid
+                         * @description Optional ID of the folder to place the discovery in
+                         */
+                        folderId?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Discovery created successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * Format: uuid
+                             * @description The ID of the created discovery
+                             */
+                            discoveryId: string;
+                            /**
+                             * Format: uuid
+                             * @description The ID of the associated test case
+                             */
+                            testCaseId: string;
+                        };
+                    };
+                };
+                /** @description Invalid request body */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized - Invalid or missing API key */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Test target not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    ExecutionContext:
-      | {
-          /**
-           * @example github
-           * @enum {string}
-           */
-          source?: "github";
-          /** @example 123 */
-          issueNumber?: number | null;
-          /** @example refs/heads/main */
-          ref?: string | null;
-          /** @example abc123def456 */
-          sha?: string | null;
-          /** @example my-repo */
-          repo?: string;
-          /** @example repo-owner */
-          owner?: string;
-          triggeredBy?: {
+    schemas: {
+        ExecutionContext: {
             /**
-             * @example USER
+             * @example github
              * @enum {string}
              */
-            type?: "USER";
-            /** @example user123 */
-            userId?: string;
-          } | null;
-          /** @example node-123 */
-          nodeId?: string | null;
-        }
-      | {
-          /**
-           * @example azureDevOps
-           * @enum {string}
-           */
-          source?: "azureDevOps";
-          /** @example token123 */
-          accessToken?: string;
-          /** @example my-org */
-          organization?: string;
-          /** @example my-project */
-          project?: string;
-          /** @example repo-123 */
-          repositoryId?: string;
-          /** @example abc123def456 */
-          sha?: string | null;
-          /** @example refs/heads/main */
-          ref?: string | null;
-          /** @example 101 */
-          pullRequestId?: number | null;
-          triggeredBy?: {
-            /**
-             * @example USER
-             * @enum {string}
-             */
-            type?: "USER";
-            /** @example user123 */
-            userId?: string;
-          } | null;
-          /** @example thread-123 */
-          threadId?: string | null;
-        }
-      | {
-          /**
-           * @example discovery
-           * @enum {string}
-           */
-          source?: "discovery";
-          /** @example A discovery test */
-          description?: string;
-          triggeredBy?:
-            | {
-                /**
-                 * @example INITIAL
-                 * @enum {string}
-                 */
-                type?: "INITIAL";
-              }
-            | {
+            source?: "github";
+            /** @example 123 */
+            issueNumber?: number | null;
+            /** @example refs/heads/main */
+            ref?: string | null;
+            /** @example abc123def456 */
+            sha?: string | null;
+            /** @example my-repo */
+            repo?: string;
+            /** @example repo-owner */
+            owner?: string;
+            triggeredBy?: {
                 /**
                  * @example USER
                  * @enum {string}
@@ -1189,59 +1139,30 @@ export interface components {
                 type?: "USER";
                 /** @example user123 */
                 userId?: string;
-              };
-        }
-      | {
-          /**
-           * @example manual
-           * @enum {string}
-           */
-          source?: "manual";
-          /** @example A manual trigger */
-          description?: string;
-          triggeredBy?: {
+            } | null;
+            /** @example node-123 */
+            nodeId?: string | null;
+        } | {
             /**
-             * @example USER
+             * @example azureDevOps
              * @enum {string}
              */
-            type?: "USER";
-            /** @example user123 */
-            userId?: string;
-          };
-        }
-      | {
-          /**
-           * @example scheduled
-           * @enum {string}
-           */
-          source?: "scheduled";
-          triggeredBy?: {
-            /**
-             * @example USER
-             * @enum {string}
-             */
-            type?: "USER";
-            /** @example user123 */
-            userId?: string;
-          } | null;
-        }
-      | {
-          /**
-           * @example proposal
-           * @enum {string}
-           */
-          source?: "proposal";
-          /** @example A proposal trigger */
-          description?: string;
-          triggeredBy?:
-            | {
-                /**
-                 * @example INITIAL
-                 * @enum {string}
-                 */
-                type?: "INITIAL";
-              }
-            | {
+            source?: "azureDevOps";
+            /** @example token123 */
+            accessToken?: string;
+            /** @example my-org */
+            organization?: string;
+            /** @example my-project */
+            project?: string;
+            /** @example repo-123 */
+            repositoryId?: string;
+            /** @example abc123def456 */
+            sha?: string | null;
+            /** @example refs/heads/main */
+            ref?: string | null;
+            /** @example 101 */
+            pullRequestId?: number | null;
+            triggeredBy?: {
                 /**
                  * @example USER
                  * @enum {string}
@@ -1249,492 +1170,553 @@ export interface components {
                 type?: "USER";
                 /** @example user123 */
                 userId?: string;
-              };
+            } | null;
+            /** @example thread-123 */
+            threadId?: string | null;
+        } | {
+            /**
+             * @example discovery
+             * @enum {string}
+             */
+            source?: "discovery";
+            /** @example A discovery test */
+            description?: string;
+            triggeredBy?: {
+                /**
+                 * @example INITIAL
+                 * @enum {string}
+                 */
+                type?: "INITIAL";
+            } | {
+                /**
+                 * @example USER
+                 * @enum {string}
+                 */
+                type?: "USER";
+                /** @example user123 */
+                userId?: string;
+            };
+        } | {
+            /**
+             * @example manual
+             * @enum {string}
+             */
+            source?: "manual";
+            /** @example A manual trigger */
+            description?: string;
+            triggeredBy?: {
+                /**
+                 * @example USER
+                 * @enum {string}
+                 */
+                type?: "USER";
+                /** @example user123 */
+                userId?: string;
+            };
+        } | {
+            /**
+             * @example scheduled
+             * @enum {string}
+             */
+            source?: "scheduled";
+            triggeredBy?: {
+                /**
+                 * @example USER
+                 * @enum {string}
+                 */
+                type?: "USER";
+                /** @example user123 */
+                userId?: string;
+            } | null;
+        } | {
+            /**
+             * @example proposal
+             * @enum {string}
+             */
+            source?: "proposal";
+            /** @example A proposal trigger */
+            description?: string;
+            triggeredBy?: {
+                /**
+                 * @example INITIAL
+                 * @enum {string}
+                 */
+                type?: "INITIAL";
+            } | {
+                /**
+                 * @example USER
+                 * @enum {string}
+                 */
+                type?: "USER";
+                /** @example user123 */
+                userId?: string;
+            };
         };
-    /**
-     * @description The variables to overwrite exclusively for this test run.
-     * @example {
-     *       "SPACE_ID": [
-     *         "64ee32b4-7365-47a6-b5b0-2903b6ad849d"
-     *       ]
-     *     }
-     */
-    Variables: {
-      [key: string]: string[];
-    };
-    TestTargetExecutionRequest: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the testTarget.
-       * @example 2e2bb27b-a19c-47ce-a9b6-cd1bd31622dc
-       */
-      testTargetId: string;
-      /**
-       * Format: uri
-       * @description The URL of the test target for this run.
-       * @example https://example.com
-       */
-      url: string;
-      context: components["schemas"]["ExecutionContext"];
-      /**
-       * Format: environment name
-       * @description the environment name you want to run your test against
-       * @default default
-       */
-      environmentName: string;
-      variablesToOverwrite?: components["schemas"]["Variables"];
-      /**
-       * @default []
-       * @example [
-       *       "tag1",
-       *       "tag2"
-       *     ]
-       */
-      tags: string[];
-    };
-    TestTargetExecutionResponse: {
-      /**
-       * @description The URL the test target was executed.
-       * @example https://example.com
-       */
-      testReportUrl?: string;
-      /**
-       * @description The test report from the run.
-       * @example some json
-       */
-      testReport?: Record<string, never>;
-    };
-    TestReportContext: {
-      /**
-       * @description The source of the test trigger.
-       * @example manual
-       * @enum {string}
-       */
-      source?: "manual";
-      /**
-       * @description The description of the test context.
-       * @example manual trigger
-       */
-      description?: string;
-      triggeredBy?: {
         /**
-         * @description The type of entity triggering the test.
-         * @example USER
-         * @enum {string}
+         * @description The variables to overwrite exclusively for this test run.
+         * @example {
+         *       "SPACE_ID": [
+         *         "64ee32b4-7365-47a6-b5b0-2903b6ad849d"
+         *       ]
+         *     }
          */
-        type?: "USER";
-        /**
-         * Format: uuid
-         * @description The unique identifier of the user who triggered the test.
-         * @example 2e2bb27b-a19c-47ce-a9b6-cd1bd31622dc
-         */
-        userId?: string;
-      };
-    };
-    TestResult: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the test result.
-       * @example 826c15af-644b-4b28-89b4-f50ff34e46b7
-       */
-      id?: string;
-      /**
-       * Format: uuid
-       * @description Unique identifier of the test report this result belongs to.
-       * @example 3435918b-3d29-4ebd-8c68-9a540532f45a
-       */
-      testTargetId?: string;
-      /**
-       * Format: uuid
-       * @description Unique identifier of the test case this result belongs to.
-       * @example 5b844cf1-d597-4048-9e74-7c0f9ce3e2ee
-       */
-      testCaseId?: string;
-      /**
-       * Format: date-time
-       * @description The timestamp when the test result was created.
-       * @example 2024-09-06T13:01:51.686Z
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description The timestamp when the test result was last updated.
-       * @example 2024-09-06T13:01:51.686Z
-       */
-      updatedAt?: string;
-      /**
-       * @description The status of the specific test result, will be WAITING as long as the result is running, FAILED if the execution failed, PASSED if it succeeded, and ERROR if an internal error occurred.
-       * @enum {string}
-       */
-      status?: "WAITING" | "PASSED" | "FAILED" | "ERROR";
-      /**
-       * @description The error that has occurred during execution - only set if the status is FAILED or ERROR.
-       * @example TimeoutError: locator.click: Timeout 30000ms exceeded.
-       */
-      errorMessage?: string | null;
-      /**
-       * @description Link to the playwright trace of the test execution - only set once the test result is finished (PASSED or FAILED).
-       * @example https://storage.googleapis.com/automagically-traces/826c15af-644b-4b28-89b4-f50ff34e46b7-trace.zip
-       */
-      traceUrl?: string | null;
-    };
-    TestReport: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the test report.
-       * @example 826c15af-644b-4b28-89b4-f50ff34e46b7
-       */
-      id?: string;
-      /**
-       * Format: uuid
-       * @description The unique identifier of the test target.
-       * @example 3435918b-3d29-4ebd-8c68-9a540532f45a
-       */
-      testTargetId?: string;
-      /**
-       * Format: date-time
-       * @description The timestamp when the test report was created.
-       * @example 2024-09-06T13:01:51.686Z
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description The timestamp when the test report was last updated.
-       * @example 2024-09-06T13:01:51.686Z
-       */
-      updatedAt?: string;
-      /**
-       * Format: uri
-       * @description The URL where the test execution was performed.
-       * @example https://en.wikipedia.org/
-       */
-      executionUrl?: string;
-      /**
-       * @description The status of the test report, will be WAITING as long as any result is running, FAILED if the report is done but has any failed result and PASSED if all test results are done and successful
-       * @enum {string}
-       */
-      status?: "WAITING" | "PASSED" | "FAILED";
-      context?: components["schemas"]["TestReportContext"];
-      testResults?: components["schemas"]["TestResult"][];
-    };
-    PrivateLocationInfo: {
-      /** @enum {string} */
-      status: "OFFLINE" | "ONLINE";
-      /**
-       * Format: uri
-       * @example https://example.com:3128
-       */
-      address: string;
-      /** @example my-private-location */
-      name: string;
-    }[];
-    TestReportResponse: {
-      /**
-       * Format: uri
-       * @description The URL where the test report can be accessed.
-       * @example https://app.octomind.dev/testreports/826c15af-644b-4b28-89b4-f50ff34e46b7
-       */
-      testReportUrl?: string;
-      testReport?: components["schemas"]["TestReport"];
-    };
-    TestCasesResponse: components["schemas"]["TestCaseResponse"][];
-    TestCaseResponse: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      testTargetId?: string;
-      type?: string | null;
-      elements?: {
-        /** Format: uuid */
-        id?: string;
-        index?: number;
-        interaction?: {
-          /** Format: uuid */
-          id?: string;
-          /** @enum {string} */
-          action?:
-            | "EXTRACT"
-            | "ENTER_TEXT"
-            | "CLICK"
-            | "SELECT_OPTION"
-            | "TYPE_TEXT"
-            | "KEY_PRESS"
-            | "HOVER"
-            | "UPLOAD"
-            | "GO_TO"
-            | "DRAG_AND_DROP"
-            | "CLOSE_PAGE"
-            | "OPEN_EMAIL";
-          calledWith?: string | null;
-          /** Format: uuid */
-          testCaseElementId?: string;
-        } | null;
-        assertion?: {
-          /** Format: uuid */
-          id?: string;
-          /** @enum {string} */
-          expectation?:
-            | "VISIBLE"
-            | "NOT_VISIBLE"
-            | "TO_BE_CHECKED"
-            | "NOT_TO_BE_CHECKED"
-            | "TO_HAVE_VALUE"
-            | "TO_CONTAIN_TEXT"
-            | "TO_HAVE_STYLE";
-          calledWith?: string | null;
-          /** Format: uuid */
-          testCaseElementId?: string;
-        } | null;
-        scrollState?: Record<string, never> | null;
-        selectors?: {
-          /** Format: uuid */
-          id?: string;
-          index?: number;
-          selector?: string;
-          /** @enum {string} */
-          selectorType?: "TEXT" | "LABEL" | "PLACEHOLDER" | "ROLE";
-          options?: {
-            name?: string;
-          } | null;
-          /** Format: uuid */
-          testCaseElementId?: string;
-          scrollStateId?: string | null;
-        }[];
-        /** Format: uuid */
-        testCaseId?: string;
-        ignoreFailure?: boolean;
-      }[];
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      description?: string;
-      /** @enum {string} */
-      status?: "ENABLED" | "DRAFT";
-      externalId?: string | null;
-      entryPointUrlPath?: string | null;
-      tags?: string[];
-      /** @enum {string} */
-      createdBy?: "EDIT";
-      /** @enum {string} */
-      runStatus?: "ON" | "OFF";
-      prerequisiteId?: string | null;
-      proposalRunId?: string | null;
-      folderId?: string | null;
-      discovery?: {
-        /** Format: uuid */
-        id?: string;
-        freePrompt?: string;
-        traceUrl?: string | null;
-        traceJsonManifestUrl?: string | null;
-        /** @enum {string} */
-        status?: "OUTDATED";
-        abortCause?: string | null;
-        message?: string | null;
-        /** Format: uuid */
-        testCaseId?: string;
-        lastJobExecutionName?: string | null;
-        /** Format: date-time */
-        createdAt?: string;
-        /** Format: date-time */
-        updatedAt?: string;
-        executedTestCaseElements?: string[];
-        testCase?: {
-          /** Format: uuid */
-          id?: string;
-          /** Format: uuid */
-          testTargetId?: string;
-          description?: string;
-          /** Format: date-time */
-          createdAt?: string;
-          /** Format: date-time */
-          updatedAt?: string;
-          entryPointUrlPath?: string | null;
-          type?: string | null;
-          /** @enum {string} */
-          status?: "ENABLED";
-          /** @enum {string} */
-          runStatus?: "ON";
-          /** @enum {string} */
-          interactionStatus?: "NEW";
-          /** @enum {string} */
-          createdBy?: "EDIT";
-          proposalRunId?: string | null;
-          externalId?: string | null;
-          folderId?: string | null;
-          prerequisiteId?: string | null;
-          /** Format: uuid */
-          predecessorId?: string;
-          testTarget?: {
-            /** Format: uuid */
+        Variables: {
+            [key: string]: string[];
+        };
+        TestTargetExecutionRequest: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the testTarget.
+             * @example 2e2bb27b-a19c-47ce-a9b6-cd1bd31622dc
+             */
+            testTargetId: string;
+            /**
+             * Format: uri
+             * @description The URL of the test target for this run.
+             * @example https://example.com
+             */
+            url: string;
+            context: components["schemas"]["ExecutionContext"];
+            /**
+             * Format: environment name
+             * @description the environment name you want to run your test against
+             * @default default
+             */
+            environmentName: string;
+            variablesToOverwrite?: components["schemas"]["Variables"];
+            /**
+             * @default []
+             * @example [
+             *       "tag1",
+             *       "tag2"
+             *     ]
+             */
+            tags: string[];
+        };
+        TestTargetExecutionResponse: {
+            /**
+             * @description The URL the test target was executed.
+             * @example https://example.com
+             */
+            testReportUrl?: string;
+            /**
+             * @description The test report from the run.
+             * @example some json
+             */
+            testReport?: Record<string, never>;
+        };
+        TestReportContext: {
+            /**
+             * @description The source of the test trigger.
+             * @example manual
+             * @enum {string}
+             */
+            source?: "manual";
+            /**
+             * @description The description of the test context.
+             * @example manual trigger
+             */
+            description?: string;
+            triggeredBy?: {
+                /**
+                 * @description The type of entity triggering the test.
+                 * @example USER
+                 * @enum {string}
+                 */
+                type?: "USER";
+                /**
+                 * Format: uuid
+                 * @description The unique identifier of the user who triggered the test.
+                 * @example 2e2bb27b-a19c-47ce-a9b6-cd1bd31622dc
+                 */
+                userId?: string;
+            };
+        };
+        TestResult: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the test result.
+             * @example 826c15af-644b-4b28-89b4-f50ff34e46b7
+             */
             id?: string;
-            app?: string;
+            /**
+             * Format: uuid
+             * @description Unique identifier of the test report this result belongs to.
+             * @example 3435918b-3d29-4ebd-8c68-9a540532f45a
+             */
+            testTargetId?: string;
+            /**
+             * Format: uuid
+             * @description Unique identifier of the test case this result belongs to.
+             * @example 5b844cf1-d597-4048-9e74-7c0f9ce3e2ee
+             */
+            testCaseId?: string;
+            /**
+             * Format: date-time
+             * @description The timestamp when the test result was created.
+             * @example 2024-09-06T13:01:51.686Z
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description The timestamp when the test result was last updated.
+             * @example 2024-09-06T13:01:51.686Z
+             */
+            updatedAt?: string;
+            /**
+             * @description The status of the specific test result, will be WAITING as long as the result is running, FAILED if the execution failed, PASSED if it succeeded, and ERROR if an internal error occurred.
+             * @enum {string}
+             */
+            status?: "WAITING" | "PASSED" | "FAILED" | "ERROR";
+            /**
+             * @description The error that has occurred during execution - only set if the status is FAILED or ERROR.
+             * @example TimeoutError: locator.click: Timeout 30000ms exceeded.
+             */
+            errorMessage?: string | null;
+            /**
+             * @description Link to the playwright trace of the test execution - only set once the test result is finished (PASSED or FAILED).
+             * @example https://storage.googleapis.com/automagically-traces/826c15af-644b-4b28-89b4-f50ff34e46b7-trace.zip
+             */
+            traceUrl?: string | null;
+        };
+        TestReport: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the test report.
+             * @example 826c15af-644b-4b28-89b4-f50ff34e46b7
+             */
+            id?: string;
+            /**
+             * Format: uuid
+             * @description The unique identifier of the test target.
+             * @example 3435918b-3d29-4ebd-8c68-9a540532f45a
+             */
+            testTargetId?: string;
+            /**
+             * Format: date-time
+             * @description The timestamp when the test report was created.
+             * @example 2024-09-06T13:01:51.686Z
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description The timestamp when the test report was last updated.
+             * @example 2024-09-06T13:01:51.686Z
+             */
+            updatedAt?: string;
+            /**
+             * Format: uri
+             * @description The URL where the test execution was performed.
+             * @example https://en.wikipedia.org/
+             */
+            executionUrl?: string;
+            /**
+             * @description The status of the test report, will be WAITING as long as any result is running, FAILED if the report is done but has any failed result and PASSED if all test results are done and successful
+             * @enum {string}
+             */
+            status?: "WAITING" | "PASSED" | "FAILED";
+            context?: components["schemas"]["TestReportContext"];
+            testResults?: components["schemas"]["TestResult"][];
+        };
+        PrivateLocationInfo: {
+            /** @enum {string} */
+            status: "OFFLINE" | "ONLINE";
+            /**
+             * Format: uri
+             * @example https://example.com:3128
+             */
+            address: string;
+            /** @example my-private-location */
+            name: string;
+        }[];
+        TestReportResponse: {
+            /**
+             * Format: uri
+             * @description The URL where the test report can be accessed.
+             * @example https://app.octomind.dev/testreports/826c15af-644b-4b28-89b4-f50ff34e46b7
+             */
+            testReportUrl?: string;
+            testReport?: components["schemas"]["TestReport"];
+        };
+        TestCasesResponse: components["schemas"]["TestCaseResponse"][];
+        TestCaseResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            testTargetId: string;
+            type?: string | null;
+            elements?: {
+                /** Format: uuid */
+                id?: string;
+                index?: number;
+                interaction?: {
+                    /** Format: uuid */
+                    id?: string;
+                    /** @enum {string} */
+                    action?: "EXTRACT" | "ENTER_TEXT" | "CLICK" | "SELECT_OPTION" | "TYPE_TEXT" | "KEY_PRESS" | "HOVER" | "UPLOAD" | "GO_TO" | "DRAG_AND_DROP" | "CLOSE_PAGE" | "OPEN_EMAIL";
+                    calledWith?: string | null;
+                    /** Format: uuid */
+                    testCaseElementId?: string;
+                } | null;
+                assertion?: {
+                    /** Format: uuid */
+                    id?: string;
+                    /** @enum {string} */
+                    expectation?: "VISIBLE" | "NOT_VISIBLE" | "TO_BE_CHECKED" | "NOT_TO_BE_CHECKED" | "TO_HAVE_VALUE" | "TO_CONTAIN_TEXT" | "TO_HAVE_STYLE";
+                    calledWith?: string | null;
+                    /** Format: uuid */
+                    testCaseElementId?: string;
+                } | null;
+                scrollState?: Record<string, never> | null;
+                selectors?: {
+                    /** Format: uuid */
+                    id?: string;
+                    index?: number;
+                    selector?: string;
+                    /** @enum {string} */
+                    selectorType?: "TEXT" | "LABEL" | "PLACEHOLDER" | "ROLE";
+                    options?: {
+                        name?: string;
+                    } | null;
+                    /** Format: uuid */
+                    testCaseElementId?: string;
+                    scrollStateId?: string | null;
+                }[];
+                /** Format: uuid */
+                testCaseId?: string;
+                ignoreFailure?: boolean;
+            }[];
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
-            /** Format: uuid */
-            orgId?: string;
-            testIdAttribute?: string | null;
-            timeoutPerStep?: number;
-          };
+            description?: string;
+            /** @enum {string} */
+            status?: "ENABLED" | "DRAFT";
+            externalId?: string | null;
+            entryPointUrlPath?: string | null;
+            tags?: string[];
+            /** @enum {string} */
+            createdBy?: "EDIT";
+            /** @enum {string} */
+            runStatus?: "ON" | "OFF";
+            prerequisiteId?: string | null;
+            proposalRunId?: string | null;
+            folderId?: string | null;
+            discovery?: {
+                /** Format: uuid */
+                id?: string;
+                freePrompt?: string;
+                traceUrl?: string | null;
+                traceJsonManifestUrl?: string | null;
+                /** @enum {string} */
+                status?: "OUTDATED";
+                abortCause?: string | null;
+                message?: string | null;
+                /** Format: uuid */
+                testCaseId?: string;
+                lastJobExecutionName?: string | null;
+                /** Format: date-time */
+                createdAt?: string;
+                /** Format: date-time */
+                updatedAt?: string;
+                executedTestCaseElements?: string[];
+                testCase?: {
+                    /** Format: uuid */
+                    id?: string;
+                    /** Format: uuid */
+                    testTargetId?: string;
+                    description?: string;
+                    /** Format: date-time */
+                    createdAt?: string;
+                    /** Format: date-time */
+                    updatedAt?: string;
+                    entryPointUrlPath?: string | null;
+                    type?: string | null;
+                    /** @enum {string} */
+                    status?: "ENABLED";
+                    /** @enum {string} */
+                    runStatus?: "ON";
+                    /** @enum {string} */
+                    interactionStatus?: "NEW";
+                    /** @enum {string} */
+                    createdBy?: "EDIT";
+                    proposalRunId?: string | null;
+                    externalId?: string | null;
+                    folderId?: string | null;
+                    prerequisiteId?: string | null;
+                    /** Format: uuid */
+                    predecessorId?: string;
+                    testTarget?: {
+                        /** Format: uuid */
+                        id?: string;
+                        app?: string;
+                        /** Format: date-time */
+                        createdAt?: string;
+                        /** Format: date-time */
+                        updatedAt?: string;
+                        /** Format: uuid */
+                        orgId?: string;
+                        testIdAttribute?: string | null;
+                        timeoutPerStep?: number;
+                    };
+                };
+            };
         };
-      };
+        SuccessResponse: {
+            /**
+             * @description Indicates whether the operation was successful.
+             * @example true
+             */
+            success?: boolean;
+        };
+        UnregisterRequest: {
+            name?: string;
+        };
+        RegisterRequest: {
+            name?: string;
+            registrationData?: {
+                /** @example secret22 */
+                proxypass?: string;
+                /** @example user */
+                proxyuser?: string;
+                /**
+                 * @description the address of the remote endpoint. IP and port
+                 * @example 34.45.23.22:23455
+                 */
+                address?: string;
+            };
+        };
+        EnvironmentsResponse: components["schemas"]["EnvironmentResponse"][];
+        EnvironmentResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** Format: uuid */
+            testTargetId: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            type: string;
+            /** Format: url */
+            discoveryUrl?: string;
+            additionalHeaderFields?: {
+                [key: string]: string;
+            } | null;
+            testAccount?: {
+                username?: string;
+                password?: string;
+                otpInitializerKey?: string | null;
+                /** Format: date-time */
+                updatedAt?: string;
+            } | null;
+            basicAuth?: {
+                username?: string;
+                password?: string;
+                /** Format: date-time */
+                updatedAt?: string;
+            } | null;
+            privateLocation?: {
+                /** Format: uuid */
+                id?: string;
+                name?: string;
+                status?: string;
+                type?: string;
+            };
+        };
+        TestSuiteRequestCommons: {
+            /**
+             * Format: uuid
+             * @description The test case to run before all test cases
+             */
+            beforeAll?: string | null;
+            /**
+             * Format: uuid
+             * @description The test case to run after all test cases
+             */
+            afterAll?: string | null;
+            /**
+             * Format: uuid
+             * @description The test case to run before each test case in the suite
+             */
+            beforeEach?: string | null;
+            /**
+             * Format: uuid
+             * @description The test case to run after each test case in the suite
+             */
+            afterEach?: string | null;
+        };
+        TestSuitePatchRequest: {
+            /**
+             * @description The name of the test suite
+             * @example regression for chat
+             */
+            name?: string | null;
+            /**
+             * @description The test cases to include in the suite
+             * @example [
+             *       "5b844cf1-d597-4048-9e74-7c0f9ce3e2ee"
+             *     ]
+             */
+            testCases?: string[] | null;
+            /**
+             * @description the environment name you want to run your test suite against
+             * @example default
+             */
+            environmentName?: string | null;
+        } & components["schemas"]["TestSuiteRequestCommons"];
+        TestSuiteCreateRequest: {
+            /**
+             * @description The name of the test suite
+             * @example regression for chat
+             */
+            name?: string;
+            /**
+             * @description The test cases to include in the suite
+             * @example [
+             *       "5b844cf1-d597-4048-9e74-7c0f9ce3e2ee"
+             *     ]
+             */
+            testCases?: string[];
+            /**
+             * @description the environment name you want to run your test suite against
+             * @example default
+             */
+            environmentName?: string;
+        } & components["schemas"]["TestSuiteRequestCommons"];
+        TestSuiteResponse: {
+            /** Format: uuid */
+            id?: string;
+        } & components["schemas"]["TestSuiteCreateRequest"];
+        TestSuitesResponse: components["schemas"]["TestSuiteResponse"][];
+        ZodResponse: {
+            /**
+             * @description What error code happened while parsing the request
+             * @example invalid_type
+             */
+            code?: string;
+            /**
+             * @description What the expected type was
+             * @example object
+             */
+            expected?: string;
+            /**
+             * @description What the actual passed type was
+             * @example string
+             */
+            received?: string;
+            path?: string[];
+            /**
+             * @description Human-readable message of the error that occurred while parsing.
+             * @example Expected object, received string
+             */
+            message?: string;
+        }[];
     };
-    SuccessResponse: {
-      /**
-       * @description Indicates whether the operation was successful.
-       * @example true
-       */
-      success?: boolean;
-    };
-    UnregisterRequest: {
-      name?: string;
-    };
-    RegisterRequest: {
-      name?: string;
-      registrationData?: {
-        /** @example secret22 */
-        proxypass?: string;
-        /** @example user */
-        proxyuser?: string;
-        /**
-         * @description the address of the remote endpoint. IP and port
-         * @example 34.45.23.22:23455
-         */
-        address?: string;
-      };
-    };
-    EnvironmentsResponse: components["schemas"]["EnvironmentResponse"][];
-    EnvironmentResponse: {
-      /** Format: uuid */
-      id?: string;
-      name?: string;
-      /** Format: uuid */
-      testTargetId?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      type?: string;
-      /** Format: url */
-      discoveryUrl?: string;
-      additionalHeaderFields?: {
-        [key: string]: string;
-      } | null;
-      testAccount?: {
-        username?: string;
-        password?: string;
-        otpInitializerKey?: string | null;
-        /** Format: date-time */
-        updatedAt?: string;
-      } | null;
-      basicAuth?: {
-        username?: string;
-        password?: string;
-        /** Format: date-time */
-        updatedAt?: string;
-      } | null;
-      privateLocation?: {
-        /** Format: uuid */
-        id?: string;
-        name?: string;
-        status?: string;
-        type?: string;
-      };
-    };
-    TestSuiteRequestCommons: {
-      /**
-       * Format: uuid
-       * @description The test case to run before all test cases
-       */
-      beforeAll?: string | null;
-      /**
-       * Format: uuid
-       * @description The test case to run after all test cases
-       */
-      afterAll?: string | null;
-      /**
-       * Format: uuid
-       * @description The test case to run before each test case in the suite
-       */
-      beforeEach?: string | null;
-      /**
-       * Format: uuid
-       * @description The test case to run after each test case in the suite
-       */
-      afterEach?: string | null;
-    };
-    TestSuitePatchRequest: {
-      /**
-       * @description The name of the test suite
-       * @example regression for chat
-       */
-      name?: string | null;
-      /**
-       * @description The test cases to include in the suite
-       * @example [
-       *       "5b844cf1-d597-4048-9e74-7c0f9ce3e2ee"
-       *     ]
-       */
-      testCases?: string[] | null;
-      /**
-       * @description the environment name you want to run your test suite against
-       * @example default
-       */
-      environmentName?: string | null;
-    } & components["schemas"]["TestSuiteRequestCommons"];
-    TestSuiteCreateRequest: {
-      /**
-       * @description The name of the test suite
-       * @example regression for chat
-       */
-      name?: string;
-      /**
-       * @description The test cases to include in the suite
-       * @example [
-       *       "5b844cf1-d597-4048-9e74-7c0f9ce3e2ee"
-       *     ]
-       */
-      testCases?: string[];
-      /**
-       * @description the environment name you want to run your test suite against
-       * @example default
-       */
-      environmentName?: string;
-    } & components["schemas"]["TestSuiteRequestCommons"];
-    TestSuiteResponse: {
-      /** Format: uuid */
-      id?: string;
-    } & components["schemas"]["TestSuiteCreateRequest"];
-    TestSuitesResponse: components["schemas"]["TestSuiteResponse"][];
-    ZodResponse: {
-      /**
-       * @description What error code happened while parsing the request
-       * @example invalid_type
-       */
-      code?: string;
-      /**
-       * @description What the expected type was
-       * @example object
-       */
-      expected?: string;
-      /**
-       * @description What the actual passed type was
-       * @example string
-       */
-      received?: string;
-      path?: string[];
-      /**
-       * @description Human-readable message of the error that occurred while parsing.
-       * @example Expected object, received string
-       */
-      message?: string;
-    }[];
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;
