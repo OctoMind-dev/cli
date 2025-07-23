@@ -12,7 +12,16 @@ import {
   getTestTarget,
   TestCase,
 } from "./octomind-api";
-import { DebugtopusOptions } from "../types";
+
+type DebugtopusOptions = {
+  id?: string;
+  testTargetId: string;
+  token: string;
+  url: string;
+  octomindUrl: string;
+  environmentId?: string;
+  headless?: boolean;
+};
 
 type BasicAuth = { username: string; password: string };
 
