@@ -111,10 +111,10 @@ export const buildCmd = (): Command => {
       "JSON object of variables to overwrite",
       toJSON,
     )
-    .action(async (command, options) => {
+    .action(async (options) => {
       const testTargetId = await resolveTestTargetId(options.testTargetId);
       await executeTests({
-        ...command,
+        ...options,
         testTargetId,
       });
     });
@@ -123,10 +123,10 @@ export const buildCmd = (): Command => {
     .description("Get test report details")
     .requiredOption("-r, --test-report-id <id>", "Test report ID")
     .option("-t, --test-target-id <id>", "Test target ID")
-    .action(async (command, options) => {
+    .action(async (options) => {
       const testTargetId = await resolveTestTargetId(options.testTargetId);
       await getTestReport({
-        ...command,
+        ...options,
         testTargetId,
       });
     });
