@@ -12,7 +12,7 @@ import {
   updateEnvironment,
 } from "./api";
 import { Config, loadConfig, saveConfig } from "./config";
-import { promptUser } from "./consoleActions";
+import { promptUser } from "./helpers";
 
 const createCommandWithCommonOptions = (command: string): Command => {
   return program
