@@ -3,7 +3,6 @@ import fs from "fs/promises";
 
 export interface Config {
   apiKey?: string;
-  baseUrl?: string;
   testTargetId?: string;
 }
 

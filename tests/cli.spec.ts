@@ -5,15 +5,7 @@ import { executeTests } from "../src/api";
 jest.mock("../src/api");
 
 describe("CLI Commands parsing options", () => {
-  const stdArgs = [
-    "node",
-    "cli.js",
-    "execute",
-    "--test-target-id",
-    "test-target-id",
-    "--url",
-    "https://example.com",
-  ];
+  const stdArgs = ["node", "cli.js", "execute", "--url", "https://example.com"];
 
   beforeAll(() => {
     buildCmd();

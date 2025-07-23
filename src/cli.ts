@@ -66,15 +66,14 @@ export const buildCmd = (): Command => {
           process.exit(1);
         }
 
-        // Optional: Prompt for additional configuration
-        const baseUrl = await promptUser(
-          "Enter base URL (optional, press Enter to skip): ",
+        const testTargetId = await promptUser(
+          "Enter test target id (optional, press Enter to skip): ",
         );
 
         const newConfig: Config = {
           ...existingConfig,
           apiKey,
-          ...(baseUrl && { baseUrl }),
+          ...(testTargetId && { testTargetId }),
         };
 
         await saveConfig(newConfig);
@@ -91,8 +90,8 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-u, --url <url>", "URL to test")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .option("-e, --environment <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
     .option("-g, --tags <tags>", "comma separated list of tags", splitter)
@@ -105,8 +104,8 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("report")
     .description("Get test report details")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-r, --report-id <id>", "Test report ID")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .action(getTestReport);
 
   createCommandWithCommonOptions("register-location")
@@ -128,14 +127,14 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("list-environments")
     .description("List all environments")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .action(listEnvironments);
 
   createCommandWithCommonOptions("create-environment")
     .description("Create a new environment")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-n, --name <name>", "Environment name")
     .requiredOption("-d, --discovery-url <url>", "Discovery URL")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .option("--test-account-username <username>", "Test account username")
     .option("--test-account-password <password>", "Test account password")
     .option(
@@ -150,8 +149,8 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("update-environment")
     .description("Update an existing environment")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .option("-n, --name <name>", "Environment name")
     .option("-d, --discovery-url <url>", "Discovery URL")
     .option("--test-account-username <username>", "Test account username")
@@ -168,8 +167,8 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("delete-environment")
     .description("Delete an environment")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .action(deleteEnvironment);
   return program;
 };
