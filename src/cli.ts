@@ -10,7 +10,7 @@ import {
   registerLocation,
   unregisterLocation,
   updateEnvironment,
-} from "./api";
+} from "./tools";
 
 const apiKeyOption = new Option(
   "-k, --api-key <key>",
@@ -54,7 +54,7 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("report")
     .description("Get test report details")
     .requiredOption("-t, --test-target-id <id>", "Test target ID")
-    .requiredOption("-r, --report-id <id>", "Test report ID")
+    .requiredOption("-r, --test-report-id <id>", "Test report ID")
     .action(getTestReport);
 
   createCommandWithCommonOptions("register-location")
