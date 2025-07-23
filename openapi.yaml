@@ -809,6 +809,10 @@ paths:
       responses:
         '200':
           description: Environment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentResponse"
 
   /apiKey/v2/test-targets/{testTargetId}/environments:
     post:
