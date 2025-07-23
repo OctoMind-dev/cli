@@ -1,6 +1,7 @@
 import { program } from "commander";
 import { buildCmd } from "../src/cli";
 import { executeTests } from "../src/tools";
+
 jest.mock("../src/tools");
 
 describe("CLI Commands parsing options", () => {

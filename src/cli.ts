@@ -114,21 +114,8 @@ export const buildCmd = (): Command => {
     .action(async (command, options) => {
       const testTargetId = await resolveTestTargetId(options.testTargetId);
       await executeTests({
-        url: command.url,
+        ...command,
         testTargetId,
-        environmentName: command.environmentName,
-        description: command.description,
-        tags: command.tags,
-        variablesToOverwrite: command.variablesToOverwrite,
-        json: command.json,
-        context: {
-          source: "manual",
-          description: command.description || "CLI execution",
-          triggeredBy: {
-            type: "USER",
-            userId: "cli-user",
-          },
-        },
       });
     });
 
@@ -136,7 +123,13 @@ export const buildCmd = (): Command => {
     .description("Get test report details")
     .requiredOption("-r, --test-report-id <id>", "Test report ID")
     .option("-t, --test-target-id <id>", "Test target ID")
-    .action(getTestReport);
+    .action(async (command, options) => {
+      const testTargetId = await resolveTestTargetId(options.testTargetId);
+      await getTestReport({
+        ...command,
+        testTargetId,
+      });
+    });
 
   createCommandWithCommonOptions("register-location")
     .description("Register a private location")
@@ -179,7 +172,12 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .action(createEnvironment);
+    .action((_, options) =>
+      createEnvironment({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
 
   createCommandWithCommonOptions("update-environment")
     .description("Update an existing environment")
@@ -196,7 +194,12 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .action(updateEnvironment);
+    .action((_, options) =>
+      updateEnvironment({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
 
   createCommandWithCommonOptions("delete-environment")
     .description("Delete an environment")
