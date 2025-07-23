@@ -183,3 +183,13 @@ export interface DeleteEnvironmentOptions {
   environmentId: string;
   json?: boolean;
 }
+
+export type DebugtopusOptions = {
+  id?: string;
+  testTargetId: string;
+  token: string;
+  url: string;
+  octomindUrl: string;
+  environmentId?: string;
+  headless?: boolean;
+};

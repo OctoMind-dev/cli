@@ -21,13 +21,14 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@playwright/test": "^1.54.1",
     "axios": "^1.7.9",
     "commander": "^14.0.0",
     "tsx": "^4.19.3"
   },
   "devDependencies": {
-    "@types/node": "^24.0.1",
     "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.1",
     "@typescript-eslint/parser": "^8.25.0",
     "eslint": "8.57.1",
     "eslint-config-prettier": "^10.0.1",

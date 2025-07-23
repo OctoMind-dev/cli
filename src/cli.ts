@@ -11,6 +11,7 @@ import {
   unregisterLocation,
   updateEnvironment,
 } from "./api";
+import { runDebugtopus } from "./debugtopus";
 
 const apiKeyOption = new Option(
   "-k, --api-key <key>",
@@ -36,6 +37,32 @@ export const buildCmd = (): Command => {
       `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`,
     )
     .version(version);
+
+  createCommandWithCommonOptions("debug")
+    .description("run test cases against local build")
+    .option(
+      "-i, --id <uuid>",
+      "id of the test case you want to run, if not provided will run all test cases in the test target",
+    )
+    .option(
+      "-e, --environmentId <uuid>",
+      "id of the environment you want to run against, if not provided will run all test cases against the default environment",
+    )
+    .requiredOption("-u, --url <url>", "url the tests should run against")
+    .requiredOption(
+      "-a, --testTargetId <uuid>",
+      "id of the test target of the test case",
+    )
+    .option(
+      "-o, --octomindUrl <url>",
+      "base url of the octomind api",
+      "https://app.octomind.dev",
+    )
+    .option(
+      "--headless",
+      "if we should run headless without the UI of playwright and the browser",
+    )
+    .action(runDebugtopus);
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
