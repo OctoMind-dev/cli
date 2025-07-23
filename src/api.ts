@@ -796,6 +796,102 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve code for a test case
+     * @description Get the code representation of a specific test case
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description The ID of the test target */
+          testTargetId: string;
+          /** @description The ID of the test case */
+          testCaseId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Code for the test case */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @description The code representation of the test case */
+              testCode?: string;
+            };
+          };
+        };
+        /** @description Test case not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/apiKey/v2/test-targets/{testTargetId}/test-cases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve test cases
+     * @description Get a list of test cases for a specific test target
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description The ID of the test target */
+          testTargetId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description List of test cases */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TestCasesResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}": {
     parameters: {
       query?: never;
@@ -827,149 +923,7 @@ export interface paths {
             [name: string]: unknown;
           };
           content: {
-            "application/json": {
-              /** Format: uuid */
-              id?: string;
-              /** Format: uuid */
-              testTargetId?: string;
-              type?: string | null;
-              elements?: {
-                /** Format: uuid */
-                id?: string;
-                index?: number;
-                interaction?: {
-                  /** Format: uuid */
-                  id?: string;
-                  /** @enum {string} */
-                  action?:
-                    | "EXTRACT"
-                    | "ENTER_TEXT"
-                    | "CLICK"
-                    | "SELECT_OPTION"
-                    | "TYPE_TEXT"
-                    | "KEY_PRESS"
-                    | "HOVER"
-                    | "UPLOAD"
-                    | "GO_TO"
-                    | "DRAG_AND_DROP"
-                    | "CLOSE_PAGE"
-                    | "OPEN_EMAIL";
-                  calledWith?: string | null;
-                  /** Format: uuid */
-                  testCaseElementId?: string;
-                } | null;
-                assertion?: {
-                  /** Format: uuid */
-                  id?: string;
-                  /** @enum {string} */
-                  expectation?:
-                    | "VISIBLE"
-                    | "NOT_VISIBLE"
-                    | "TO_BE_CHECKED"
-                    | "NOT_TO_BE_CHECKED"
-                    | "TO_HAVE_VALUE"
-                    | "TO_CONTAIN_TEXT"
-                    | "TO_HAVE_STYLE";
-                  calledWith?: string | null;
-                  /** Format: uuid */
-                  testCaseElementId?: string;
-                } | null;
-                scrollState?: Record<string, never> | null;
-                selectors?: {
-                  /** Format: uuid */
-                  id?: string;
-                  index?: number;
-                  selector?: string;
-                  /** @enum {string} */
-                  selectorType?: "TEXT" | "LABEL" | "PLACEHOLDER" | "ROLE";
-                  options?: {
-                    name?: string;
-                  } | null;
-                  /** Format: uuid */
-                  testCaseElementId?: string;
-                  scrollStateId?: string | null;
-                }[];
-                /** Format: uuid */
-                testCaseId?: string;
-                ignoreFailure?: boolean;
-              }[];
-              /** Format: date-time */
-              createdAt?: string;
-              /** Format: date-time */
-              updatedAt?: string;
-              description?: string;
-              /** @enum {string} */
-              status?: "ENABLED" | "DRAFT";
-              externalId?: string | null;
-              entryPointUrlPath?: string | null;
-              tags?: string[];
-              /** @enum {string} */
-              createdBy?: "EDIT";
-              /** @enum {string} */
-              runStatus?: "ON" | "OFF";
-              prerequisiteId?: string | null;
-              proposalRunId?: string | null;
-              folderId?: string | null;
-              discovery?: {
-                /** Format: uuid */
-                id?: string;
-                freePrompt?: string;
-                traceUrl?: string | null;
-                traceJsonManifestUrl?: string | null;
-                /** @enum {string} */
-                status?: "OUTDATED";
-                abortCause?: string | null;
-                message?: string | null;
-                /** Format: uuid */
-                testCaseId?: string;
-                lastJobExecutionName?: string | null;
-                /** Format: date-time */
-                createdAt?: string;
-                /** Format: date-time */
-                updatedAt?: string;
-                executedTestCaseElements?: string[];
-                testCase?: {
-                  /** Format: uuid */
-                  id?: string;
-                  /** Format: uuid */
-                  testTargetId?: string;
-                  description?: string;
-                  /** Format: date-time */
-                  createdAt?: string;
-                  /** Format: date-time */
-                  updatedAt?: string;
-                  entryPointUrlPath?: string | null;
-                  type?: string | null;
-                  /** @enum {string} */
-                  status?: "ENABLED";
-                  /** @enum {string} */
-                  runStatus?: "ON";
-                  /** @enum {string} */
-                  interactionStatus?: "NEW";
-                  /** @enum {string} */
-                  createdBy?: "EDIT";
-                  proposalRunId?: string | null;
-                  externalId?: string | null;
-                  folderId?: string | null;
-                  prerequisiteId?: string | null;
-                  /** Format: uuid */
-                  predecessorId?: string;
-                  testTarget?: {
-                    /** Format: uuid */
-                    id?: string;
-                    app?: string;
-                    /** Format: date-time */
-                    createdAt?: string;
-                    /** Format: date-time */
-                    updatedAt?: string;
-                    /** Format: uuid */
-                    orgId?: string;
-                    testIdAttribute?: string | null;
-                    timeoutPerStep?: number;
-                  };
-                };
-              };
-            };
+            "application/json": components["schemas"]["TestCaseResponse"];
           };
         };
         /** @description Unauthorized - Invalid or missing API key */
@@ -985,6 +939,51 @@ export interface paths {
             [name: string]: unknown;
           };
           content?: never;
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/apiKey/v2/test-targets/{testTargetId}/config": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Retrieve test target configuration
+     * @description Get the configuration of a specific test target
+     */
+    get: {
+      parameters: {
+        query?: {
+          /** @description Optional ID of the environment to use for the test target configuration */
+          environmentId?: string;
+        };
+        header?: never;
+        path: {
+          /** @description The ID of the test target */
+          testTargetId: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Test target configuration */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/plain": string;
+          };
         };
       };
     };
@@ -1437,6 +1436,150 @@ export interface components {
        */
       testReportUrl?: string;
       testReport?: components["schemas"]["TestReport"];
+    };
+    TestCasesResponse: components["schemas"]["TestCaseResponse"][];
+    TestCaseResponse: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      testTargetId?: string;
+      type?: string | null;
+      elements?: {
+        /** Format: uuid */
+        id?: string;
+        index?: number;
+        interaction?: {
+          /** Format: uuid */
+          id?: string;
+          /** @enum {string} */
+          action?:
+            | "EXTRACT"
+            | "ENTER_TEXT"
+            | "CLICK"
+            | "SELECT_OPTION"
+            | "TYPE_TEXT"
+            | "KEY_PRESS"
+            | "HOVER"
+            | "UPLOAD"
+            | "GO_TO"
+            | "DRAG_AND_DROP"
+            | "CLOSE_PAGE"
+            | "OPEN_EMAIL";
+          calledWith?: string | null;
+          /** Format: uuid */
+          testCaseElementId?: string;
+        } | null;
+        assertion?: {
+          /** Format: uuid */
+          id?: string;
+          /** @enum {string} */
+          expectation?:
+            | "VISIBLE"
+            | "NOT_VISIBLE"
+            | "TO_BE_CHECKED"
+            | "NOT_TO_BE_CHECKED"
+            | "TO_HAVE_VALUE"
+            | "TO_CONTAIN_TEXT"
+            | "TO_HAVE_STYLE";
+          calledWith?: string | null;
+          /** Format: uuid */
+          testCaseElementId?: string;
+        } | null;
+        scrollState?: Record<string, never> | null;
+        selectors?: {
+          /** Format: uuid */
+          id?: string;
+          index?: number;
+          selector?: string;
+          /** @enum {string} */
+          selectorType?: "TEXT" | "LABEL" | "PLACEHOLDER" | "ROLE";
+          options?: {
+            name?: string;
+          } | null;
+          /** Format: uuid */
+          testCaseElementId?: string;
+          scrollStateId?: string | null;
+        }[];
+        /** Format: uuid */
+        testCaseId?: string;
+        ignoreFailure?: boolean;
+      }[];
+      /** Format: date-time */
+      createdAt?: string;
+      /** Format: date-time */
+      updatedAt?: string;
+      description?: string;
+      /** @enum {string} */
+      status?: "ENABLED" | "DRAFT";
+      externalId?: string | null;
+      entryPointUrlPath?: string | null;
+      tags?: string[];
+      /** @enum {string} */
+      createdBy?: "EDIT";
+      /** @enum {string} */
+      runStatus?: "ON" | "OFF";
+      prerequisiteId?: string | null;
+      proposalRunId?: string | null;
+      folderId?: string | null;
+      discovery?: {
+        /** Format: uuid */
+        id?: string;
+        freePrompt?: string;
+        traceUrl?: string | null;
+        traceJsonManifestUrl?: string | null;
+        /** @enum {string} */
+        status?: "OUTDATED";
+        abortCause?: string | null;
+        message?: string | null;
+        /** Format: uuid */
+        testCaseId?: string;
+        lastJobExecutionName?: string | null;
+        /** Format: date-time */
+        createdAt?: string;
+        /** Format: date-time */
+        updatedAt?: string;
+        executedTestCaseElements?: string[];
+        testCase?: {
+          /** Format: uuid */
+          id?: string;
+          /** Format: uuid */
+          testTargetId?: string;
+          description?: string;
+          /** Format: date-time */
+          createdAt?: string;
+          /** Format: date-time */
+          updatedAt?: string;
+          entryPointUrlPath?: string | null;
+          type?: string | null;
+          /** @enum {string} */
+          status?: "ENABLED";
+          /** @enum {string} */
+          runStatus?: "ON";
+          /** @enum {string} */
+          interactionStatus?: "NEW";
+          /** @enum {string} */
+          createdBy?: "EDIT";
+          proposalRunId?: string | null;
+          externalId?: string | null;
+          folderId?: string | null;
+          prerequisiteId?: string | null;
+          /** Format: uuid */
+          predecessorId?: string;
+          testTarget?: {
+            /** Format: uuid */
+            id?: string;
+            app?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            /** Format: uuid */
+            orgId?: string;
+            testIdAttribute?: string | null;
+            timeoutPerStep?: number;
+          };
+        };
+      };
     };
     SuccessResponse: {
       /**
