@@ -1,6 +1,7 @@
 import { program } from "commander";
 import { buildCmd } from "../src/cli";
 import { executeTests } from "../src/tools";
+
 jest.mock("../src/tools");
 
 describe("CLI Commands parsing options", () => {
@@ -8,12 +9,10 @@ describe("CLI Commands parsing options", () => {
     "node",
     "cli.js",
     "execute",
-    "--api-key",
-    "test-api-key",
-    "--test-target-id",
-    "test-target-id",
     "--url",
     "https://example.com",
+    "--test-target-id",
+    "test-target-123",
   ];
 
   beforeAll(() => {
@@ -23,48 +22,48 @@ describe("CLI Commands parsing options", () => {
     });
   });
 
-  it("should parse executeTests tags option with comma", () => {
-    program.parse([...stdArgs, "--tags", "tag1,tags2"]);
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should parse executeTests tags option with comma", async () => {
+    await program.parseAsync([...stdArgs, "--tags", "tag1,tags2"]);
     expect(executeTests).toHaveBeenCalledWith(
       expect.objectContaining({
         tags: ["tag1", "tags2"],
       }),
-      expect.anything(),
     );
   });
 
-  it("should parse executeTests tags option with space", () => {
-    program.parse([...stdArgs, "--tags", "tag1 tags2"]);
+  it("should parse executeTests tags option with space", async () => {
+    await program.parseAsync([...stdArgs, "--tags", "tag1 tags2"]);
     expect(executeTests).toHaveBeenCalledWith(
       expect.objectContaining({
         tags: ["tag1", "tags2"],
       }),
-      expect.anything(),
     );
   });
 
-  it("should parse executeTests tags option with |", () => {
-    program.parse([...stdArgs, "--tags", "tag1|tags2"]);
+  it("should parse executeTests tags option with |", async () => {
+    await program.parseAsync([...stdArgs, "--tags", "tag1|tags2"]);
     expect(executeTests).toHaveBeenCalledWith(
       expect.objectContaining({
         tags: ["tag1", "tags2"],
       }),
-      expect.anything(),
     );
   });
 
-  it("should parse executeTests tags option always as array", () => {
-    program.parse([...stdArgs, "--tags", "tag1"]);
+  it("should parse executeTests tags option always as array", async () => {
+    await program.parseAsync([...stdArgs, "--tags", "tag1"]);
     expect(executeTests).toHaveBeenCalledWith(
       expect.objectContaining({
         tags: ["tag1"],
       }),
-      expect.anything(),
     );
   });
 
-  it("should parse executeTests vars option as JSON", () => {
-    program.parse([
+  it("should parse executeTests vars option as JSON", async () => {
+    await program.parseAsync([
       ...stdArgs,
       "--variables-to-overwrite",
       '{ "foo": ["bar"] }',
@@ -73,7 +72,6 @@ describe("CLI Commands parsing options", () => {
       expect.objectContaining({
         variablesToOverwrite: { foo: ["bar"] },
       }),
-      expect.anything(),
     );
   });
 });
