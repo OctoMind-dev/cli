@@ -128,6 +128,7 @@ export const buildCmd = (): Command => {
       "--persist",
       "if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again",
     )
+    .option("--grep <substring>", "filter test cases by substring")
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
         options.testTargetId,
