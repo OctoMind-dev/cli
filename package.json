@@ -15,7 +15,7 @@
     "apigen": "openapi-typescript ./openapi.yaml --output src/api.ts",
     "build": "npx genversion -des src/version.ts && pnpm apigen && tsc --project tsconfig.build.json",
     "octomind": "tsx src/index.ts",
-    "test": "npx genversion -des src/version.ts && jest",
+    "test": "pnpm apigen && npx genversion -des src/version.ts && jest",
     "test:watch": "npx genversion -e src/version.ts && jest --watch"
   },
   "keywords": [],

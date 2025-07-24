@@ -1091,8 +1091,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ZodResponse"
-        "401":
-          description: Invalid or missing API key
         "500":
           description: Internal server error
 
