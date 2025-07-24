@@ -316,8 +316,6 @@ components:
       example:
         "SPACE_ID": ["64ee32b4-7365-47a6-b5b0-2903b6ad849d"]
 
-
-
     TestTargetExecutionRequest:
       type: object
       properties:
@@ -350,6 +348,66 @@ components:
         - testTargetId
         - url
         - context
+
+    TestTargetExecutionResponse:
+      type: object
+      properties:
+        testReportUrl:
+          type: string
+          description: The URL the test target was executed.
+          example: "https://example.com"
+        testReport:
+          type: object
+          description: The test report from the run.
+          example:
+            id: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+            testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+            createdAt: "2024-09-06T13:01:51.686Z"
+            updatedAt: "2024-09-06T13:05:23.412Z"
+            executionUrl: "https://en.wikipedia.org/"
+            status: "FAILED"
+            context:
+              source: "github"
+              issueNumber: 123
+              ref: "refs/heads/main"
+              sha: "abc123def456"
+              repo: "my-repo"
+              owner: "repo-owner"
+              triggeredBy:
+                type: "USER"
+                userId: "user123"
+              nodeId: "node-123"
+            testResults:
+              - id: "7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p"
+                testCaseId: "9876fedc-ba98-7654-3210-fedcba987654"
+                testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+                name: "User can search for information"
+                createdAt: "2024-09-06T13:01:51.686Z"
+                updatedAt: "2024-09-06T13:03:12.345Z"
+                status: "PASSED"
+                errorMessage: null
+                traceUrl: "https://storage.googleapis.com/automagically-traces/7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p-trace.zip"
+              - id: "2a3b4c5d-6e7f-8g9h-0i1j-2k3l4m5n6o7p"
+                testCaseId: "5432fedc-ba98-7654-3210-fedcba543210"
+                testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+                name: "User can navigate to article"
+                createdAt: "2024-09-06T13:01:51.686Z"
+                updatedAt: "2024-09-06T13:04:45.678Z"
+                status: "FAILED"
+                errorMessage: "TimeoutError: locator.click: Timeout 30000ms exceeded."
+                traceUrl: "https://storage.googleapis.com/automagically-traces/2a3b4c5d-6e7f-8g9h-0i1j-2k3l4m5n6o7p-trace.zip"
+              - id: "3a4b5c6d-7e8f-9g0h-1i2j-3k4l5m6n7o8p"
+                testCaseId: "1234abcd-ef56-7890-abcd-ef1234567890"
+                testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+                name: "User can create an account"
+                createdAt: "2024-09-06T13:01:51.686Z"
+                updatedAt: "2024-09-06T13:05:23.412Z"
+                status: "WAITING"
+                errorMessage: null
+                traceUrl: null
 
     TestReportContext:
       type: object
@@ -487,194 +545,6 @@ components:
           - address
           - name
 
-    TestExecutionResponse:
-      type: object
-      properties:
-        testReportUrl:
-          type: string
-          format: uri
-          description: The URL where the test report can be accessed.
-          example: "https://app.octomind.dev/testreports/826c15af-644b-4b28-89b4-f50ff34e46b7"
-        testReport:
-          $ref: "#/components/schemas/TestReport"
-
-    TestCasesResponse:
-      type: array
-      items:
-        $ref: "#/components/schemas/TestCaseResponse"
-    TestCaseResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        testTargetId:
-          type: string
-          format: uuid
-        type:
-          type: string
-          nullable: true
-        elements:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-              index:
-                type: integer
-              interaction:
-                type: object
-                nullable: true
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  action:
-                    type: string
-                    enum:
-                      [
-                        EXTRACT,
-                        ENTER_TEXT,
-                        CLICK,
-                        SELECT_OPTION,
-                        TYPE_TEXT,
-                        KEY_PRESS,
-                        HOVER,
-                        UPLOAD,
-                        GO_TO,
-                        DRAG_AND_DROP,
-                        CLOSE_PAGE,
-                        OPEN_EMAIL,
-                      ]
-                  calledWith:
-                    type: string
-                    nullable: true
-                  testCaseElementId:
-                    type: string
-                    format: uuid
-              assertion:
-                type: object
-                nullable: true
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  expectation:
-                    type: string
-                    enum:
-                      [
-                        VISIBLE,
-                        NOT_VISIBLE,
-                        TO_BE_CHECKED,
-                        NOT_TO_BE_CHECKED,
-                        TO_HAVE_VALUE,
-                        TO_CONTAIN_TEXT,
-                        TO_HAVE_STYLE,
-                      ]
-                  calledWith:
-                    type: string
-                    nullable: true
-                  testCaseElementId:
-                    type: string
-                    format: uuid
-              scrollState:
-                type: object
-                nullable: true
-              selectors:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uuid
-                    index:
-                      type: integer
-                    selector:
-                      type: string
-                    selectorType:
-                      type: string
-                      enum: [TEXT, LABEL, PLACEHOLDER, ROLE]
-                    options:
-                      type: object
-                      nullable: true
-                      properties:
-                        name:
-                          type: string
-                    testCaseElementId:
-                      type: string
-                      format: uuid
-                    scrollStateId:
-                      type: string
-                      nullable: true
-              testCaseId:
-                type: string
-                format: uuid
-              ignoreFailure:
-                type: boolean
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        description:
-          type: string
-        status:
-          type: string
-          enum: [ENABLED, DRAFT]
-        externalId:
-          type: string
-          nullable: true
-        entryPointUrlPath:
-          type: string
-          nullable: true
-        tags:
-          type: array
-          items:
-            type: string
-        createdBy:
-          type: string
-          enum: [EDIT]
-        runStatus:
-          type: string
-          enum: [ON, OFF]
-        prerequisiteId:
-          type: string
-          nullable: true
-        proposalRunId:
-          type: string
-          nullable: true
-        folderId:
-          type: string
-          nullable: true
-        discovery:
-          type: object
-          nullable: true
-          properties:
-            updatedAt:
-              type: string
-              format: date-time
-            freePrompt:
-              type: string
-            traceUrl:
-              type: string
-              nullable: true
-            status:
-              type: string
-              enum: [CREATED, IN_PROGRESS, ERROR, SUCCESS, FAILED, INCOMPLETE, QUEUED, STOPPED, OUTDATED, PAUSED]
-            abortCause:
-              type: string
-              nullable: true
-            message:
-              type: string
-              nullable: true
-      required:
-        - id
-        - testTargetId
-
     SuccessResponse:
       type: object
       properties:
@@ -796,11 +666,7 @@ components:
               type: string
             type:
               type: string
-      required:
-        - id
-        - name
-        - testTargetId
-        - type
+
     TestSuiteRequestCommons:
       type: object
       properties:
@@ -993,112 +859,6 @@ components:
             description: "Human-readable message of the error that occurred while parsing."
             example: "Expected object, received string"
 
-    Notification:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the event.
-          example: "826c15af-644b-4b28-89b4-f50ff34e46b7"
-        testTargetId:
-          type: string
-          format: uuid
-          description: The unique identifier of the test target this event belongs to.
-          example: "3435918b-3d29-4ebd-8c68-9a540532f45a"
-        createdAt:
-          type: string
-          format: date-time
-          description: The timestamp when the event was created.
-          example: "2024-09-06T13:01:51.686Z"
-        updatedAt:
-          type: string
-          format: date-time
-          description: The timestamp when the event was last updated.
-          example: "2024-09-06T13:01:51.686Z"
-        payload:
-          type: object
-          description: JSON payload containing event-specific data.
-          example: { testCaseId: "5deeef76-f37a-418b-8101-7d69529fa561" }
-        type:
-          type: string
-          enum:
-            [
-              "VALIDATION_PASSED",
-              "VALIDATION_FAILED",
-              "DISCOVERY_FINISHED",
-              "PROPOSAL_SUCCESS",
-              "PROPOSAL_FAILED",
-              "REPORT_EXECUTION_FINISHED",
-            ]
-          description: The type of event that occurred.
-          example: "VALIDATION_PASSED"
-        ack:
-          type: string
-          enum: ["IN_WEB_APP"]
-          description: Optional acknowledgment status of the event.
-          example: "IN_WEB_APP"
-          nullable: true
-      required:
-        - id
-        - testTargetId
-        - createdAt
-        - updatedAt
-        - payload
-        - type
-
-    ExternalDiscoveryBody:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Name of the discovered test case
-          example: "Login Form Validation Test"
-        entryPointUrlPath:
-          type: string
-          description: Entry point URL path of the discovered test case
-          example: "/login"
-        prerequisiteName:
-          type: string
-          description: Prerequisite test case name
-          example: "Cookie Banner Acceptance"
-        externalId:
-          type: string
-          description: External ID of the discovered test case
-          example: "ext-test-001"
-        tagNames:
-          type: array
-          items:
-            type: string
-          description: Tags to assign to the discovered test case
-          example: ["authentication", "forms", "validation"]
-        prompt:
-          type: string
-          description: Prompt to generate the discovered test case
-          example: "Test the login form with valid and invalid credentials"
-        folderName:
-          type: string
-          description: Folder name of the discovered test case
-          example: "Authentication Tests"
-        type:
-          type: string
-          enum: ["LOGIN", "COOKIE_BANNER"]
-          description: Type of the discovered test case
-          example: "LOGIN"
-      required:
-        - name
-        - prompt
-
-    DiscoveryResponse:
-      type: object
-      properties:
-        discoveryId:
-          type: string
-          format: uuid
-        testCaseId:
-          type: string
-          format: uuid
-
 paths:
   /apiKey/v2/test-targets:
     get:
@@ -1274,7 +1034,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TestExecutionResponse"
+                $ref: "#/components/schemas/TestTargetExecutionResponse"
         "400":
           description: Invalid request parameters
           content:
@@ -1515,10 +1275,6 @@ paths:
       responses:
         "200":
           description: Environment updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EnvironmentResponse"
     delete:
       summary: Delete an environment
       operationId: deleteEnvironment
@@ -1915,7 +1671,43 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TestCasesResponse"
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    testTargetId:
+                      type: string
+                      format: uuid
+                    description:
+                      type: string
+                    status:
+                      type: string
+                      enum: [ENABLED, DISABLED, DRAFT, OUTDATED, PROVISIONAL]
+                    runStatus:
+                      type: string
+                      enum: [ON, OFF]
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+                    entryPointUrlPath:
+                      type: string
+                      nullable: true
+                    folderId:
+                      type: string
+                      nullable: true
+                    externalId:
+                      type: string
+                      nullable: true
+                    tags:
+                      type: array
+                      items:
+                        type: string
         "400":
           description: Invalid request parameters
           content:
@@ -1957,7 +1749,174 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TestCaseResponse"
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  testTargetId:
+                    type: string
+                    format: uuid
+                  type:
+                    type: string
+                    nullable: true
+                  elements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        index:
+                          type: integer
+                        interaction:
+                          type: object
+                          nullable: true
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            action:
+                              type: string
+                              enum:
+                                [
+                                  EXTRACT,
+                                  ENTER_TEXT,
+                                  CLICK,
+                                  SELECT_OPTION,
+                                  TYPE_TEXT,
+                                  KEY_PRESS,
+                                  HOVER,
+                                  UPLOAD,
+                                  GO_TO,
+                                  DRAG_AND_DROP,
+                                  CLOSE_PAGE,
+                                  OPEN_EMAIL,
+                                ]
+                            calledWith:
+                              type: string
+                              nullable: true
+                            testCaseElementId:
+                              type: string
+                              format: uuid
+                        assertion:
+                          type: object
+                          nullable: true
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            expectation:
+                              type: string
+                              enum:
+                                [
+                                  VISIBLE,
+                                  NOT_VISIBLE,
+                                  TO_BE_CHECKED,
+                                  NOT_TO_BE_CHECKED,
+                                  TO_HAVE_VALUE,
+                                  TO_CONTAIN_TEXT,
+                                  TO_HAVE_STYLE,
+                                ]
+                            calledWith:
+                              type: string
+                              nullable: true
+                            testCaseElementId:
+                              type: string
+                              format: uuid
+                        scrollState:
+                          type: object
+                          nullable: true
+                        selectors:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                              index:
+                                type: integer
+                              selector:
+                                type: string
+                              selectorType:
+                                type: string
+                                enum: [TEXT, LABEL, PLACEHOLDER, ROLE]
+                              options:
+                                type: object
+                                nullable: true
+                                properties:
+                                  name:
+                                    type: string
+                              testCaseElementId:
+                                type: string
+                                format: uuid
+                              scrollStateId:
+                                type: string
+                                nullable: true
+                        testCaseId:
+                          type: string
+                          format: uuid
+                        ignoreFailure:
+                          type: boolean
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+                  description:
+                    type: string
+                  status:
+                    type: string
+                    enum: [ENABLED, DRAFT]
+                  externalId:
+                    type: string
+                    nullable: true
+                  entryPointUrlPath:
+                    type: string
+                    nullable: true
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                  createdBy:
+                    type: string
+                    enum: [EDIT]
+                  runStatus:
+                    type: string
+                    enum: [ON, OFF]
+                  prerequisiteId:
+                    type: string
+                    nullable: true
+                  proposalRunId:
+                    type: string
+                    nullable: true
+                  folderId:
+                    type: string
+                    nullable: true
+                  discovery:
+                    type: object
+                    nullable: true
+                    properties:
+                      updatedAt:
+                        type: string
+                        format: date-time
+                      freePrompt:
+                        type: string
+                      traceUrl:
+                        type: string
+                        nullable: true
+                      status:
+                        type: string
+                        enum: [CREATED, IN_PROGRESS, ERROR, SUCCESS, FAILED, INCOMPLETE, QUEUED, STOPPED, OUTDATED, PAUSED]
+                      abortCause:
+                        type: string
+                        nullable: true
+                      message:
+                        type: string
+                        nullable: true
         "401":
           description: Unauthorized - Invalid or missing API key
         "404":
@@ -1965,8 +1924,9 @@ paths:
 
   /apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code:
     get:
-      summary: Retrieve code for a test case
-      description: Get the code representation of a specific test case
+      summary: Retrieve test case code
+      description: Get the full test file code for a specific test case for download
+      operationId: getTestCaseCode
       security:
         - ApiKeyAuth: []
       tags:
@@ -1986,23 +1946,23 @@ paths:
             type: string
             format: uuid
           description: The ID of the test case
+        - name: executionUrl
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uri
+          description: The URL where the test will be executed
         - name: environmentId
           in: query
           required: false
           schema:
             type: string
             format: uuid
-          description: Optional ID of the environment to use for the test case code
-        - name: executionUrl
-          in: query
-          required: true
-          schema:
-            type: string
-            format: url
-          description: URL of the app to test
+          description: Optional ID of the environment to use
       responses:
         "200":
-          description: Code for the test case
+          description: Test case code retrieved successfully
           content:
             application/json:
               schema:
@@ -2010,11 +1970,17 @@ paths:
                 properties:
                   testCode:
                     type: string
-                    description: The code representation of the test case
-                required:
-                  - testCode
+                    description: The full test file code for the test case
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Unauthorized - Invalid or missing API key
         "404":
-          description: Test case not found
+          description: Test target, test case, or test code not found
 
     patch:
       summary: Update a test case
