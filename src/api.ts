@@ -1612,13 +1612,13 @@ export interface components {
     EnvironmentsResponse: components["schemas"]["EnvironmentResponse"][];
     EnvironmentResponse: {
       /** Format: uuid */
-      id?: string;
-      name?: string;
+      id: string;
+      name: string;
       /** Format: uuid */
-      testTargetId?: string;
+      testTargetId: string;
       /** Format: date-time */
       updatedAt?: string;
-      type?: string;
+      type: string;
       /** Format: url */
       discoveryUrl?: string;
       additionalHeaderFields?: {
@@ -1733,6 +1733,110 @@ export interface components {
        */
       message?: string;
     }[];
+    Notification: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the event.
+       * @example 826c15af-644b-4b28-89b4-f50ff34e46b7
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description The unique identifier of the test target this event belongs to.
+       * @example 3435918b-3d29-4ebd-8c68-9a540532f45a
+       */
+      testTargetId: string;
+      /**
+       * Format: date-time
+       * @description The timestamp when the event was created.
+       * @example 2024-09-06T13:01:51.686Z
+       */
+      createdAt: string;
+      /**
+       * Format: date-time
+       * @description The timestamp when the event was last updated.
+       * @example 2024-09-06T13:01:51.686Z
+       */
+      updatedAt: string;
+      /**
+       * @description JSON payload containing event-specific data.
+       * @example {
+       *       "testCaseId": "5deeef76-f37a-418b-8101-7d69529fa561"
+       *     }
+       */
+      payload: Record<string, never>;
+      /**
+       * @description The type of event that occurred.
+       * @example VALIDATION_PASSED
+       * @enum {string}
+       */
+      type:
+        | "VALIDATION_PASSED"
+        | "VALIDATION_FAILED"
+        | "DISCOVERY_FINISHED"
+        | "PROPOSAL_SUCCESS"
+        | "PROPOSAL_FAILED"
+        | "REPORT_EXECUTION_FINISHED";
+      /**
+       * @description Optional acknowledgment status of the event.
+       * @example IN_WEB_APP
+       * @enum {string|null}
+       */
+      ack?: "IN_WEB_APP" | null;
+    };
+    ExternalDiscoveryBody: {
+      /**
+       * @description Name of the discovered test case
+       * @example Login Form Validation Test
+       */
+      name: string;
+      /**
+       * @description Entry point URL path of the discovered test case
+       * @example /login
+       */
+      entryPointUrlPath?: string;
+      /**
+       * @description Prerequisite test case name
+       * @example Cookie Banner Acceptance
+       */
+      prerequisiteName?: string;
+      /**
+       * @description External ID of the discovered test case
+       * @example ext-test-001
+       */
+      externalId?: string;
+      /**
+       * @description Tags to assign to the discovered test case
+       * @example [
+       *       "authentication",
+       *       "forms",
+       *       "validation"
+       *     ]
+       */
+      tagNames?: string[];
+      /**
+       * @description Prompt to generate the discovered test case
+       * @example Test the login form with valid and invalid credentials
+       */
+      prompt: string;
+      /**
+       * @description Folder name of the discovered test case
+       * @example Authentication Tests
+       */
+      folderName?: string;
+      /**
+       * @description Type of the discovered test case
+       * @example LOGIN
+       * @enum {string}
+       */
+      type?: "LOGIN" | "COOKIE_BANNER";
+    };
+    DiscoveryResponse: {
+      /** Format: uuid */
+      discoveryId?: string;
+      /** Format: uuid */
+      testCaseId?: string;
+    };
   };
   responses: never;
   parameters: never;
