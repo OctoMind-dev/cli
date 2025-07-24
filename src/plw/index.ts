@@ -1,8 +1,7 @@
-
 import { randomUUID } from "crypto";
 import { loadConfig } from "../config";
-import { spawn, ChildProcess } from 'child_process';
-import { createInterface } from 'readline';
+import { spawn, ChildProcess } from "child_process";
+import { createInterface } from "readline";
 
 interface StreamResult {
   lines: string[];
@@ -12,39 +11,38 @@ interface StreamResult {
 }
 
 const spawnAndStreamLines = async (
-  command: string, 
-  args: string[] = [], 
-  maxLines: number = 20
+  command: string,
+  args: string[] = [],
+  maxLines: number = 20,
 ): Promise<StreamResult> => {
   console.log(`Spawning command: ${command} ${args.join(" ")}`);
   return new Promise((resolve, reject) => {
     const child: ChildProcess = spawn(command, args, {
-      stdio: ['ignore', 'pipe', 'pipe'],
+      stdio: ["ignore", "pipe", "pipe"],
       detached: true,
-      shell: true, 
-      env: process.env
+      shell: true,
+      env: process.env,
     });
 
     if (!child.stdout) {
-      reject(new Error('Failed to create stdout pipe'));
+      reject(new Error("Failed to create stdout pipe"));
       return;
     }
 
     const rl = createInterface({
       input: child.stdout,
-      crlfDelay: Infinity
+      crlfDelay: Infinity,
     });
 
     const lines: string[] = [];
     let lineCount = 0;
 
-    rl.on('line', (line: string) => {
+    rl.on("line", (line: string) => {
       lines.push(line);
       console.log(`-- ${line}`);
       lineCount++;
 
       if (lineCount >= maxLines) {
-        
         rl.close();
         child.unref();
         child.stdout?.destroy();
@@ -53,29 +51,29 @@ const spawnAndStreamLines = async (
       }
     });
 
-    child.on('error', (error) => {
+    child.on("error", (error) => {
       rl.close();
       reject(error);
     });
 
-    child.on('exit', (code, signal) => {
+    child.on("exit", (code, signal) => {
       if (lineCount < maxLines) {
         console.log(`Process exited with code ${code}, signal ${signal}`);
       }
       resolve({ lines, detached: false, code, signal });
     });
   });
-}
+};
 
 const checkDockerDaemon = (): Promise<boolean> => {
   return new Promise((resolve) => {
-    const child = spawn('docker', ['info'], { stdio: 'pipe' });
-    
-    child.on('exit', (code) => {
+    const child = spawn("docker", ["info"], { stdio: "pipe" });
+
+    child.on("exit", (code) => {
       resolve(code === 0);
     });
   });
-}
+};
 
 const createDockerCommand = (options: {
   apiKey: string;
@@ -86,11 +84,15 @@ const createDockerCommand = (options: {
   return `docker run --rm --name PLW -e PLW_NAME=${options.name} -e PROXY_USER=${options.username} -e PROXY_PASS=${options.password} -e APIKEY=${options.apiKey}  eu.gcr.io/octomind-dev/plw:latest`;
 };
 
-export const startPrivateLocationWorker = async (options: { name?: string, username?: string, password?: string, apikey: string }) => {
-
+export const startPrivateLocationWorker = async (options: {
+  name?: string;
+  username?: string;
+  password?: string;
+  apikey: string;
+}) => {
   const name = options.name || "default-plw";
-  const username = options.username || randomUUID().replace(/-/g, '');
-  const password = options.password || randomUUID().replace(/-/g, '');
+  const username = options.username || randomUUID().replace(/-/g, "");
+  const password = options.password || randomUUID().replace(/-/g, "");
 
   const { apiKey } = await loadConfig();
   if (!apiKey) {
@@ -98,10 +100,12 @@ export const startPrivateLocationWorker = async (options: { name?: string, usern
       "API key is required. Please configure it first by running 'octomind init'",
     );
   }
-  let command = createDockerCommand({ name, username, password, apiKey });
+  const command = createDockerCommand({ name, username, password, apiKey });
 
-  if( !await checkDockerDaemon()) {
-    console.error("Docker daemon is not running. Please start Docker and try again.");
+  if (!(await checkDockerDaemon())) {
+    console.error(
+      "Docker daemon is not running. Please start Docker and try again.",
+    );
     return;
   }
 
@@ -112,13 +116,15 @@ export const startPrivateLocationWorker = async (options: { name?: string, usern
   console.log(`Process detached: ${result.detached}`);
 };
 
-export const stopPLW = async () : Promise<void> => { 
-  const command = 'docker stop PLW';
+export const stopPLW = async (): Promise<void> => {
+  const command = "docker stop PLW";
   const args = command.split(" ");
   const result = await spawnAndStreamLines(args[0], args.slice(1), 10);
-  if(result.code === 0) {
+  if (result.code === 0) {
     console.log("Private Location Worker stopped successfully.");
   } else {
-    console.error(`Failed to stop Private Location Worker. Exit code: ${result.code}`);
+    console.error(
+      `Failed to stop Private Location Worker. Exit code: ${result.code}`,
+    );
   }
-}
+};
