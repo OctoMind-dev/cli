@@ -642,17 +642,13 @@ export const getPlaywrightCode = async (options: {
           testTargetId: options.testTargetId,
           testCaseId: options.testCaseId,
         },
-        query: {
-          environmentId: options.environmentId,
-          executionUrl: options.executionUrl,
-        },
       },
     }
   );
 
   handleError(error);
 
-  if (!data) {
+  if (!data?.testCode) {
     console.log({ data, error });
     throw new Error("no test code found");
   }
