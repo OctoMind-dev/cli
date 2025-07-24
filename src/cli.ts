@@ -1,4 +1,4 @@
-import { program, Command } from "commander";
+import { program, Command, createCommand } from "commander";
 import { version } from "./version";
 import {
   createEnvironment,
@@ -14,6 +14,8 @@ import {
 import { Config, loadConfig, saveConfig } from "./config";
 import { promptUser, resolveTestTargetId } from "./helpers";
 import { runDebugtopus } from "./debugtopus";
+
+import { startPrivateLocationWorker, stopPLW } from "./plw";
 
 const createCommandWithCommonOptions = (command: string): Command => {
   return program
@@ -233,5 +235,16 @@ export const buildCmd = (): Command => {
     .requiredOption("-e, --environment-id <id>", "Environment ID")
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(deleteEnvironment);
+
+  program.command("start-private-location")
+    .description("Start a private location worker")
+    .option("-n, --name <name>", "Location name")
+    .option("-u, --username <username>", "Proxy user")
+    .option("-p, --password <password>", "Proxy password")
+    .action(startPrivateLocationWorker);
+
+    program.command("stop-private-location")
+    .description("Stop a private location worker")
+    .action(stopPLW)
   return program;
 };
