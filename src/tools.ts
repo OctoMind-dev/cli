@@ -26,7 +26,7 @@ export type EnvironmentResponse = components["schemas"]["EnvironmentResponse"];
 
 export type ErrorResponse = components["schemas"]["ZodResponse"] | undefined;
 
-const BASE_URL = "https://app.octomind.dev/api";
+const BASE_URL = process.env.OCTOMIND_API_URL || "https://app.octomind.dev/api";
 
 const client = createClient<paths>({ baseUrl: BASE_URL });
 
