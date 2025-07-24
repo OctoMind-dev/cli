@@ -665,11 +665,6 @@ export const getTestCases = async (options: {
   status?: string;
   json?: boolean;
 }): Promise<TestCasesResponse> => {
-  console.log("options", options);
-  console.log(
-    "filter",
-    encodeURIComponent(JSON.stringify({ status: options.status })),
-  );
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases",
     {
