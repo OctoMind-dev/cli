@@ -46,7 +46,7 @@ const authMiddleware: Middleware = {
     const { apiKey } = await loadConfig();
     if (!apiKey) {
       throw new Error(
-        "API key is required. Please configure it first by running 'octomind init'",
+        "API key is required. Please configure it first by running 'octomind init'"
       );
     }
     request.headers.set("x-api-key", apiKey);
@@ -59,7 +59,7 @@ const authMiddleware: Middleware = {
       const errorBody = await res.json();
       return new Response(
         `${response.status}, ${response.statusText}: ${errorBody ? JSON.stringify(errorBody, null, 2) : ""}`,
-        { ...resOptions, status: response.status },
+        { ...resOptions, status: response.status }
       );
     }
     return response;
@@ -79,7 +79,7 @@ const handleError = (error: ErrorResponse) => {
 };
 
 export const listEnvironments = async (
-  options: listEnvironmentsOptions & { json?: boolean },
+  options: listEnvironmentsOptions & { json?: boolean }
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -87,7 +87,7 @@ export const listEnvironments = async (
       params: {
         path: { testTargetId: options.testTargetId },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -109,7 +109,7 @@ export const listEnvironments = async (
 };
 
 export const getEnvironments = async (
-  options: listEnvironmentsOptions & { json?: boolean },
+  options: listEnvironmentsOptions & { json?: boolean }
 ): Promise<EnvironmentResponse[]> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -117,7 +117,7 @@ export const getEnvironments = async (
       params: {
         path: { testTargetId: options.testTargetId },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -138,7 +138,7 @@ const outputResult = (result: unknown): void => {
 };
 
 export const executeTests = async (
-  options: executeTestsBody & { json?: boolean; description?: string },
+  options: executeTestsBody & { json?: boolean; description?: string }
 ): Promise<void> => {
   const { data, error } = await client.POST("/apiKey/v2/execute", {
     body: {
@@ -186,7 +186,7 @@ export const executeTests = async (
 };
 
 export const getTestReport = async (
-  options: getTestReportParams & { json?: boolean },
+  options: getTestReportParams & { json?: boolean }
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}",
@@ -197,7 +197,7 @@ export const getTestReport = async (
           testReportId: options.testReportId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -244,7 +244,7 @@ export const registerLocation = async (options: {
           password: options.password,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -269,7 +269,7 @@ export const unregisterLocation = async (options: {
       body: {
         name: options.name,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -282,7 +282,7 @@ export const unregisterLocation = async (options: {
 
   console.log(
     "Unregistration result:",
-    response.success ? "Success" : "Failed",
+    response.success ? "Success" : "Failed"
   );
 };
 
@@ -316,7 +316,7 @@ export const createEnvironment = async (
     basicAuthPassword?: string;
     privateLocationName?: string;
     testAccountOtpInitializerKey?: string;
-  },
+  }
 ): Promise<void> => {
   const { data, error } = await client.POST(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -339,7 +339,7 @@ export const createEnvironment = async (
         privateLocationName: options.privateLocationName,
         additionalHeaderFields: options.additionalHeaderFields,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -369,7 +369,7 @@ export const updateEnvironment = async (
     basicAuthPassword?: string;
     privateLocationName?: string;
     testAccountOtpInitializerKey?: string;
-  },
+  }
 ): Promise<void> => {
   const { data, error } = await client.PATCH(
     "/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}",
@@ -394,7 +394,7 @@ export const updateEnvironment = async (
         },
         privateLocationName: options.privateLocationName,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -427,7 +427,7 @@ export const deleteEnvironment = async (options: {
           environmentId: options.environmentId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -441,7 +441,7 @@ export const deleteEnvironment = async (options: {
 };
 
 export const getNotifications = async (
-  options: getNotificationsParams & { json?: boolean },
+  options: getNotificationsParams & { json?: boolean }
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/notifications",
@@ -451,7 +451,7 @@ export const getNotifications = async (
           testTargetId: options.testTargetId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -482,8 +482,9 @@ export const getNotifications = async (
 };
 
 export const getTestCase = async (
-  options: getTestCaseParams & { json?: boolean },
+  options: getTestCaseParams & { json?: boolean }
 ): Promise<void> => {
+  console.log(options);
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}",
     {
@@ -493,7 +494,7 @@ export const getTestCase = async (
           testCaseId: options.testCaseId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -541,7 +542,7 @@ export const getTestCase = async (
 };
 
 export const createDiscovery = async (
-  options: createDiscoveryBody & { json?: boolean; testTargetId: string },
+  options: createDiscoveryBody & { json?: boolean; testTargetId: string }
 ): Promise<void> => {
   const requestBody = {
     name: options.name,
@@ -567,7 +568,7 @@ export const createDiscovery = async (
         },
       },
       body: requestBody,
-    },
+    }
   );
 
   handleError(error);
@@ -606,7 +607,7 @@ export const getPlaywrightConfig = async (options: {
         },
       },
       parseAs: "text",
-    },
+    }
   );
 
   handleError(error);
@@ -642,7 +643,7 @@ export const getPlaywrightCode = async (options: {
           executionUrl: options.executionUrl,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -671,7 +672,7 @@ export const getTestCases = async (options: {
           testTargetId: options.testTargetId,
         },
       },
-    },
+    }
   );
 
   handleError(error);

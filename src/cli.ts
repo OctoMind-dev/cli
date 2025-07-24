@@ -122,12 +122,13 @@ export const buildCmd = (): Command => {
       "--headless",
       "if we should run headless without the UI of playwright and the browser"
     )
-    .action(async (_, options) =>
-      runDebugtopus({
-        ...options,
-        testTargetId: await resolveTestTargetId(options.testTargetId),
-      })
-    );
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void runDebugtopus(options);
+    });
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
@@ -181,12 +182,13 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("list-environments")
     .description("List all environments")
     .option("-t, --test-target-id <id>", "Test target ID")
-    .action(async (_, options) =>
-      listEnvironments({
-        ...options,
-        testTargetId: await resolveTestTargetId(options.testTargetId),
-      })
-    );
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void listEnvironments(options);
+    });
 
   createCommandWithCommonOptions("create-environment")
     .description("Create a new environment")
@@ -240,23 +242,25 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("notifications")
     .description("Get notifications for a test target")
     .option("-t, --test-target-id <id>", "Test target ID")
-    .action(async (_, options) =>
-      getNotifications({
-        ...options,
-        testTargetId: await resolveTestTargetId(options.testTargetId),
-      })
-    );
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void getNotifications(options);
+    });
 
   createCommandWithCommonOptions("test-case")
     .description("Get details of a specific test case")
     .requiredOption("-c, --test-case-id <id>", "Test case ID")
     .option("-t, --test-target-id <id>", "Test target ID")
-    .action(async (_, options) =>
-      getTestCase({
-        ...options,
-        testTargetId: await resolveTestTargetId(options.testTargetId),
-      })
-    );
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void getTestCase(options);
+    });
 
   createCommandWithCommonOptions("create-discovery")
     .description("Create a new test case discovery")
@@ -272,11 +276,12 @@ export const buildCmd = (): Command => {
       splitter
     )
     .option("--folder-id <id>", "Folder ID")
-    .action(async (_, options) =>
-      createDiscovery({
-        ...options,
-        testTargetId: await resolveTestTargetId(options.testTargetId),
-      })
-    );
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void createDiscovery(options);
+    });
   return program;
 };
