@@ -38,7 +38,7 @@ const authMiddleware: Middleware = {
     const { apiKey } = await loadConfig();
     if (!apiKey) {
       throw new Error(
-        "API key is required. Please configure it first by running 'octomind init'",
+        "API key is required. Please configure it first by running 'octomind init'"
       );
     }
     request.headers.set("x-api-key", apiKey);
@@ -51,7 +51,7 @@ const authMiddleware: Middleware = {
       const errorBody = await res.json();
       return new Response(
         `${response.status}, ${response.statusText}: ${errorBody ? JSON.stringify(errorBody, null, 2) : ""}`,
-        { ...resOptions, status: response.status },
+        { ...resOptions, status: response.status }
       );
     }
     return response;
@@ -71,7 +71,7 @@ const handleError = (error: ErrorResponse) => {
 };
 
 export const listEnvironments = async (
-  options: listEnvironmentsOptions & { json?: boolean },
+  options: listEnvironmentsOptions & { json?: boolean }
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -79,7 +79,7 @@ export const listEnvironments = async (
       params: {
         path: { testTargetId: options.testTargetId },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -100,12 +100,37 @@ export const listEnvironments = async (
   }
 };
 
+export const getEnvironments = async (
+  options: listEnvironmentsOptions & { json?: boolean }
+): Promise<EnvironmentResponse[]> => {
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/environments",
+    {
+      params: {
+        path: { testTargetId: options.testTargetId },
+      },
+    }
+  );
+
+  handleError(error);
+
+  if (!data) {
+    throw new Error("no environments found");
+  }
+
+  if (options.json) {
+    outputResult(data);
+  }
+
+  return data;
+};
+
 const outputResult = (result: unknown): void => {
   console.log(JSON.stringify(result, null, 2));
 };
 
 export const executeTests = async (
-  options: executeTestsBody & { json?: boolean; description?: string },
+  options: executeTestsBody & { json?: boolean; description?: string }
 ): Promise<void> => {
   const { data, error } = await client.POST("/apiKey/v2/execute", {
     body: {
@@ -153,7 +178,7 @@ export const executeTests = async (
 };
 
 export const getTestReport = async (
-  options: getTestReportParams & { json?: boolean },
+  options: getTestReportParams & { json?: boolean }
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}",
@@ -164,7 +189,7 @@ export const getTestReport = async (
           testReportId: options.testReportId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -211,7 +236,7 @@ export const registerLocation = async (options: {
           password: options.password,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -236,7 +261,7 @@ export const unregisterLocation = async (options: {
       body: {
         name: options.name,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -249,7 +274,7 @@ export const unregisterLocation = async (options: {
 
   console.log(
     "Unregistration result:",
-    response.success ? "Success" : "Failed",
+    response.success ? "Success" : "Failed"
   );
 };
 
@@ -283,7 +308,7 @@ export const createEnvironment = async (
     basicAuthPassword?: string;
     privateLocationName?: string;
     testAccountOtpInitializerKey?: string;
-  },
+  }
 ): Promise<void> => {
   const { data, error } = await client.POST(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -306,7 +331,7 @@ export const createEnvironment = async (
         privateLocationName: options.privateLocationName,
         additionalHeaderFields: options.additionalHeaderFields,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -336,7 +361,7 @@ export const updateEnvironment = async (
     basicAuthPassword?: string;
     privateLocationName?: string;
     testAccountOtpInitializerKey?: string;
-  },
+  }
 ): Promise<void> => {
   const { data, error } = await client.PATCH(
     "/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}",
@@ -361,7 +386,7 @@ export const updateEnvironment = async (
         },
         privateLocationName: options.privateLocationName,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -394,7 +419,7 @@ export const deleteEnvironment = async (options: {
           environmentId: options.environmentId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -412,8 +437,9 @@ export const getPlaywrightConfig = async (options: {
   environmentId?: string;
   url: string;
   outputDir: string;
+  headless?: boolean;
   json?: boolean;
-}): Promise<string | undefined> => {
+}): Promise<string> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/config",
     {
@@ -425,16 +451,21 @@ export const getPlaywrightConfig = async (options: {
           environmentId: options.environmentId,
           url: options.url,
           outputDir: options.outputDir,
+          headless: options.headless,
         },
       },
-    },
+      parseAs: "text",
+    }
   );
 
   handleError(error);
 
+  if (!data) {
+    throw new Error("no config found");
+  }
+
   if (options.json) {
     outputResult(data);
-    return;
   }
 
   return data;
@@ -446,7 +477,7 @@ export const getPlaywrightCode = async (options: {
   environmentId?: string;
   executionUrl: string;
   json?: boolean;
-}): Promise<string | undefined> => {
+}): Promise<string> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
     {
@@ -459,24 +490,32 @@ export const getPlaywrightCode = async (options: {
           testTargetId: options.testTargetId,
           testCaseId: options.testCaseId,
         },
+        query: {
+          environmentId: options.environmentId,
+          executionUrl: options.executionUrl,
+        },
       },
-    },
+    }
   );
 
   handleError(error);
 
-  if (options.json) {
-    outputResult(data);
-    return;
+  if (!data) {
+    console.log({ data, error });
+    throw new Error("no test code found");
   }
 
-  return data?.testCode;
+  if (options.json) {
+    outputResult(data);
+  }
+
+  return data.testCode;
 };
 
 export const getTestCases = async (options: {
   testTargetId: string;
   json?: boolean;
-}): Promise<TestCasesResponse | undefined> => {
+}): Promise<TestCasesResponse> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases",
     {
@@ -485,14 +524,17 @@ export const getTestCases = async (options: {
           testTargetId: options.testTargetId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
 
+  if (!data) {
+    throw new Error("no test cases found");
+  }
+
   if (options.json) {
     outputResult(data);
-    return;
   }
 
   return data;

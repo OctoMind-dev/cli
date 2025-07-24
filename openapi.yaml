@@ -735,7 +735,12 @@ components:
               type: string
             type:
               type: string
-
+      required:
+        - id
+        - name
+        - testTargetId
+        - type
+        
     TestSuiteRequestCommons:
       type: object
       properties:
@@ -1453,6 +1458,8 @@ paths:
                   testCode:
                     type: string
                     description: The code representation of the test case
+                required:
+                  - testCode
         '404':
           description: Test case not found
 
@@ -1565,6 +1572,7 @@ paths:
               schema:
                 type: string
                 example: "Test target configuration details"
+
   /apiKey/v2/test-targets/{testTargetId}/discoveries:
     post:
       summary: Create a discovery
