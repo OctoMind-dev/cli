@@ -1,4 +1,4 @@
-import { program, Command, createCommand } from "commander";
+import { program, Command } from "commander";
 import { version } from "./version";
 import {
   createDiscovery,
