@@ -634,13 +634,13 @@ export const getPlaywrightCode = async (options: {
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
     {
       params: {
-        query: {
-          environmentId: options.environmentId,
-          executionUrl: options.executionUrl,
-        },
         path: {
           testTargetId: options.testTargetId,
           testCaseId: options.testCaseId,
+        },
+        query: {
+          environmentId: options.environmentId,
+          executionUrl: options.executionUrl,
         },
       },
     }
