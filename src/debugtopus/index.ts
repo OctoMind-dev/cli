@@ -196,11 +196,13 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     );
   }
 
-  const environments = await getEnvironments(baseApiOptions);
-
-  const environmentIdForConfig = options.environmentId
-    ? options.environmentId
-    : (environments ?? []).find((env) => env.type === "DEFAULT")?.id;
+  let environmentIdForConfig = options.environmentId;
+  if (!environmentIdForConfig) {
+    const environments = await getEnvironments(baseApiOptions);
+    environmentIdForConfig = environments.find(
+      (env) => env.type === "DEFAULT",
+    )?.id;
+  }
 
   if (!environmentIdForConfig) {
     throw new Error("no environment found");
