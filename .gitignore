@@ -4,3 +4,4 @@ src/version.ts
 node_modules/
 .idea
 octomind.config.json
+octomind-cli-debug/
