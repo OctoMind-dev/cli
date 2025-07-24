@@ -15,9 +15,7 @@ import {
 type DebugtopusOptions = {
   id?: string;
   testTargetId: string;
-  token: string;
   url: string;
-  octomindUrl: string;
   environmentId?: string;
   headless?: boolean;
 };
@@ -164,9 +162,7 @@ const runTests = async ({
 export const runDebugtopus = async (options: DebugtopusOptions) => {
   const baseApiOptions = {
     testTargetId: options.testTargetId,
-    token: options.token,
     url: options.url,
-    octomindUrl: options.octomindUrl,
     environmentId: options.environmentId,
   };
 

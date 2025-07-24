@@ -32,27 +32,6 @@ export const buildCmd = (): Command => {
     )
     .version(version);
 
-  createCommandWithCommonOptions("debug")
-    .description("run test cases against local build")
-    .requiredOption("-u, --url <url>", "url the tests should run against")
-    .option(
-      "-i, --id <uuid>",
-      "id of the test case you want to run, if not provided will run all test cases in the test target",
-    )
-    .option(
-      "-e, --environmentId <uuid>",
-      "id of the environment you want to run against, if not provided will run all test cases against the default environment",
-    )
-    .option(
-      "-a, --testTargetId <uuid>",
-      "id of the test target of the test case",
-    )
-    .option(
-      "--headless",
-      "if we should run headless without the UI of playwright and the browser",
-    )
-    .action(runDebugtopus);
-
   program
     .command("init")
     .description("Initialize configuration by setting up API key")
@@ -119,6 +98,32 @@ export const buildCmd = (): Command => {
           process.exit(1);
         }
       },
+    );
+
+  createCommandWithCommonOptions("debug")
+    .description("run test cases against local build")
+    .requiredOption("-u, --url <url>", "url the tests should run against")
+    .option(
+      "-i, --id <uuid>",
+      "id of the test case you want to run, if not provided will run all test cases in the test target",
+    )
+    .option(
+      "-e, --environmentId <uuid>",
+      "id of the environment you want to run against, if not provided will run all test cases against the default environment",
+    )
+    .option(
+      "-a, --testTargetId <uuid>",
+      "id of the test target of the test case",
+    )
+    .option(
+      "--headless",
+      "if we should run headless without the UI of playwright and the browser",
+    )
+    .action((_, options) =>
+      runDebugtopus({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
     );
 
   createCommandWithCommonOptions("execute")
