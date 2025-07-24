@@ -18,6 +18,8 @@ import { Config, loadConfig, saveConfig } from "./config";
 import { promptUser, resolveTestTargetId } from "./helpers";
 import { runDebugtopus } from "./debugtopus";
 
+import { startPrivateLocationWorker, stopPLW } from "./plw";
+
 const createCommandWithCommonOptions = (command: string): Command => {
   return program
     .command(command)
@@ -244,6 +246,18 @@ export const buildCmd = (): Command => {
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(deleteEnvironment);
 
+
+  program.command("start-private-location")
+    .description("Start a private location worker")
+    .option("-n, --name <name>", "Location name")
+    .option("-u, --username <username>", "Proxy user")
+    .option("-p, --password <password>", "Proxy password")
+    .action(startPrivateLocationWorker);
+
+    program.command("stop-private-location")
+    .description("Stop a private location worker")
+    .action(stopPLW)
+
   createCommandWithCommonOptions("notifications")
     .description("Get notifications for a test target")
     .option("-t, --test-target-id <id>", "Test target ID")
@@ -288,5 +302,6 @@ export const buildCmd = (): Command => {
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void createDiscovery(options);
     });
+
   return program;
 };
