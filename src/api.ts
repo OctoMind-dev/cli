@@ -313,8 +313,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Retrieve test case code
-         * @description Get the full test file code for a specific test case for download
+         * Retrieve code for a test case
+         * @description Get the code representation of a specific test case
          */
         get: operations["getTestCaseCode"];
         put?: never;
@@ -568,76 +568,6 @@ export interface components {
              */
             tags: string[];
         };
-        TestTargetExecutionResponse: {
-            /**
-             * @description The URL the test target was executed.
-             * @example https://example.com
-             */
-            testReportUrl?: string;
-            /**
-             * @description The test report from the run.
-             * @example {
-             *       "id": "826c15af-644b-4b28-89b4-f50ff34e46b7",
-             *       "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-             *       "createdAt": "2024-09-06T13:01:51.686Z",
-             *       "updatedAt": "2024-09-06T13:05:23.412Z",
-             *       "executionUrl": "https://en.wikipedia.org/",
-             *       "status": "FAILED",
-             *       "context": {
-             *         "source": "github",
-             *         "issueNumber": 123,
-             *         "ref": "refs/heads/main",
-             *         "sha": "abc123def456",
-             *         "repo": "my-repo",
-             *         "owner": "repo-owner",
-             *         "triggeredBy": {
-             *           "type": "USER",
-             *           "userId": "user123"
-             *         },
-             *         "nodeId": "node-123"
-             *       },
-             *       "testResults": [
-             *         {
-             *           "id": "7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p",
-             *           "testCaseId": "9876fedc-ba98-7654-3210-fedcba987654",
-             *           "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-             *           "testReportId": "826c15af-644b-4b28-89b4-f50ff34e46b7",
-             *           "name": "User can search for information",
-             *           "createdAt": "2024-09-06T13:01:51.686Z",
-             *           "updatedAt": "2024-09-06T13:03:12.345Z",
-             *           "status": "PASSED",
-             *           "errorMessage": null,
-             *           "traceUrl": "https://storage.googleapis.com/automagically-traces/7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p-trace.zip"
-             *         },
-             *         {
-             *           "id": "2a3b4c5d-6e7f-8g9h-0i1j-2k3l4m5n6o7p",
-             *           "testCaseId": "5432fedc-ba98-7654-3210-fedcba543210",
-             *           "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-             *           "testReportId": "826c15af-644b-4b28-89b4-f50ff34e46b7",
-             *           "name": "User can navigate to article",
-             *           "createdAt": "2024-09-06T13:01:51.686Z",
-             *           "updatedAt": "2024-09-06T13:04:45.678Z",
-             *           "status": "FAILED",
-             *           "errorMessage": "TimeoutError: locator.click: Timeout 30000ms exceeded.",
-             *           "traceUrl": "https://storage.googleapis.com/automagically-traces/2a3b4c5d-6e7f-8g9h-0i1j-2k3l4m5n6o7p-trace.zip"
-             *         },
-             *         {
-             *           "id": "3a4b5c6d-7e8f-9g0h-1i2j-3k4l5m6n7o8p",
-             *           "testCaseId": "1234abcd-ef56-7890-abcd-ef1234567890",
-             *           "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-             *           "testReportId": "826c15af-644b-4b28-89b4-f50ff34e46b7",
-             *           "name": "User can create an account",
-             *           "createdAt": "2024-09-06T13:01:51.686Z",
-             *           "updatedAt": "2024-09-06T13:05:23.412Z",
-             *           "status": "WAITING",
-             *           "errorMessage": null,
-             *           "traceUrl": null
-             *         }
-             *       ]
-             *     }
-             */
-            testReport?: Record<string, never>;
-        };
         TestReportContext: {
             /**
              * @description The source of the test trigger.
@@ -762,6 +692,91 @@ export interface components {
             /** @example my-private-location */
             name: string;
         }[];
+        TestExecutionResponse: {
+            /**
+             * Format: uri
+             * @description The URL where the test report can be accessed.
+             * @example https://app.octomind.dev/testreports/826c15af-644b-4b28-89b4-f50ff34e46b7
+             */
+            testReportUrl?: string;
+            testReport?: components["schemas"]["TestReport"];
+        };
+        TestCasesResponse: components["schemas"]["TestCaseResponse"][];
+        TestCaseResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            testTargetId: string;
+            type?: string | null;
+            elements?: {
+                /** Format: uuid */
+                id?: string;
+                index?: number;
+                interaction?: {
+                    /** Format: uuid */
+                    id?: string;
+                    /** @enum {string} */
+                    action?: "EXTRACT" | "ENTER_TEXT" | "CLICK" | "SELECT_OPTION" | "TYPE_TEXT" | "KEY_PRESS" | "HOVER" | "UPLOAD" | "GO_TO" | "DRAG_AND_DROP" | "CLOSE_PAGE" | "OPEN_EMAIL";
+                    calledWith?: string | null;
+                    /** Format: uuid */
+                    testCaseElementId?: string;
+                } | null;
+                assertion?: {
+                    /** Format: uuid */
+                    id?: string;
+                    /** @enum {string} */
+                    expectation?: "VISIBLE" | "NOT_VISIBLE" | "TO_BE_CHECKED" | "NOT_TO_BE_CHECKED" | "TO_HAVE_VALUE" | "TO_CONTAIN_TEXT" | "TO_HAVE_STYLE";
+                    calledWith?: string | null;
+                    /** Format: uuid */
+                    testCaseElementId?: string;
+                } | null;
+                scrollState?: Record<string, never> | null;
+                selectors?: {
+                    /** Format: uuid */
+                    id?: string;
+                    index?: number;
+                    selector?: string;
+                    /** @enum {string} */
+                    selectorType?: "TEXT" | "LABEL" | "PLACEHOLDER" | "ROLE";
+                    options?: {
+                        name?: string;
+                    } | null;
+                    /** Format: uuid */
+                    testCaseElementId?: string;
+                    scrollStateId?: string | null;
+                }[];
+                /** Format: uuid */
+                testCaseId?: string;
+                ignoreFailure?: boolean;
+            }[];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            description?: string;
+            /** @enum {string} */
+            status?: "ENABLED" | "DRAFT";
+            externalId?: string | null;
+            entryPointUrlPath?: string | null;
+            tags?: string[];
+            /** @enum {string} */
+            createdBy?: "EDIT";
+            /** @enum {string} */
+            runStatus?: "ON" | "OFF";
+            prerequisiteId?: string | null;
+            proposalRunId?: string | null;
+            folderId?: string | null;
+            discovery?: {
+                /** Format: date-time */
+                updatedAt?: string;
+                freePrompt?: string;
+                traceUrl?: string | null;
+                /** @enum {string} */
+                status?: "CREATED" | "IN_PROGRESS" | "ERROR" | "SUCCESS" | "FAILED" | "INCOMPLETE" | "QUEUED" | "STOPPED" | "OUTDATED" | "PAUSED";
+                abortCause?: string | null;
+                message?: string | null;
+            } | null;
+        };
         SuccessResponse: {
             /**
              * @description Indicates whether the operation was successful.
@@ -808,21 +823,21 @@ export interface components {
         };
         EnvironmentResponse: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /**
              * @example DEFAULT
              * @enum {string}
              */
-            name?: "DEFAULT" | "ADDITIONAL";
+            name: "DEFAULT" | "ADDITIONAL";
             /** Format: uuid */
-            testTargetId?: string;
+            testTargetId: string;
             /** Format: date-time */
             updatedAt?: string;
             /**
              * @example DEFAULT
              * @enum {string}
              */
-            type?: "DEFAULT" | "ADDITIONAL";
+            type: "DEFAULT" | "ADDITIONAL";
             /** Format: url */
             discoveryUrl?: string;
             additionalHeaderFields?: {
@@ -999,6 +1014,104 @@ export interface components {
              */
             message?: string;
         }[];
+        Notification: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the event.
+             * @example 826c15af-644b-4b28-89b4-f50ff34e46b7
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description The unique identifier of the test target this event belongs to.
+             * @example 3435918b-3d29-4ebd-8c68-9a540532f45a
+             */
+            testTargetId: string;
+            /**
+             * Format: date-time
+             * @description The timestamp when the event was created.
+             * @example 2024-09-06T13:01:51.686Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description The timestamp when the event was last updated.
+             * @example 2024-09-06T13:01:51.686Z
+             */
+            updatedAt: string;
+            /**
+             * @description JSON payload containing event-specific data.
+             * @example {
+             *       "testCaseId": "5deeef76-f37a-418b-8101-7d69529fa561"
+             *     }
+             */
+            payload: Record<string, never>;
+            /**
+             * @description The type of event that occurred.
+             * @example VALIDATION_PASSED
+             * @enum {string}
+             */
+            type: "VALIDATION_PASSED" | "VALIDATION_FAILED" | "DISCOVERY_FINISHED" | "PROPOSAL_SUCCESS" | "PROPOSAL_FAILED" | "REPORT_EXECUTION_FINISHED";
+            /**
+             * @description Optional acknowledgment status of the event.
+             * @example IN_WEB_APP
+             * @enum {string|null}
+             */
+            ack?: "IN_WEB_APP" | null;
+        };
+        ExternalDiscoveryBody: {
+            /**
+             * @description Name of the discovered test case
+             * @example Login Form Validation Test
+             */
+            name: string;
+            /**
+             * @description Entry point URL path of the discovered test case
+             * @example /login
+             */
+            entryPointUrlPath?: string;
+            /**
+             * @description Prerequisite test case name
+             * @example Cookie Banner Acceptance
+             */
+            prerequisiteName?: string;
+            /**
+             * @description External ID of the discovered test case
+             * @example ext-test-001
+             */
+            externalId?: string;
+            /**
+             * @description Tags to assign to the discovered test case
+             * @example [
+             *       "authentication",
+             *       "forms",
+             *       "validation"
+             *     ]
+             */
+            tagNames?: string[];
+            /**
+             * @description Prompt to generate the discovered test case
+             * @example Test the login form with valid and invalid credentials
+             */
+            prompt: string;
+            /**
+             * @description Folder name of the discovered test case
+             * @example Authentication Tests
+             */
+            folderName?: string;
+            /**
+             * @description Type of the discovered test case
+             * @example LOGIN
+             * @enum {string}
+             */
+            type?: "LOGIN" | "COOKIE_BANNER";
+        };
+        DiscoveryResponse: {
+            /** Format: uuid */
+            discoveryId?: string;
+            /** Format: uuid */
+            testCaseId?: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -1239,7 +1352,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TestTargetExecutionResponse"];
+                    "application/json": components["schemas"]["TestExecutionResponse"];
                 };
             };
             /** @description Invalid request parameters */
@@ -1477,7 +1590,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["EnvironmentResponse"];
+                };
             };
         };
     };
@@ -1880,25 +1995,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        /** Format: uuid */
-                        testTargetId?: string;
-                        description?: string;
-                        /** @enum {string} */
-                        status?: "ENABLED" | "DISABLED" | "DRAFT" | "OUTDATED" | "PROVISIONAL";
-                        /** @enum {string} */
-                        runStatus?: "ON" | "OFF";
-                        /** Format: date-time */
-                        createdAt?: string;
-                        /** Format: date-time */
-                        updatedAt?: string;
-                        entryPointUrlPath?: string | null;
-                        folderId?: string | null;
-                        externalId?: string | null;
-                        tags?: string[];
-                    }[];
+                    "application/json": components["schemas"]["TestCasesResponse"];
                 };
             };
             /** @description Invalid request parameters */
@@ -1946,81 +2043,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        /** Format: uuid */
-                        testTargetId?: string;
-                        type?: string | null;
-                        elements?: {
-                            /** Format: uuid */
-                            id?: string;
-                            index?: number;
-                            interaction?: {
-                                /** Format: uuid */
-                                id?: string;
-                                /** @enum {string} */
-                                action?: "EXTRACT" | "ENTER_TEXT" | "CLICK" | "SELECT_OPTION" | "TYPE_TEXT" | "KEY_PRESS" | "HOVER" | "UPLOAD" | "GO_TO" | "DRAG_AND_DROP" | "CLOSE_PAGE" | "OPEN_EMAIL";
-                                calledWith?: string | null;
-                                /** Format: uuid */
-                                testCaseElementId?: string;
-                            } | null;
-                            assertion?: {
-                                /** Format: uuid */
-                                id?: string;
-                                /** @enum {string} */
-                                expectation?: "VISIBLE" | "NOT_VISIBLE" | "TO_BE_CHECKED" | "NOT_TO_BE_CHECKED" | "TO_HAVE_VALUE" | "TO_CONTAIN_TEXT" | "TO_HAVE_STYLE";
-                                calledWith?: string | null;
-                                /** Format: uuid */
-                                testCaseElementId?: string;
-                            } | null;
-                            scrollState?: Record<string, never> | null;
-                            selectors?: {
-                                /** Format: uuid */
-                                id?: string;
-                                index?: number;
-                                selector?: string;
-                                /** @enum {string} */
-                                selectorType?: "TEXT" | "LABEL" | "PLACEHOLDER" | "ROLE";
-                                options?: {
-                                    name?: string;
-                                } | null;
-                                /** Format: uuid */
-                                testCaseElementId?: string;
-                                scrollStateId?: string | null;
-                            }[];
-                            /** Format: uuid */
-                            testCaseId?: string;
-                            ignoreFailure?: boolean;
-                        }[];
-                        /** Format: date-time */
-                        createdAt?: string;
-                        /** Format: date-time */
-                        updatedAt?: string;
-                        description?: string;
-                        /** @enum {string} */
-                        status?: "ENABLED" | "DRAFT";
-                        externalId?: string | null;
-                        entryPointUrlPath?: string | null;
-                        tags?: string[];
-                        /** @enum {string} */
-                        createdBy?: "EDIT";
-                        /** @enum {string} */
-                        runStatus?: "ON" | "OFF";
-                        prerequisiteId?: string | null;
-                        proposalRunId?: string | null;
-                        folderId?: string | null;
-                        discovery?: {
-                            /** Format: date-time */
-                            updatedAt?: string;
-                            freePrompt?: string;
-                            traceUrl?: string | null;
-                            /** @enum {string} */
-                            status?: "CREATED" | "IN_PROGRESS" | "ERROR" | "SUCCESS" | "FAILED" | "INCOMPLETE" | "QUEUED" | "STOPPED" | "OUTDATED" | "PAUSED";
-                            abortCause?: string | null;
-                            message?: string | null;
-                        } | null;
-                    };
+                    "application/json": components["schemas"]["TestCaseResponse"];
                 };
             };
             /** @description Unauthorized - Invalid or missing API key */
@@ -2042,7 +2065,7 @@ export interface operations {
     getTestCaseCode: {
         parameters: {
             query: {
-                /** @description The URL where the test will be executed */
+                /** @description URL of the app to test */
                 executionUrl: string;
                 /** @description Optional ID of the environment to use */
                 environmentId?: string;
@@ -2065,8 +2088,8 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        /** @description The full test file code for the test case */
-                        testCode?: string;
+                        /** @description The code representation of the test case */
+                        testCode: string;
                     };
                 };
             };
