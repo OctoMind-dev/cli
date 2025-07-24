@@ -23,7 +23,14 @@ export type UpdateEnvironmentOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}"]["patch"]["requestBody"]["content"]["application/json"];
 export type EnvironmentResponse = components["schemas"]["EnvironmentResponse"];
 
-export type ErrorResponse = components["schemas"]["ZodResponse"] | undefined;
+type UnauthorizedResponse =
+  paths["/apiKey/v2/execute"]["post"]["responses"]["403"];
+
+export type ErrorResponse =
+  | components["schemas"]["ZodResponse"]
+  | UnauthorizedResponse
+  | string
+  | undefined;
 
 const BASE_URL = "https://app.octomind.dev/api";
 
@@ -37,6 +44,22 @@ const authMiddleware: Middleware = {
     }
     request.headers.set("x-api-key", apiKey);
     return request;
+  },
+  async onResponse({ response }) {
+    const { body, ...resOptions } = response;
+    if (!response.ok) {
+      const res = new Response(body, resOptions);
+      const errorBody = await res.json();
+      return new Response(
+        `${response.status}, ${response.statusText}: ${errorBody ? JSON.stringify(errorBody, null, 2) : ""}`,
+        { ...resOptions, status: response.status },
+      );
+    }
+    return response;
+  },
+  onError({ error }) {
+    console.error(error);
+    process.exit(1);
   },
 };
 client.use(authMiddleware);
@@ -388,6 +411,8 @@ export const deleteEnvironment = async (options: {
 export const getPlaywrightConfig = async (options: {
   testTargetId: string;
   environmentId?: string;
+  url: string;
+  outputDir: string;
   json?: boolean;
 }): Promise<string | undefined> => {
   const { data, error } = await client.GET(
@@ -399,6 +424,8 @@ export const getPlaywrightConfig = async (options: {
         },
         query: {
           environmentId: options.environmentId,
+          url: options.url,
+          outputDir: options.outputDir,
         },
       },
     },
@@ -417,12 +444,18 @@ export const getPlaywrightConfig = async (options: {
 export const getPlaywrightCode = async (options: {
   testTargetId: string;
   testCaseId: string;
+  environmentId?: string;
+  executionUrl: string;
   json?: boolean;
 }): Promise<string | undefined> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
     {
       params: {
+        query: {
+          environmentId: options.environmentId,
+          executionUrl: options.executionUrl,
+        },
         path: {
           testTargetId: options.testTargetId,
           testCaseId: options.testCaseId,

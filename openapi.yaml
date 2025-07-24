@@ -632,6 +632,9 @@ components:
                       nullable: true
                     timeoutPerStep:
                       type: integer
+      required:
+        - id
+        - testTargetId
 
     SuccessResponse:
       type: object
@@ -954,8 +957,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ZodResponse"
-        "401":
-          description: Invalid or missing API key
         "500":
           description: Internal server error
 
@@ -1427,6 +1428,20 @@ paths:
             type: string
             format: uuid
           description: The ID of the test case
+        - name: environmentId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional ID of the environment to use for the test case code
+        - name: executionUrl
+          in: query
+          required: true
+          schema:
+            type: string
+            format: url
+          description: URL of the app to test
       responses:
         '200':
           description: Code for the test case
@@ -1523,6 +1538,25 @@ paths:
             type: string
             format: uuid
           description: Optional ID of the environment to use for the test target configuration
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+            format: url
+          description: URL of the app to test
+        - name: outputDir
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Directory to write the playwright output to
+        - name: headless
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Whether to run the test in headless mode
       responses:
         "200":
           description: Test target configuration
