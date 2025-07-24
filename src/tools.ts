@@ -484,7 +484,6 @@ export const getNotifications = async (
 export const getTestCase = async (
   options: getTestCaseParams & { json?: boolean },
 ): Promise<void> => {
-  console.log(options);
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}",
     {
