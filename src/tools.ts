@@ -648,7 +648,7 @@ export const getPlaywrightCode = async (options: {
 
   handleError(error);
 
-  if (!data?.testCode) {
+  if (!data) {
     console.log({ data, error });
     throw new Error("no test code found");
   }
