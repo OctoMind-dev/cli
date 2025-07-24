@@ -1,4 +1,4 @@
-import { program, Option, Command } from "commander";
+import { program, Command } from "commander";
 import { version } from "./version";
 import {
   createEnvironment,
@@ -11,22 +11,16 @@ import {
   unregisterLocation,
   updateEnvironment,
 } from "./tools";
-
-const apiKeyOption = new Option(
-  "-k, --api-key <key>",
-  "the api key for authentication",
-)
-  .env("APIKEY")
-  .makeOptionMandatory();
+import { Config, loadConfig, saveConfig } from "./config";
+import { promptUser, resolveTestTargetId } from "./helpers";
 
 const createCommandWithCommonOptions = (command: string): Command => {
   return program
     .command(command)
-    .addOption(apiKeyOption)
     .option("-j, --json", "Output raw JSON response");
 };
 
-const splitter = (value: string): string[] => value.split(/,| /);
+const splitter = (value: string): string[] => value.split(/,| |\|/);
 const toJSON = (value: string): object => JSON.parse(value);
 
 export const buildCmd = (): Command => {
@@ -37,10 +31,78 @@ export const buildCmd = (): Command => {
     )
     .version(version);
 
+  program
+    .command("init")
+    .description("Initialize configuration by setting up API key")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .option("-k, --api-key <key>", "the api key for authentication")
+    .option("-f, --force", "Force overwrite existing configuration")
+    .action(
+      async (options: {
+        testTargetId?: string;
+        apiKey: string;
+        force?: boolean;
+      }) => {
+        try {
+          console.log("🚀 Initializing configuration...\n");
+
+          const existingConfig = await loadConfig();
+
+          if (existingConfig.apiKey && !options.force) {
+            console.log("⚠️  Configuration already exists.");
+            const overwrite = await promptUser(
+              "Do you want to overwrite it? (y/N): ",
+            );
+
+            if (
+              overwrite.toLowerCase() !== "y" &&
+              overwrite.toLowerCase() !== "yes"
+            ) {
+              console.log("Configuration unchanged.");
+              return;
+            }
+          }
+
+          let apiKey;
+          if (!options.apiKey) {
+            apiKey = await promptUser(
+              "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: ",
+            );
+            if (!apiKey) {
+              console.log("❌ API key is required.");
+              process.exit(1);
+            }
+          }
+          let testTargetId;
+          if (!options.testTargetId) {
+            testTargetId = await promptUser(
+              "Enter test target id (optional, press Enter to skip): ",
+            );
+          }
+
+          const newConfig: Config = {
+            ...existingConfig,
+            apiKey: options.apiKey ?? apiKey,
+            testTargetId: options.testTargetId ?? testTargetId,
+          };
+
+          await saveConfig(newConfig);
+
+          console.log("\n✨ Initialization complete!");
+        } catch (error) {
+          console.error(
+            "❌ Error during initialization:",
+            (error as Error).message,
+          );
+          process.exit(1);
+        }
+      },
+    );
+
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-u, --url <url>", "URL to test")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .option("-e, --environmentName <name>", "Environment name", "default")
     .option("-d, --description <text>", "Test description")
     .option("-g, --tags <tags>", "comma separated list of tags", splitter)
@@ -49,13 +111,25 @@ export const buildCmd = (): Command => {
       "JSON object of variables to overwrite",
       toJSON,
     )
-    .action(executeTests);
+    .action(async (options) => {
+      const testTargetId = await resolveTestTargetId(options.testTargetId);
+      await executeTests({
+        ...options,
+        testTargetId,
+      });
+    });
 
   createCommandWithCommonOptions("test-report")
     .description("Get test report details")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-r, --test-report-id <id>", "Test report ID")
-    .action(getTestReport);
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .action(async (options) => {
+      const testTargetId = await resolveTestTargetId(options.testTargetId);
+      await getTestReport({
+        ...options,
+        testTargetId,
+      });
+    });
 
   createCommandWithCommonOptions("register-location")
     .description("Register a private location")
@@ -76,14 +150,19 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("list-environments")
     .description("List all environments")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
-    .action(listEnvironments);
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .action((_, options) =>
+      listEnvironments({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
 
   createCommandWithCommonOptions("create-environment")
     .description("Create a new environment")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-n, --name <name>", "Environment name")
     .requiredOption("-d, --discovery-url <url>", "Discovery URL")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .option("--test-account-username <username>", "Test account username")
     .option("--test-account-password <password>", "Test account password")
     .option(
@@ -93,12 +172,17 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .action(createEnvironment);
+    .action((_, options) =>
+      createEnvironment({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
 
   createCommandWithCommonOptions("update-environment")
     .description("Update an existing environment")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .option("-n, --name <name>", "Environment name")
     .option("-d, --discovery-url <url>", "Discovery URL")
     .option("--test-account-username <username>", "Test account username")
@@ -110,12 +194,17 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .action(updateEnvironment);
+    .action((_, options) =>
+      updateEnvironment({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
 
   createCommandWithCommonOptions("delete-environment")
     .description("Delete an environment")
-    .requiredOption("-t, --test-target-id <id>", "Test target ID")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
+    .option("-t, --test-target-id <id>", "Test target ID")
     .action(deleteEnvironment);
   return program;
 };

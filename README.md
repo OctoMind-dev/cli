@@ -13,33 +13,49 @@ See [API documentation](https://octomind.dev/docs/api-reference/)
 
 ## Commands
 
+### Init
+
+Initialize configuration by setting up your API key and optionally a test target ID. This allows you to avoid passing these parameters for subsequent commands.
+
+```bash
+octomind init \
+  [--api-key <key>] \
+  [--test-target-id <id>] \
+  [--force]
+```
+
+Options:
+- `-k, --api-key`: Your Octomind API key (will prompt if not provided)
+- `-t, --test-target-id`: Test target ID (optional)
+- `-f, --force`: Force overwrite existing configuration
+
+If you don't provide the API key via the command line option, the CLI will prompt you to enter it interactively. You can get your API key from https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key.
+
 ### Execute Tests
 
 Run test cases against a specified URL.
 
 ```bash
 octomind execute \
-  --api-key <key> \
-  --test-target-id <id> \
   --url <url> \
+  [--api-key <key>] \
+  [--test-target-id <id>] \
   [--environment <name>] \
   [--tags <list of tags>] \
   [-v, --variables-to-overwrite <variables>] \
   [--description <text>] \
-  [--tags <tags> ] \
   [--json]
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
-- `-t, --test-target-id` (required): Test target ID
 - `-u, --url` (required): URL to test
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
+- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
 - `-e, --environment`: Environment name (default: "default")
 - `-d, --description`: Test description
 - `-g, --tags`: comma separated list of tags for tests to execute
 - `-v, --variables-to-overwrite`: JSON object for variables to override for this run e.g. `{ "key": ["v1", "v2"]}`
 - `-j, --json`: Output raw JSON response
-- `-g, --tags <tags>`: comma separated list of tags
 
 ### Get Test Report
 
@@ -47,16 +63,16 @@ Retrieve details about a specific test report.
 
 ```bash
 octomind report \
-  --api-key <key> \
-  --test-target-id <id> \
   --report-id <id> \
+  [--api-key <key>] \
+  [--test-target-id <id>] \
   [--json]
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
-- `-t, --test-target-id` (required): Test target ID
 - `-r, --report-id` (required): Test report ID
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
+- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
 
 Example text output:
@@ -104,20 +120,20 @@ Register a new private location worker. If you use the [private location worker]
 
 ```bash
 octomind register-location \
-  --api-key <key> \
   --name <name> \
   --proxypass <password> \
   --proxyuser <user> \
   --address <address> \
+  [--api-key <key>] \
   [--json]
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
 - `-n, --name` (required): Location name
 - `-p, --proxypass` (required): Proxy password
 - `-u, --proxyuser` (required): Proxy user
 - `-a, --address` (required): Location address (format: IP:PORT)
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
 
 ### Unregister Private Location
@@ -126,14 +142,14 @@ Remove a registered private location worker. If you use the [private location wo
 
 ```bash
 octomind unregister-location \
-  --api-key <key> \
   --name <name> \
+  [--api-key <key>] \
   [--json]
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
 - `-n, --name` (required): Location name
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
 
 ### List Private Locations
@@ -142,12 +158,12 @@ List all registered private locations.
 
 ```bash
 octomind list-private-locations \
-  --api-key <key> \
+  [--api-key <key>] \
   [--json]
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
 
 Example text output:
@@ -167,14 +183,14 @@ List all available environments.
 
 ```bash
 octomind list-environments \
-  --api-key <key> \
-  --test-target-id <id> \
+  [--api-key <key>] \
+  [--test-target-id <id>] \
   [--json]
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
-- `-t, --test-target-id` (required): Test target ID
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
+- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
 
 ### Create Environment
@@ -183,10 +199,10 @@ Create a new environment for a test target.
 
 ```bash
 octomind create-environment \
-  --api-key <key> \
-  --test-target-id <id> \
   --name <name> \
   --discovery-url <url> \
+  [--api-key <key>] \
+  [--test-target-id <id>] \
   [--test-account-username <username>] \
   [--test-account-password <password>] \
   [--test-account-otp-initializer-key <key>] \
@@ -198,10 +214,10 @@ octomind create-environment \
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
-- `-t, --test-target-id` (required): Test target ID
 - `-n, --name` (required): Environment name
 - `-d, --discovery-url` (required): Discovery URL
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
+- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
 - `--test-account-username`: Test account username
 - `--test-account-password`: Test account password
 - `--test-account-otp-initializer-key`: OTP initializer key for test account
@@ -217,9 +233,9 @@ Update an existing environment.
 
 ```bash
 octomind update-environment \
-  --api-key <key> \
-  --test-target-id <id> \
   --environment-id <id> \
+  [--api-key <key>] \
+  [--test-target-id <id>] \
   [--name <name>] \
   [--discovery-url <url>] \
   [--test-account-username <username>] \
@@ -233,9 +249,9 @@ octomind update-environment \
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
-- `-t, --test-target-id` (required): Test target ID
 - `-e, --environment-id` (required): Environment ID
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
+- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
 - `-n, --name`: New environment name
 - `-d, --discovery-url`: New discovery URL
 - `--test-account-username`: New test account username
@@ -253,16 +269,16 @@ Delete an existing environment.
 
 ```bash
 octomind delete-environment \
-  --api-key <key> \
-  --test-target-id <id> \
   --environment-id <id> \
+  [--api-key <key>] \
+  [--test-target-id <id>] \
   [--json]
 ```
 
 Options:
-- `-k, --api-key` (required): Your Octomind API key
-- `-t, --test-target-id` (required): Test target ID
 - `-e, --environment-id` (required): Environment ID
+- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
+- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
 - `-j, --json`: Output raw JSON response
 
 ## Output Formats
@@ -305,7 +321,6 @@ pnpm install
 
 The CLI is written in TypeScript and uses the following dependencies:
 - `commander`: For command-line argument parsing
-- `axios`: For making HTTP requests
 
 To build from source:
 ```bash
