@@ -545,6 +545,181 @@ components:
           - address
           - name
 
+    TestCasesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/TestCaseResponse"
+
+    TestCaseResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        testTargetId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          nullable: true
+        elements:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              index:
+                type: integer
+              interaction:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  action:
+                    type: string
+                    enum:
+                      [
+                        EXTRACT,
+                        ENTER_TEXT,
+                        CLICK,
+                        SELECT_OPTION,
+                        TYPE_TEXT,
+                        KEY_PRESS,
+                        HOVER,
+                        UPLOAD,
+                        GO_TO,
+                        DRAG_AND_DROP,
+                        CLOSE_PAGE,
+                        OPEN_EMAIL,
+                      ]
+                  calledWith:
+                    type: string
+                    nullable: true
+                  testCaseElementId:
+                    type: string
+                    format: uuid
+              assertion:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  expectation:
+                    type: string
+                    enum:
+                      [
+                        VISIBLE,
+                        NOT_VISIBLE,
+                        TO_BE_CHECKED,
+                        NOT_TO_BE_CHECKED,
+                        TO_HAVE_VALUE,
+                        TO_CONTAIN_TEXT,
+                        TO_HAVE_STYLE,
+                      ]
+                  calledWith:
+                    type: string
+                    nullable: true
+                  testCaseElementId:
+                    type: string
+                    format: uuid
+              scrollState:
+                type: object
+                nullable: true
+              selectors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    index:
+                      type: integer
+                    selector:
+                      type: string
+                    selectorType:
+                      type: string
+                      enum: [TEXT, LABEL, PLACEHOLDER, ROLE]
+                    options:
+                      type: object
+                      nullable: true
+                      properties:
+                        name:
+                          type: string
+                    testCaseElementId:
+                      type: string
+                      format: uuid
+                    scrollStateId:
+                      type: string
+                      nullable: true
+              testCaseId:
+                type: string
+                format: uuid
+              ignoreFailure:
+                type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        status:
+          type: string
+          enum: [ENABLED, DRAFT]
+        externalId:
+          type: string
+          nullable: true
+        entryPointUrlPath:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        createdBy:
+          type: string
+          enum: [EDIT]
+        runStatus:
+          type: string
+          enum: [ON, OFF]
+        prerequisiteId:
+          type: string
+          nullable: true
+        proposalRunId:
+          type: string
+          nullable: true
+        folderId:
+          type: string
+          nullable: true
+        discovery:
+          type: object
+          nullable: true
+          properties:
+            updatedAt:
+              type: string
+              format: date-time
+            freePrompt:
+              type: string
+            traceUrl:
+              type: string
+              nullable: true
+            status:
+              type: string
+              enum: [CREATED, IN_PROGRESS, ERROR, SUCCESS, FAILED, INCOMPLETE, QUEUED, STOPPED, OUTDATED, PAUSED]
+            abortCause:
+              type: string
+              nullable: true
+            message:
+              type: string
+              nullable: true
+
     SuccessResponse:
       type: object
       properties:
@@ -1671,43 +1846,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uuid
-                    testTargetId:
-                      type: string
-                      format: uuid
-                    description:
-                      type: string
-                    status:
-                      type: string
-                      enum: [ENABLED, DISABLED, DRAFT, OUTDATED, PROVISIONAL]
-                    runStatus:
-                      type: string
-                      enum: [ON, OFF]
-                    createdAt:
-                      type: string
-                      format: date-time
-                    updatedAt:
-                      type: string
-                      format: date-time
-                    entryPointUrlPath:
-                      type: string
-                      nullable: true
-                    folderId:
-                      type: string
-                      nullable: true
-                    externalId:
-                      type: string
-                      nullable: true
-                    tags:
-                      type: array
-                      items:
-                        type: string
+                $ref: "#/components/schemas/TestCasesResponse"
         "400":
           description: Invalid request parameters
           content:
@@ -1749,174 +1888,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  testTargetId:
-                    type: string
-                    format: uuid
-                  type:
-                    type: string
-                    nullable: true
-                  elements:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          format: uuid
-                        index:
-                          type: integer
-                        interaction:
-                          type: object
-                          nullable: true
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            action:
-                              type: string
-                              enum:
-                                [
-                                  EXTRACT,
-                                  ENTER_TEXT,
-                                  CLICK,
-                                  SELECT_OPTION,
-                                  TYPE_TEXT,
-                                  KEY_PRESS,
-                                  HOVER,
-                                  UPLOAD,
-                                  GO_TO,
-                                  DRAG_AND_DROP,
-                                  CLOSE_PAGE,
-                                  OPEN_EMAIL,
-                                ]
-                            calledWith:
-                              type: string
-                              nullable: true
-                            testCaseElementId:
-                              type: string
-                              format: uuid
-                        assertion:
-                          type: object
-                          nullable: true
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            expectation:
-                              type: string
-                              enum:
-                                [
-                                  VISIBLE,
-                                  NOT_VISIBLE,
-                                  TO_BE_CHECKED,
-                                  NOT_TO_BE_CHECKED,
-                                  TO_HAVE_VALUE,
-                                  TO_CONTAIN_TEXT,
-                                  TO_HAVE_STYLE,
-                                ]
-                            calledWith:
-                              type: string
-                              nullable: true
-                            testCaseElementId:
-                              type: string
-                              format: uuid
-                        scrollState:
-                          type: object
-                          nullable: true
-                        selectors:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                                format: uuid
-                              index:
-                                type: integer
-                              selector:
-                                type: string
-                              selectorType:
-                                type: string
-                                enum: [TEXT, LABEL, PLACEHOLDER, ROLE]
-                              options:
-                                type: object
-                                nullable: true
-                                properties:
-                                  name:
-                                    type: string
-                              testCaseElementId:
-                                type: string
-                                format: uuid
-                              scrollStateId:
-                                type: string
-                                nullable: true
-                        testCaseId:
-                          type: string
-                          format: uuid
-                        ignoreFailure:
-                          type: boolean
-                  createdAt:
-                    type: string
-                    format: date-time
-                  updatedAt:
-                    type: string
-                    format: date-time
-                  description:
-                    type: string
-                  status:
-                    type: string
-                    enum: [ENABLED, DRAFT]
-                  externalId:
-                    type: string
-                    nullable: true
-                  entryPointUrlPath:
-                    type: string
-                    nullable: true
-                  tags:
-                    type: array
-                    items:
-                      type: string
-                  createdBy:
-                    type: string
-                    enum: [EDIT]
-                  runStatus:
-                    type: string
-                    enum: [ON, OFF]
-                  prerequisiteId:
-                    type: string
-                    nullable: true
-                  proposalRunId:
-                    type: string
-                    nullable: true
-                  folderId:
-                    type: string
-                    nullable: true
-                  discovery:
-                    type: object
-                    nullable: true
-                    properties:
-                      updatedAt:
-                        type: string
-                        format: date-time
-                      freePrompt:
-                        type: string
-                      traceUrl:
-                        type: string
-                        nullable: true
-                      status:
-                        type: string
-                        enum: [CREATED, IN_PROGRESS, ERROR, SUCCESS, FAILED, INCOMPLETE, QUEUED, STOPPED, OUTDATED, PAUSED]
-                      abortCause:
-                        type: string
-                        nullable: true
-                      message:
-                        type: string
-                        nullable: true
+                $ref: "#/components/schemas/TestCaseResponse"
         "401":
           description: Unauthorized - Invalid or missing API key
         "404":
