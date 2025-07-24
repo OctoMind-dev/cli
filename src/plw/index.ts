@@ -15,7 +15,6 @@ const spawnAndStreamLines = async (
   args: string[] = [],
   maxLines: number = 20,
 ): Promise<StreamResult> => {
-  console.log(`Spawning command: ${command} ${args.join(" ")}`);
   return new Promise((resolve, reject) => {
     const child: ChildProcess = spawn(command, args, {
       stdio: ["ignore", "pipe", "pipe"],
