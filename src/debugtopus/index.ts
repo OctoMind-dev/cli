@@ -18,6 +18,7 @@ type DebugtopusOptions = {
   url: string;
   environmentId?: string;
   headless?: boolean;
+  persist?: boolean;
 };
 
 const getPackageRootLevel = (appDir: string): string => {
@@ -72,7 +73,7 @@ const prepareDirectories = async (
     packageRootDir = getPackageRootLevel(appDir);
   }
 
-  const tempDir = path.join(packageRootDir, "temp");
+  const tempDir = path.join(packageRootDir, "octomind-cli-debug");
 
   if (existsSync(tempDir)) {
     await fs.rm(tempDir, { force: true, recursive: true });
@@ -208,7 +209,9 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     throw new Error("no environment found");
   }
 
-  const dirs = await prepareDirectories();
+  const dirs = await prepareDirectories(
+    options.persist ? process.cwd() : undefined,
+  );
 
   const config = await getPlaywrightConfig({
     testTargetId: options.testTargetId,

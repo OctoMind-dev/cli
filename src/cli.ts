@@ -1,9 +1,12 @@
 import { program, Command, createCommand } from "commander";
 import { version } from "./version";
 import {
+  createDiscovery,
   createEnvironment,
   deleteEnvironment,
   executeTests,
+  getNotifications,
+  getTestCase,
   getTestReport,
   listEnvironments,
   listPrivateLocations,
@@ -121,12 +124,17 @@ export const buildCmd = (): Command => {
       "--headless",
       "if we should run headless without the UI of playwright and the browser",
     )
-    .action((_, options) =>
-      runDebugtopus({
-        ...options,
-        testTargetId: resolveTestTargetId(options.testTargetId),
-      }),
-    );
+    .option(
+      "--persist",
+      "if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again",
+    )
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void runDebugtopus(options);
+    });
 
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
@@ -180,12 +188,13 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("list-environments")
     .description("List all environments")
     .option("-t, --test-target-id <id>", "Test target ID")
-    .action((_, options) =>
-      listEnvironments({
-        ...options,
-        testTargetId: resolveTestTargetId(options.testTargetId),
-      }),
-    );
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void listEnvironments(options);
+    });
 
   createCommandWithCommonOptions("create-environment")
     .description("Create a new environment")
@@ -201,10 +210,10 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .action((_, options) =>
+    .action(async (_, options) =>
       createEnvironment({
         ...options,
-        testTargetId: resolveTestTargetId(options.testTargetId),
+        testTargetId: await resolveTestTargetId(options.testTargetId),
       }),
     );
 
@@ -223,10 +232,10 @@ export const buildCmd = (): Command => {
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
     .option("--private-location-name <name>", "Private location name")
-    .action((_, options) =>
+    .action(async (_, options) =>
       updateEnvironment({
         ...options,
-        testTargetId: resolveTestTargetId(options.testTargetId),
+        testTargetId: await resolveTestTargetId(options.testTargetId),
       }),
     );
 
@@ -235,6 +244,7 @@ export const buildCmd = (): Command => {
     .requiredOption("-e, --environment-id <id>", "Environment ID")
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(deleteEnvironment);
+
 
   program.command("start-private-location")
     .description("Start a private location worker")
@@ -246,5 +256,51 @@ export const buildCmd = (): Command => {
     program.command("stop-private-location")
     .description("Stop a private location worker")
     .action(stopPLW)
+
+  createCommandWithCommonOptions("notifications")
+    .description("Get notifications for a test target")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void getNotifications(options);
+    });
+
+  createCommandWithCommonOptions("test-case")
+    .description("Get details of a specific test case")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void getTestCase(options);
+    });
+
+  createCommandWithCommonOptions("create-discovery")
+    .description("Create a new test case discovery")
+    .requiredOption("-n, --name <name>", "Discovery name")
+    .requiredOption("-p, --prompt <prompt>", "Discovery prompt")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .option("-e, --entry-point-url-path <path>", "Entry point URL path")
+    .option("--prerequisite-id <id>", "Prerequisite test case ID")
+    .option("--external-id <id>", "External identifier")
+    .option(
+      "--assigned-tag-ids <ids>",
+      "Comma-separated list of tag IDs",
+      splitter,
+    )
+    .option("--folder-id <id>", "Folder ID")
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void createDiscovery(options);
+    });
+
   return program;
 };

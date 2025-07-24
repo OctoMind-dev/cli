@@ -24,7 +24,18 @@ export type UpdateEnvironmentOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}"]["patch"]["requestBody"]["content"]["application/json"];
 export type EnvironmentResponse = components["schemas"]["EnvironmentResponse"];
 
-export type ErrorResponse = components["schemas"]["ZodResponse"] | undefined;
+export type ErrorResponse =
+  | components["schemas"]["ZodResponse"]
+  | string
+  | undefined;
+export type getNotificationsParams =
+  paths["/apiKey/v2/test-targets/{testTargetId}/notifications"]["get"]["parameters"]["path"];
+export type Notification = components["schemas"]["Notification"];
+export type getTestCaseParams =
+  paths["/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}"]["get"]["parameters"]["path"];
+export type createDiscoveryBody =
+  components["schemas"]["ExternalDiscoveryBody"];
+export type DiscoveryResponse = components["schemas"]["DiscoveryResponse"];
 
 const BASE_URL = process.env.OCTOMIND_API_URL || "https://app.octomind.dev/api";
 
@@ -35,11 +46,27 @@ const authMiddleware: Middleware = {
     const { apiKey } = await loadConfig();
     if (!apiKey) {
       throw new Error(
-        "API key is required. Please configure it first by running 'octomind init'",
+        "API key is required. Please configure it first by running 'octomind init'"
       );
     }
     request.headers.set("x-api-key", apiKey);
     return request;
+  },
+  async onResponse({ response }) {
+    const { body, ...resOptions } = response;
+    if (!response.ok) {
+      const res = new Response(body, resOptions);
+      const errorBody = await res.json();
+      return new Response(
+        `${response.status}, ${response.statusText}: ${errorBody ? JSON.stringify(errorBody, null, 2) : ""}`,
+        { ...resOptions, status: response.status }
+      );
+    }
+    return response;
+  },
+  onError({ error }) {
+    console.error(error);
+    process.exit(1);
   },
 };
 client.use(authMiddleware);
@@ -52,7 +79,7 @@ const handleError = (error: ErrorResponse) => {
 };
 
 export const listEnvironments = async (
-  options: listEnvironmentsOptions & { json?: boolean },
+  options: listEnvironmentsOptions & { json?: boolean }
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -60,7 +87,7 @@ export const listEnvironments = async (
       params: {
         path: { testTargetId: options.testTargetId },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -82,7 +109,7 @@ export const listEnvironments = async (
 };
 
 export const getEnvironments = async (
-  options: listEnvironmentsOptions & { json?: boolean },
+  options: listEnvironmentsOptions & { json?: boolean }
 ): Promise<EnvironmentResponse[]> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -90,7 +117,7 @@ export const getEnvironments = async (
       params: {
         path: { testTargetId: options.testTargetId },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -111,7 +138,7 @@ const outputResult = (result: unknown): void => {
 };
 
 export const executeTests = async (
-  options: executeTestsBody & { json?: boolean; description?: string },
+  options: executeTestsBody & { json?: boolean; description?: string }
 ): Promise<void> => {
   const { data, error } = await client.POST("/apiKey/v2/execute", {
     body: {
@@ -159,7 +186,7 @@ export const executeTests = async (
 };
 
 export const getTestReport = async (
-  options: getTestReportParams & { json?: boolean },
+  options: getTestReportParams & { json?: boolean }
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}",
@@ -170,7 +197,7 @@ export const getTestReport = async (
           testReportId: options.testReportId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -217,7 +244,7 @@ export const registerLocation = async (options: {
           password: options.password,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -242,7 +269,7 @@ export const unregisterLocation = async (options: {
       body: {
         name: options.name,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -255,7 +282,7 @@ export const unregisterLocation = async (options: {
 
   console.log(
     "Unregistration result:",
-    response.success ? "Success" : "Failed",
+    response.success ? "Success" : "Failed"
   );
 };
 
@@ -289,7 +316,7 @@ export const createEnvironment = async (
     basicAuthPassword?: string;
     privateLocationName?: string;
     testAccountOtpInitializerKey?: string;
-  },
+  }
 ): Promise<void> => {
   const { data, error } = await client.POST(
     "/apiKey/v2/test-targets/{testTargetId}/environments",
@@ -312,7 +339,7 @@ export const createEnvironment = async (
         privateLocationName: options.privateLocationName,
         additionalHeaderFields: options.additionalHeaderFields,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -342,7 +369,7 @@ export const updateEnvironment = async (
     basicAuthPassword?: string;
     privateLocationName?: string;
     testAccountOtpInitializerKey?: string;
-  },
+  }
 ): Promise<void> => {
   const { data, error } = await client.PATCH(
     "/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}",
@@ -367,7 +394,7 @@ export const updateEnvironment = async (
         },
         privateLocationName: options.privateLocationName,
       },
-    },
+    }
   );
 
   handleError(error);
@@ -400,7 +427,7 @@ export const deleteEnvironment = async (options: {
           environmentId: options.environmentId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -411,6 +438,150 @@ export const deleteEnvironment = async (options: {
   }
 
   console.log("Environment deleted successfully!");
+};
+
+export const getNotifications = async (
+  options: getNotificationsParams & { json?: boolean }
+): Promise<void> => {
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/notifications",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+    }
+  );
+
+  handleError(error);
+  const response = data as Notification[];
+  if (options.json) {
+    outputResult(response);
+    return;
+  }
+
+  console.log("Notifications:");
+  response.forEach((notification) => {
+    console.log(`\nID: ${notification.id}`);
+    console.log(`Type: ${notification.type}`);
+    console.log(`Created At: ${notification.createdAt}`);
+    if (notification.payload?.testReportId) {
+      console.log(`Test Report ID: ${notification.payload.testReportId}`);
+    }
+    if (notification.payload?.testCaseId) {
+      console.log(`Test Case ID: ${notification.payload.testCaseId}`);
+    }
+    if (notification.payload?.failed !== undefined) {
+      console.log(`Failed: ${notification.payload.failed}`);
+    }
+    if (notification.ack) {
+      console.log(`Acknowledged: ${notification.ack}`);
+    }
+  });
+};
+
+export const getTestCase = async (
+  options: getTestCaseParams & { json?: boolean }
+): Promise<void> => {
+  console.log(options);
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+          testCaseId: options.testCaseId,
+        },
+      },
+    }
+  );
+
+  handleError(error);
+
+  const response = data as TestCaseResponse;
+
+  if (options.json) {
+    outputResult(response);
+    return;
+  }
+
+  console.log("Test Case Details:");
+  console.log(`ID: ${response.id}`);
+  console.log(`Description: ${response.description}`);
+  console.log(`Status: ${response.status}`);
+  console.log(`Run Status: ${response.runStatus}`);
+  console.log(`Created At: ${response.createdAt}`);
+  console.log(`Updated At: ${response.updatedAt}`);
+
+  if (response.elements && response.elements.length > 0) {
+    console.log("\nElements:");
+    response.elements.forEach((element, index) => {
+      console.log(`\nElement ${index + 1}:`);
+      if (element.interaction) {
+        console.log(`  Action: ${element.interaction.action}`);
+        if (element.interaction.calledWith) {
+          console.log(`  Called With: ${element.interaction.calledWith}`);
+        }
+      }
+      if (element.assertion) {
+        console.log(`  Expectation: ${element.assertion.expectation}`);
+        if (element.assertion.calledWith) {
+          console.log(`  Called With: ${element.assertion.calledWith}`);
+        }
+      }
+      console.log("  Selectors:");
+      element.selectors?.forEach((selector) => {
+        console.log(`    - ${selector.selectorType}: ${selector.selector}`);
+        if (selector.options?.name) {
+          console.log(`      Name: ${selector.options.name}`);
+        }
+      });
+    });
+  }
+};
+
+export const createDiscovery = async (
+  options: createDiscoveryBody & { json?: boolean; testTargetId: string }
+): Promise<void> => {
+  const requestBody = {
+    name: options.name,
+    prompt: options.prompt,
+    ...(options.entryPointUrlPath && {
+      entryPointUrlPath: options.entryPointUrlPath,
+    }),
+    ...(options.prerequisiteName && {
+      prerequisiteName: options.prerequisiteName,
+    }),
+    ...(options.externalId && { externalId: options.externalId }),
+    ...(options.tagNames && { tagNames: options.tagNames }),
+    ...(options.folderName && { folderName: options.folderName }),
+    ...(options.type && { type: options.type }),
+  };
+
+  const { data, error } = await client.POST(
+    "/apiKey/v2/test-targets/{testTargetId}/discoveries",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+      body: requestBody,
+    }
+  );
+
+  handleError(error);
+
+  const response = data as DiscoveryResponse;
+  if (options.json) {
+    outputResult(response);
+    return;
+  }
+
+  console.log("Discovery created successfully!");
+  console.log(`Discovery ID: ${response.discoveryId}`);
+  console.log(`Test Case ID: ${response.testCaseId}`);
 };
 
 export const getPlaywrightConfig = async (options: {
@@ -436,9 +607,8 @@ export const getPlaywrightConfig = async (options: {
         },
       },
       parseAs: "text",
-    },
+    }
   );
-
 
   handleError(error);
 
@@ -473,7 +643,7 @@ export const getPlaywrightCode = async (options: {
           executionUrl: options.executionUrl,
         },
       },
-    },
+    }
   );
 
   handleError(error);
@@ -502,7 +672,7 @@ export const getTestCases = async (options: {
           testTargetId: options.testTargetId,
         },
       },
-    },
+    }
   );
 
   handleError(error);
