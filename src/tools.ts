@@ -602,7 +602,7 @@ export const getPlaywrightConfig = async (options: {
           environmentId: options.environmentId,
           url: options.url,
           outputDir: options.outputDir,
-          headless: options.headless,
+          headless: options.headless ? "true" : "false",
         },
       },
       parseAs: "text",
