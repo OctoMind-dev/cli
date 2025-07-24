@@ -809,7 +809,12 @@ export interface paths {
      */
     get: {
       parameters: {
-        query?: never;
+        query: {
+          /** @description Optional ID of the environment to use for the test case code */
+          environmentId?: string;
+          /** @description URL of the app to test */
+          executionUrl: string;
+        };
         header?: never;
         path: {
           /** @description The ID of the test target */
@@ -829,7 +834,7 @@ export interface paths {
           content: {
             "application/json": {
               /** @description The code representation of the test case */
-              testCode?: string;
+              testCode: string;
             };
           };
         };
@@ -963,9 +968,15 @@ export interface paths {
      */
     get: {
       parameters: {
-        query?: {
+        query: {
           /** @description Optional ID of the environment to use for the test target configuration */
           environmentId?: string;
+          /** @description URL of the app to test */
+          url: string;
+          /** @description Directory to write the playwright output to */
+          outputDir: string;
+          /** @description Whether to run the test in headless mode */
+          headless?: boolean;
         };
         header?: never;
         path: {
