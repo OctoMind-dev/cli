@@ -439,7 +439,6 @@ export const getPlaywrightConfig = async (options: {
     },
   );
 
-  console.log({ data, error });
 
   handleError(error);
 
