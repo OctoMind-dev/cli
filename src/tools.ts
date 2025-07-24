@@ -23,12 +23,8 @@ export type UpdateEnvironmentOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}"]["patch"]["requestBody"]["content"]["application/json"];
 export type EnvironmentResponse = components["schemas"]["EnvironmentResponse"];
 
-type UnauthorizedResponse =
-  paths["/apiKey/v2/execute"]["post"]["responses"]["403"];
-
 export type ErrorResponse =
   | components["schemas"]["ZodResponse"]
-  | UnauthorizedResponse
   | string
   | undefined;
 
