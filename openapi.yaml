@@ -22,7 +22,7 @@ components:
           properties:
             source:
               type: string
-              enum: [ "github" ]
+              enum: ["github"]
               example: "github"
             issueNumber:
               type: integer
@@ -48,7 +48,7 @@ components:
               properties:
                 type:
                   type: string
-                  enum: [ "USER" ]
+                  enum: ["USER"]
                   example: "USER"
                 userId:
                   type: string
@@ -62,7 +62,7 @@ components:
           properties:
             source:
               type: string
-              enum: [ "azureDevOps" ]
+              enum: ["azureDevOps"]
               example: "azureDevOps"
             accessToken:
               type: string
@@ -94,7 +94,7 @@ components:
               properties:
                 type:
                   type: string
-                  enum: [ "USER" ]
+                  enum: ["USER"]
                   example: "USER"
                 userId:
                   type: string
@@ -108,7 +108,7 @@ components:
           properties:
             source:
               type: string
-              enum: [ "discovery" ]
+              enum: ["discovery"]
               example: "discovery"
             description:
               type: string
@@ -119,13 +119,13 @@ components:
                   properties:
                     type:
                       type: string
-                      enum: [ "INITIAL" ]
+                      enum: ["INITIAL"]
                       example: "INITIAL"
                 - type: object
                   properties:
                     type:
                       type: string
-                      enum: [ "USER" ]
+                      enum: ["USER"]
                       example: "USER"
                     userId:
                       type: string
@@ -135,7 +135,7 @@ components:
           properties:
             source:
               type: string
-              enum: [ "manual" ]
+              enum: ["manual"]
               example: "manual"
             description:
               type: string
@@ -145,7 +145,7 @@ components:
               properties:
                 type:
                   type: string
-                  enum: [ "USER" ]
+                  enum: ["USER"]
                   example: "USER"
                 userId:
                   type: string
@@ -155,7 +155,7 @@ components:
           properties:
             source:
               type: string
-              enum: [ "scheduled" ]
+              enum: ["scheduled"]
               example: "scheduled"
             triggeredBy:
               type: object
@@ -163,7 +163,7 @@ components:
               properties:
                 type:
                   type: string
-                  enum: [ "USER" ]
+                  enum: ["USER"]
                   example: "USER"
                 userId:
                   type: string
@@ -173,7 +173,7 @@ components:
           properties:
             source:
               type: string
-              enum: [ "proposal" ]
+              enum: ["proposal"]
               example: "proposal"
             description:
               type: string
@@ -184,13 +184,13 @@ components:
                   properties:
                     type:
                       type: string
-                      enum: [ "INITIAL" ]
+                      enum: ["INITIAL"]
                       example: "INITIAL"
                 - type: object
                   properties:
                     type:
                       type: string
-                      enum: [ "USER" ]
+                      enum: ["USER"]
                       example: "USER"
                     userId:
                       type: string
@@ -256,7 +256,7 @@ components:
       properties:
         source:
           type: string
-          enum: [ "manual" ]
+          enum: ["manual"]
           description: The source of the test trigger.
           example: "manual"
         description:
@@ -268,7 +268,7 @@ components:
           properties:
             type:
               type: string
-              enum: [ "USER" ]
+              enum: ["USER"]
               description: The type of entity triggering the test.
               example: "USER"
             userId:
@@ -307,7 +307,7 @@ components:
           example: "2024-09-06T13:01:51.686Z"
         status:
           type: string
-          enum: [ "WAITING", "PASSED", "FAILED", "ERROR" ]
+          enum: ["WAITING", "PASSED", "FAILED", "ERROR"]
           description: The status of the specific test result, will be WAITING as long as the result is running, FAILED if the execution failed, PASSED if it succeeded, and ERROR if an internal error occurred.
         errorMessage:
           type: string
@@ -350,7 +350,7 @@ components:
           example: "https://en.wikipedia.org/"
         status:
           type: string
-          enum: [ "WAITING", "PASSED", "FAILED" ]
+          enum: ["WAITING", "PASSED", "FAILED"]
           description: The status of the test report, will be WAITING as long as any result is running, FAILED if the report is done but has any failed result and PASSED if all test results are done and successful
         context:
           $ref: "#/components/schemas/TestReportContext"
@@ -391,7 +391,7 @@ components:
           example: "https://app.octomind.dev/testreports/826c15af-644b-4b28-89b4-f50ff34e46b7"
         testReport:
           $ref: "#/components/schemas/TestReport"
-    
+
     TestCasesResponse:
       type: array
       items:
@@ -427,7 +427,21 @@ components:
                     format: uuid
                   action:
                     type: string
-                    enum: [EXTRACT, ENTER_TEXT, CLICK, SELECT_OPTION, TYPE_TEXT, KEY_PRESS, HOVER,UPLOAD, GO_TO, DRAG_AND_DROP, CLOSE_PAGE, OPEN_EMAIL]
+                    enum:
+                      [
+                        EXTRACT,
+                        ENTER_TEXT,
+                        CLICK,
+                        SELECT_OPTION,
+                        TYPE_TEXT,
+                        KEY_PRESS,
+                        HOVER,
+                        UPLOAD,
+                        GO_TO,
+                        DRAG_AND_DROP,
+                        CLOSE_PAGE,
+                        OPEN_EMAIL,
+                      ]
                   calledWith:
                     type: string
                     nullable: true
@@ -443,7 +457,16 @@ components:
                     format: uuid
                   expectation:
                     type: string
-                    enum: [VISIBLE, NOT_VISIBLE, TO_BE_CHECKED, NOT_TO_BE_CHECKED, TO_HAVE_VALUE, TO_CONTAIN_TEXT, TO_HAVE_STYLE]
+                    enum:
+                      [
+                        VISIBLE,
+                        NOT_VISIBLE,
+                        TO_BE_CHECKED,
+                        NOT_TO_BE_CHECKED,
+                        TO_HAVE_VALUE,
+                        TO_CONTAIN_TEXT,
+                        TO_HAVE_STYLE,
+                      ]
                   calledWith:
                     type: string
                     nullable: true
@@ -842,13 +865,119 @@ components:
             description: "Human-readable message of the error that occurred while parsing."
             example: "Expected object, received string"
 
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the event.
+          example: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+        testTargetId:
+          type: string
+          format: uuid
+          description: The unique identifier of the test target this event belongs to.
+          example: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the event was created.
+          example: "2024-09-06T13:01:51.686Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the event was last updated.
+          example: "2024-09-06T13:01:51.686Z"
+        payload:
+          type: object
+          description: JSON payload containing event-specific data.
+          example: { testCaseId: "5deeef76-f37a-418b-8101-7d69529fa561" }
+        type:
+          type: string
+          enum:
+            [
+              "VALIDATION_PASSED",
+              "VALIDATION_FAILED",
+              "DISCOVERY_FINISHED",
+              "PROPOSAL_SUCCESS",
+              "PROPOSAL_FAILED",
+              "REPORT_EXECUTION_FINISHED",
+            ]
+          description: The type of event that occurred.
+          example: "VALIDATION_PASSED"
+        ack:
+          type: string
+          enum: ["IN_WEB_APP"]
+          description: Optional acknowledgment status of the event.
+          example: "IN_WEB_APP"
+          nullable: true
+      required:
+        - id
+        - testTargetId
+        - createdAt
+        - updatedAt
+        - payload
+        - type
+
+    ExternalDiscoveryBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the discovered test case
+          example: "Login Form Validation Test"
+        entryPointUrlPath:
+          type: string
+          description: Entry point URL path of the discovered test case
+          example: "/login"
+        prerequisiteName:
+          type: string
+          description: Prerequisite test case name
+          example: "Cookie Banner Acceptance"
+        externalId:
+          type: string
+          description: External ID of the discovered test case
+          example: "ext-test-001"
+        tagNames:
+          type: array
+          items:
+            type: string
+          description: Tags to assign to the discovered test case
+          example: ["authentication", "forms", "validation"]
+        prompt:
+          type: string
+          description: Prompt to generate the discovered test case
+          example: "Test the login form with valid and invalid credentials"
+        folderName:
+          type: string
+          description: Folder name of the discovered test case
+          example: "Authentication Tests"
+        type:
+          type: string
+          enum: ["LOGIN", "COOKIE_BANNER"]
+          description: Type of the discovered test case
+          example: "LOGIN"
+      required:
+        - name
+        - prompt
+
+    DiscoveryResponse:
+      type: object
+      properties:
+        discoveryId:
+          type: string
+          format: uuid
+        testCaseId:
+          type: string
+          format: uuid
+
 paths:
   /apiKey/v2/test-suites:
     get:
       summary: Retrieve test suites
       description: get a list of all defined test suites.
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       tags:
         - test-suites
       responses:
@@ -861,7 +990,7 @@ paths:
     post:
       summary: Create a test suite
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       tags:
         - test-suites
       requestBody:
@@ -888,7 +1017,7 @@ paths:
     patch:
       summary: Update a test suite
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       tags:
         - test-suites
       requestBody:
@@ -913,7 +1042,7 @@ paths:
     delete:
       summary: Delete a test suite
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       tags:
         - test-suites
       responses:
@@ -934,7 +1063,7 @@ paths:
       tags:
         - execute
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -963,12 +1092,12 @@ paths:
     delete:
       summary: Delete an environment
       security:
-      - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       tags:
         - environments
       responses:
-        '200':
-          description: Environment deleted successfully 
+        "200":
+          description: Environment deleted successfully
       parameters:
         - in: path
           name: testTargetId
@@ -987,7 +1116,7 @@ paths:
     patch:
       summary: Update an environment
       security:
-      - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       tags:
         - environments
       parameters:
@@ -1048,7 +1177,7 @@ paths:
                     type: string
                   nullable: true
       responses:
-        '200':
+        "200":
           description: Environment updated successfully
           content:
             application/json:
@@ -1060,7 +1189,7 @@ paths:
       summary: Create an environment
       description: Create a custom environment.
       security:
-      - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       tags:
         - environments
       parameters:
@@ -1123,7 +1252,7 @@ paths:
       summary: Retrieve environments
       description: get a list of all defined environments.
       security:
-      - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       tags:
         - environments
       parameters:
@@ -1164,7 +1293,7 @@ paths:
             format: uuid
           description: ID of the test report to fetch
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       responses:
         "200":
           description: Test Report information
@@ -1230,7 +1359,7 @@ paths:
                   description: The value to compare with to find matches.
                   example: "3435918b-3d29-4ebd-8c68-9a540532f45a"
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       responses:
         "200":
           description: Test Reports information
@@ -1254,7 +1383,6 @@ paths:
                   hasNextPage:
                     type: boolean
                     description: If the query in question has another page to retrieve
-
 
         "400":
           description: Invalid request parameters
@@ -1285,7 +1413,7 @@ paths:
             format: uuid
           description: The ID of the test target
       responses:
-        '200':
+        "200":
           description: List of notifications
           content:
             application/json:
@@ -1312,7 +1440,7 @@ paths:
                         failed:
                           type: boolean
                         context:
-                          $ref: '#/components/schemas/ExecutionContext'
+                          $ref: "#/components/schemas/ExecutionContext"
                         testReportId:
                           type: string
                           format: uuid
@@ -1329,19 +1457,19 @@ paths:
                       enum:
                         - IN_WEB_APP
                       nullable: true
-        '401':
+        "401":
           description: Unauthorized - Invalid or missing API key
-        '404':
+        "404":
           description: Test target not found
 
   /apiKey/v1/private-location:
     get:
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Retrieve all private locations
       description: "gets a list of private location workers"
       tags:
-      - private-location
+        - private-location
       responses:
         "200":
           description: OK
@@ -1353,7 +1481,7 @@ paths:
   /apiKey/v1/private-location/register:
     put:
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Register a private location
       description: "registers a private location worker"
       tags:
@@ -1379,7 +1507,7 @@ paths:
   /apiKey/v1/private-location/unregister:
     put:
       security:
-        - ApiKeyAuth: [ ]
+        - ApiKeyAuth: []
       summary: Unregister a private location
       description: "Unregisters a private location worker."
       tags:
@@ -1428,7 +1556,7 @@ paths:
             format: uuid
           description: The ID of the test case
       responses:
-        '200':
+        "200":
           description: Code for the test case
           content:
             application/json:
@@ -1438,31 +1566,31 @@ paths:
                   testCode:
                     type: string
                     description: The code representation of the test case
-        '404':
+        "404":
           description: Test case not found
 
   /apiKey/v2/test-targets/{testTargetId}/test-cases:
-    get:      
-      summary: Retrieve test cases  
+    get:
+      summary: Retrieve test cases
       description: Get a list of test cases for a specific test target
-      security: 
+      security:
         - ApiKeyAuth: []
       tags:
         - Test Cases
       parameters:
-        - name: testTargetId  
+        - name: testTargetId
           in: path
           required: true
           schema:
             type: string
             format: uuid
-          description: The ID of the test target  
+          description: The ID of the test target
       responses:
-        '200':
+        "200":
           description: List of test cases
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: "#/components/schemas/TestCasesResponse"
 
   /apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}:
@@ -1489,15 +1617,15 @@ paths:
             format: uuid
           description: The ID of the test case
       responses:
-        '200':
+        "200":
           description: Test case details
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/TestCaseResponse"
-        '401':
+        "401":
           description: Unauthorized - Invalid or missing API key
-        '404':
+        "404":
           description: Test target or test case not found
 
   /apiKey/v2/test-targets/{testTargetId}/config:
@@ -1591,7 +1719,7 @@ paths:
                   description: Optional ID of the folder to place the discovery in
                   nullable: true
       responses:
-        '200':
+        "200":
           description: Discovery created successfully
           content:
             application/json:
@@ -1609,9 +1737,9 @@ paths:
                     type: string
                     format: uuid
                     description: The ID of the associated test case
-        '401':
+        "401":
           description: Unauthorized - Invalid or missing API key
-        '404':
+        "404":
           description: Test target not found
-        '400':
+        "400":
           description: Invalid request body

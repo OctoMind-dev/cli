@@ -1,9 +1,12 @@
 import { program, Command } from "commander";
 import { version } from "./version";
 import {
+  createDiscovery,
   createEnvironment,
   deleteEnvironment,
   executeTests,
+  getNotifications,
+  getTestCase,
   getTestReport,
   listEnvironments,
   listPrivateLocations,
@@ -206,5 +209,47 @@ export const buildCmd = (): Command => {
     .requiredOption("-e, --environment-id <id>", "Environment ID")
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(deleteEnvironment);
+
+  createCommandWithCommonOptions("notifications")
+    .description("Get notifications for a test target")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .action((_, options) =>
+      getNotifications({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
+
+  createCommandWithCommonOptions("test-case")
+    .description("Get details of a specific test case")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .action((_, options) =>
+      getTestCase({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
+
+  createCommandWithCommonOptions("create-discovery")
+    .description("Create a new test case discovery")
+    .requiredOption("-n, --name <name>", "Discovery name")
+    .requiredOption("-p, --prompt <prompt>", "Discovery prompt")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .option("-e, --entry-point-url-path <path>", "Entry point URL path")
+    .option("--prerequisite-id <id>", "Prerequisite test case ID")
+    .option("--external-id <id>", "External identifier")
+    .option(
+      "--assigned-tag-ids <ids>",
+      "Comma-separated list of tag IDs",
+      splitter,
+    )
+    .option("--folder-id <id>", "Folder ID")
+    .action((_, options) =>
+      createDiscovery({
+        ...options,
+        testTargetId: resolveTestTargetId(options.testTargetId),
+      }),
+    );
   return program;
 };
