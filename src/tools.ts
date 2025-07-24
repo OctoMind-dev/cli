@@ -484,7 +484,6 @@ export const getNotifications = async (
 export const getTestCase = async (
   options: getTestCaseParams & { json?: boolean },
 ): Promise<void> => {
-  console.log(options);
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}",
     {
@@ -662,6 +661,7 @@ export const getPlaywrightCode = async (options: {
 
 export const getTestCases = async (options: {
   testTargetId: string;
+  status?: string;
   json?: boolean;
 }): Promise<TestCasesResponse> => {
   const { data, error } = await client.GET(
@@ -670,6 +670,9 @@ export const getTestCases = async (options: {
       params: {
         path: {
           testTargetId: options.testTargetId,
+        },
+        query: {
+          filter: JSON.stringify({ status: options.status }),
         },
       },
     },
