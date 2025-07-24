@@ -49,16 +49,7 @@ const spawnAndStreamLines = async (
         child.unref();
         child.stdout?.destroy();
         child.stderr?.destroy();
-        console.log("resolve on(line)");
         resolve({ lines, detached: true, code: null, signal: null });
-      }
-    });
-
-    rl.on('close', () => {
-      if (lineCount < maxLines) {
-        // Process ended before reaching max lines
-        console.log("resolve on(close)");
-        resolve({ lines, detached: false, code: null, signal: null });
       }
     });
 
@@ -71,7 +62,6 @@ const spawnAndStreamLines = async (
       if (lineCount < maxLines) {
         console.log(`Process exited with code ${code}, signal ${signal}`);
       }
-      console.log("resolve on(exit)");
       resolve({ lines, detached: false, code, signal });
     });
   });
