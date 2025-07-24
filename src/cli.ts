@@ -119,6 +119,10 @@ export const buildCmd = (): Command => {
       "--headless",
       "if we should run headless without the UI of playwright and the browser",
     )
+    .option(
+      "--persist",
+      "if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again",
+    )
     .action((_, options) =>
       runDebugtopus({
         ...options,
