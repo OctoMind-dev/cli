@@ -19,6 +19,7 @@ type DebugtopusOptions = {
   environmentId?: string;
   headless?: boolean;
   persist?: boolean;
+  grep?: string;
 };
 
 const getPackageRootLevel = (appDir: string): string => {
@@ -180,20 +181,31 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
       },
     ];
   } else {
-    const testCases = await getTestCases(baseApiOptions);
+    const testCases = await getTestCases({
+      ...baseApiOptions,
+      status: "ENABLED",
+    });
     if (!testCases) {
       throw new Error("no test cases found");
     }
 
     testCasesWithCode = await Promise.all(
-      testCases.map(async (testCase) => ({
-        code: await getPlaywrightCode({
-          testCaseId: testCase.id,
-          executionUrl: options.url,
-          ...baseApiOptions,
-        }),
-        ...testCase,
-      })),
+      testCases
+        .filter((testCase) =>
+          options.grep
+            ? testCase.description
+                ?.toLowerCase()
+                .includes(options.grep.toLowerCase())
+            : true,
+        )
+        .map(async (testCase) => ({
+          code: await getPlaywrightCode({
+            testCaseId: testCase.id,
+            executionUrl: options.url,
+            ...baseApiOptions,
+          }),
+          ...testCase,
+        })),
     );
   }
 

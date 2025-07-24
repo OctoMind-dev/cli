@@ -1607,6 +1607,12 @@ paths:
             type: string
             format: uuid
           description: The ID of the test target
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter for the test cases
       responses:
         "200":
           description: List of test cases
