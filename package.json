@@ -11,9 +11,10 @@
     "octomind": "./dist/index.js"
   },
   "scripts": {
+    "gendoc": "tsx scripts/generate-docs.ts > README.md",
     "lint": "pnpm apigen &&npx genversion -des src/version.ts && eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
     "apigen": "openapi-typescript ./openapi.yaml --output src/api.ts",
-    "build": "pnpm apigen && npx genversion -des src/version.ts && tsc --project tsconfig.build.json",
+    "build": "pnpm apigen && npx genversion -des src/version.ts && pnpm gendoc && tsc --project tsconfig.build.json",
     "octomind": "pnpm apigen && tsx src/index.ts",
     "test": "pnpm apigen && npx genversion -des src/version.ts && jest",
     "test:watch": "pnpm apigen && npx genversion -e src/version.ts && jest --watch"
