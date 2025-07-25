@@ -3,11 +3,11 @@ import { client, handleError, ListOptions, logJson } from "./client";
 
 export type TestCaseResponse = components["schemas"]["TestCaseResponse"];
 export type TestCasesResponse = components["schemas"]["TestCasesResponse"];
-export type getTestCaseParams =
+export type GetTestCaseParams =
   paths["/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}"]["get"]["parameters"]["path"];
 
 export const listTestCase = async (
-  options: getTestCaseParams & ListOptions,
+  options: GetTestCaseParams & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}",
@@ -65,12 +65,12 @@ export const listTestCase = async (
   }
 };
 
-export type GetTestCaseOptions = {
+export type GetTestCasesOptions = {
   testTargetId: string;
   status?: string;
 };
 export const getTestCases = async (
-  options: GetTestCaseOptions,
+  options: GetTestCasesOptions,
 ): Promise<TestCasesResponse> => {
   const { data, error } = await client.GET(
     "/apiKey/v2/test-targets/{testTargetId}/test-cases",
@@ -95,7 +95,7 @@ export const getTestCases = async (
   return data;
 };
 export const listTestCases = async (
-  options: GetTestCaseOptions & ListOptions,
+  options: GetTestCasesOptions & ListOptions,
 ): Promise<void> => {
   const testCases = await getTestCases(options);
 
