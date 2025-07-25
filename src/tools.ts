@@ -56,9 +56,9 @@ const authMiddleware: Middleware = {
     const { body, ...resOptions } = response;
     if (!response.ok) {
       const res = new Response(body, resOptions);
-      const errorBody = await res.json();
+      const errorBody = await res.text();
       return new Response(
-        `${response.status}, ${response.statusText}: ${errorBody ? JSON.stringify(errorBody, null, 2) : ""}`,
+        `${response.status}, ${response.statusText}: ${errorBody ? errorBody : ""}`,
         { ...resOptions, status: response.status },
       );
     }
