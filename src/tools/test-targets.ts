@@ -1,4 +1,4 @@
-import { client, handleError } from "./client";
+import { client, handleError, ListOptions, logJson } from "./client";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v2/test-targets");
@@ -10,4 +10,23 @@ export const getTestTargets = async () => {
   }
 
   return data;
+};
+
+export const listTestTargets = async (options: ListOptions): Promise<void> => {
+  const testTargets = await getTestTargets();
+
+  if (options.json) {
+    logJson(testTargets);
+    return;
+  }
+
+  console.log("Test Targets:");
+  testTargets.forEach((testTarget, idx) => {
+    const idxString = `${idx + 1}. `.padEnd(
+      testTargets.length.toString().length + 2,
+    );
+    const paddingString = " ".repeat(idxString.length);
+    console.log(`${idxString}ID: ${testTarget.id}`);
+    console.log(`${paddingString}App: ${testTarget.app}`);
+  });
 };

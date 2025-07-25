@@ -20,6 +20,7 @@ import { promptUser, resolveTestTargetId } from "./helpers";
 import { runDebugtopus } from "./debugtopus";
 
 import { startPrivateLocationWorker, stopPLW } from "./plw";
+import { getTestTargets, listTestTargets } from "./tools/test-targets";
 
 const createCommandWithCommonOptions = (command: string): Command => {
   return program
@@ -29,6 +30,26 @@ const createCommandWithCommonOptions = (command: string): Command => {
 
 const splitter = (value: string): string[] => value.split(/,| |\|/);
 const toJSON = (value: string): object => JSON.parse(value);
+
+const selectTestTarget = async (): Promise<string> => {
+  const testTargets = await getTestTargets();
+  await listTestTargets({});
+
+  if (testTargets.length === 1 && testTargets[0]?.id) {
+    return testTargets[0].id;
+  }
+
+  const testTargetIndex = await promptUser(
+    "Enter number of the test target you want to use (optional, press Enter to skip): "
+  );
+  const testTargetId = testTargets[Number.parseInt(testTargetIndex) - 1].id;
+  if (!testTargetId) {
+    console.log("❌ could not find a test target with the index you provided");
+    process.exit(1);
+  }
+
+  return testTargetId;
+}
 
 export const buildCmd = (): Command => {
   program
@@ -80,12 +101,14 @@ export const buildCmd = (): Command => {
               process.exit(1);
             }
           }
-          let testTargetId;
-          if (!options.testTargetId) {
-            testTargetId = await promptUser(
-              "Enter test target id (optional, press Enter to skip): "
-            );
+          // saving here to be able to use the api key for the test targets
+          const newApiKeyConfig  = {
+            ...existingConfig,
+            apiKey: options.apiKey ?? apiKey,
           }
+          await saveConfig(newApiKeyConfig);
+          
+          const testTargetId = await selectTestTarget();
 
           const newConfig: Config = {
             ...existingConfig,
@@ -105,6 +128,20 @@ export const buildCmd = (): Command => {
         }
       }
     );
+
+  program
+    .command("switch-test-target")
+    .description("Switch to a different test target")
+    .action(async () => {
+      const testTargetId = await selectTestTarget();
+      const existingConfig = await loadConfig();
+      const newConfig: Config = {
+        ...existingConfig,
+        testTargetId,
+      };
+      await saveConfig(newConfig);
+      console.log(`✨ Switched to test target: ${testTargetId}`);
+    });
 
   createCommandWithCommonOptions("debug")
     .description("run test cases against local build")
@@ -320,6 +357,10 @@ export const buildCmd = (): Command => {
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void listTestCases({...options, status: "ENABLED"});
     });
+
+  createCommandWithCommonOptions("list-test-targets")
+    .description("List all test targets")
+    .action(listTestTargets);
 
   return program;
 };
