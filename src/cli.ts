@@ -251,7 +251,7 @@ export const buildCmd = (): Command => {
 
   program
     .command("start-private-location")
-    .description("Start a private location worker")
+    .description("Start a private location worker, see https://octomind.dev/docs/proxy/private-location")
     .option("-n, --name [name]", "Location name")
     .option("-u, --username [username]", "Proxy user")
     .option("-p, --password [password]", "Proxy password")
@@ -260,7 +260,7 @@ export const buildCmd = (): Command => {
 
   program
     .command("stop-private-location")
-    .description("Stop a private location worker")
+    .description("Stop a private location worker, see https://octomind.dev/docs/proxy/private-location")
     .action(stopPLW);
 
   createCommandWithCommonOptions("notifications")

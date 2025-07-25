@@ -208,7 +208,7 @@ Delete an environment
 
 ## start-private-location
 
-Start a private location worker
+Start a private location worker, see https://octomind.dev/docs/proxy/private-location
 
 **Usage:** `start-private-location [options]`
 
@@ -223,7 +223,7 @@ Start a private location worker
 
 ## stop-private-location
 
-Stop a private location worker
+Stop a private location worker, see https://octomind.dev/docs/proxy/private-location
 
 **Usage:** `stop-private-location [options]`
 
