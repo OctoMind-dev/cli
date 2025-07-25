@@ -1,6 +1,7 @@
 notes.txt
 dist/
 src/version.ts
+src/api.ts
 node_modules/
 .idea
 octomind.config.json
