@@ -246,8 +246,8 @@ export const buildCmd = (): Command => {
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(deleteEnvironment);
 
-
-  program.command("start-private-location")
+  program
+    .command("start-private-location")
     .description("Start a private location worker")
     .option("-n, --name <name>", "Location name")
     .option("-u, --username <username>", "Proxy user")
@@ -255,9 +255,10 @@ export const buildCmd = (): Command => {
     .option("-l, --host-network", "Use host network (default: false). If set you can use localhost directly", false)
     .action(startPrivateLocationWorker);
 
-    program.command("stop-private-location")
+  program
+    .command("stop-private-location")
     .description("Stop a private location worker")
-    .action(stopPLW)
+    .action(stopPLW);
 
   createCommandWithCommonOptions("notifications")
     .description("Get notifications for a test target")
@@ -303,6 +304,21 @@ export const buildCmd = (): Command => {
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void createDiscovery(options);
     });
+
+  program.command("cmd2json", { hidden: true }).action(() => {
+    const cmds = program.commands.map((cmd) => ({
+      name: cmd.name(),
+      description: cmd.description(),
+      options: cmd.options.map((option) => ({
+        name: option.name(),
+        description: option.description,
+        flags: option.flags,
+        required: option.required,
+      })),
+      args: cmd.args,
+    }));
+    console.log(JSON.stringify(cmds, null, 2));
+  });
 
   return program;
 };
