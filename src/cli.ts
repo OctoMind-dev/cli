@@ -5,14 +5,15 @@ import {
   createEnvironment,
   deleteEnvironment,
   executeTests,
-  getNotifications,
-  getTestCase,
-  getTestReport,
+  listNotifications,
+  listTestCase,
+  listTestReport,
   listEnvironments,
   listPrivateLocations,
   registerLocation,
   unregisterLocation,
   updateEnvironment,
+  listTestCases,
 } from "./tools";
 import { Config, loadConfig, saveConfig } from "./config";
 import { promptUser, resolveTestTargetId } from "./helpers";
@@ -163,7 +164,7 @@ export const buildCmd = (): Command => {
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(async (options) => {
       const testTargetId = await resolveTestTargetId(options.testTargetId);
-      await getTestReport({
+      await listTestReport({
         ...options,
         testTargetId,
       });
@@ -255,7 +256,7 @@ export const buildCmd = (): Command => {
     .option(
       "-l, --host-network",
       "Use host network (default: false). If set you can use localhost directly",
-      false
+      false,
     )
     .action(startPrivateLocationWorker);
 
@@ -272,7 +273,7 @@ export const buildCmd = (): Command => {
         options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
-      void getNotifications(options);
+      void listNotifications(options);
     });
 
   createCommandWithCommonOptions("test-case")
@@ -284,7 +285,7 @@ export const buildCmd = (): Command => {
         options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
-      void getTestCase(options);
+      void listTestCase(options);
     });
 
   createCommandWithCommonOptions("create-discovery")
@@ -307,6 +308,17 @@ export const buildCmd = (): Command => {
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void createDiscovery(options);
+    });
+
+  createCommandWithCommonOptions("list-test-cases")
+    .description("List all test cases")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void listTestCases({...options, status: "ENABLED"});
     });
 
   return program;

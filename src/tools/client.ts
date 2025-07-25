@@ -47,6 +47,9 @@ export const handleError = (error: ErrorResponse) => {
   }
 };
 
-export const outputResult = (result: unknown): void => {
+export type ListOptions = {
+  json?: boolean;
+};
+export const logJson = (result: unknown): void => {
   console.log(JSON.stringify(result, null, 2));
 };
