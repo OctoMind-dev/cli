@@ -1,4 +1,4 @@
-import { client, handleError, logJson } from "./client";
+import { client, handleError } from "./client";
 
 export const getPlaywrightConfig = async (options: {
   testTargetId: string;
