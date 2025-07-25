@@ -919,6 +919,9 @@ components:
           items:
             $ref: "#/components/schemas/EnvironmentSimpleResponse"
           description: The environments of the test target
+      required:
+        - id
+        - app
     TestTargetUpdateRequest:
       type: object
       properties:

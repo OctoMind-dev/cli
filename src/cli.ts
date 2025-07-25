@@ -35,7 +35,8 @@ const selectTestTarget = async (): Promise<string> => {
   const testTargets = await getTestTargets();
   await listTestTargets({});
 
-  if (testTargets.length === 1 && testTargets[0]?.id) {
+  if (testTargets.length === 1) {
+    console.log(`Only one test target found, using it: ${testTargets[0].app} (${testTargets[0].id})`);
     return testTargets[0].id;
   }
 
