@@ -5,14 +5,15 @@ import {
   createEnvironment,
   deleteEnvironment,
   executeTests,
-  getNotifications,
-  getTestCase,
-  getTestReport,
+  listNotifications,
+  listTestCase,
+  listTestReport,
   listEnvironments,
   listPrivateLocations,
   registerLocation,
   unregisterLocation,
   updateEnvironment,
+  listTestCases,
 } from "./tools";
 import { Config, loadConfig, saveConfig } from "./config";
 import { promptUser, resolveTestTargetId } from "./helpers";
@@ -166,7 +167,7 @@ export const buildCmd = (): Command => {
     .addOption(testTargetIdOption)
     .action(async (options) => {
       const testTargetId = await resolveTestTargetId(options.testTargetId);
-      await getTestReport({
+      await listTestReport({
         ...options,
         testTargetId,
       });
@@ -252,10 +253,14 @@ export const buildCmd = (): Command => {
   program
     .command("start-private-location")
     .description("Start a private location worker, see https://octomind.dev/docs/proxy/private-location")
-    .option("-n, --name [name]", "Location name")
-    .option("-u, --username [username]", "Proxy user")
-    .option("-p, --password [password]", "Proxy password")
-    .option("-l, --host-network", "Use host network (default: false). If set you can use localhost directly", false)
+    .option("-n, --name <name>", "Location name")
+    .option("-u, --username <username>", "Proxy user")
+    .option("-p, --password <password>", "Proxy password")
+    .option(
+      "-l, --host-network",
+      "Use host network (default: false). If set you can use localhost directly",
+      false,
+    )
     .action(startPrivateLocationWorker);
 
   program
@@ -271,7 +276,7 @@ export const buildCmd = (): Command => {
         options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
-      void getNotifications(options);
+      void listNotifications(options);
     });
 
   createCommandWithCommonOptions("test-case")
@@ -283,7 +288,7 @@ export const buildCmd = (): Command => {
         options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
-      void getTestCase(options);
+      void listTestCase(options);
     });
 
   createCommandWithCommonOptions("create-discovery")
@@ -304,6 +309,17 @@ export const buildCmd = (): Command => {
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void createDiscovery(options);
+    });
+
+  createCommandWithCommonOptions("list-test-cases")
+    .description("List all test cases")
+    .option("-t, --test-target-id <id>", "Test target ID")
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void listTestCases({...options, status: "ENABLED"});
     });
 
   return program;
