@@ -11,11 +11,24 @@ jest.mock("../src/config", () => ({
   loadConfig: jest.fn(),
 }));
 
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
 beforeAll(() => {
   buildCmd();
   program.exitOverride((err) => {
     throw err;
   });
+});
+
+beforeEach(() => {
+  console.log = jest.fn();
+  console.error = jest.fn();
+});
+
+afterEach(() => {
+  console.log = originalConsoleLog;
+  console.error = originalConsoleError;
 });
 
 describe("CLI Commands parsing options", () => {

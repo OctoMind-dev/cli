@@ -56,7 +56,7 @@ export const buildCmd = (): Command => {
         try {
           console.log("🚀 Initializing configuration...\n");
 
-          const existingConfig = await loadConfig();
+          const existingConfig = await loadConfig(options.force);
 
           if (existingConfig.apiKey && !options.force) {
             console.log("⚠️  Configuration already exists.");
@@ -259,7 +259,7 @@ export const buildCmd = (): Command => {
     .option(
       "-l, --host-network",
       "Use host network (default: false). If set you can use localhost directly",
-      false,
+      false
     )
     .action(startPrivateLocationWorker);
 
@@ -316,10 +316,10 @@ export const buildCmd = (): Command => {
     .addOption(testTargetIdOption)
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
-        options.testTargetId,
+        options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
-      void listTestCases({...options, status: "ENABLED"});
+      void listTestCases({ ...options, status: "ENABLED" });
     });
 
   return program;
