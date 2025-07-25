@@ -34,7 +34,7 @@ describe("Config", () => {
       );
     });
 
-    it("should error when config file does not exist", async () => {
+    it("should return empty config when config file does not exist", async () => {
       const fileNotFoundError = new Error(
         "ENOENT: no such file or directory",
       ) as Error & { code?: string };
@@ -42,9 +42,34 @@ describe("Config", () => {
 
       mockedFs.readFile.mockRejectedValue(fileNotFoundError);
 
-      await loadConfig();
+      const result = await loadConfig();
 
+      expect(result).toEqual({});
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("should error and exit when config file does not exist and force is true", async () => {
+      const fileNotFoundError = new Error(
+        "ENOENT: no such file or directory",
+      ) as Error & { code?: string };
+      fileNotFoundError.code = "ENOENT";
+
+      mockedFs.readFile.mockRejectedValue(fileNotFoundError);
+
+      const mockExit = jest
+        .spyOn(process, "exit")
+        .mockImplementation((code?: string | number | null | undefined) => {
+          throw new Error(`Process exit with code: ${code}`);
+        });
+
+      const MOCK_FORCE_OPTION = true;
+      await expect(loadConfig(MOCK_FORCE_OPTION)).rejects.toThrow(
+        "Process exit with code: 1",
+      );
       expect(console.error).toHaveBeenCalled();
+      expect(mockExit).toHaveBeenCalledWith(1);
+
+      mockExit.mockRestore();
     });
   });
 });
