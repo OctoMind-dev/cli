@@ -34,7 +34,7 @@ export const buildCmd = (): Command => {
   program
     .name("octomind-cli")
     .description(
-      `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`,
+      `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`
     )
     .version(version);
 
@@ -58,7 +58,7 @@ export const buildCmd = (): Command => {
           if (existingConfig.apiKey && !options.force) {
             console.log("⚠️  Configuration already exists.");
             const overwrite = await promptUser(
-              "Do you want to overwrite it? (y/N): ",
+              "Do you want to overwrite it? (y/N): "
             );
 
             if (
@@ -73,7 +73,7 @@ export const buildCmd = (): Command => {
           let apiKey;
           if (!options.apiKey) {
             apiKey = await promptUser(
-              "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: ",
+              "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: "
             );
             if (!apiKey) {
               console.log("❌ API key is required.");
@@ -83,7 +83,7 @@ export const buildCmd = (): Command => {
           let testTargetId;
           if (!options.testTargetId) {
             testTargetId = await promptUser(
-              "Enter test target id (optional, press Enter to skip): ",
+              "Enter test target id (optional, press Enter to skip): "
             );
           }
 
@@ -99,11 +99,11 @@ export const buildCmd = (): Command => {
         } catch (error) {
           console.error(
             "❌ Error during initialization:",
-            (error as Error).message,
+            (error as Error).message
           );
           process.exit(1);
         }
-      },
+      }
     );
 
   createCommandWithCommonOptions("debug")
@@ -111,28 +111,28 @@ export const buildCmd = (): Command => {
     .requiredOption("-u, --url <url>", "url the tests should run against")
     .option(
       "-i, --id <uuid>",
-      "id of the test case you want to run, if not provided will run all test cases in the test target",
+      "id of the test case you want to run, if not provided will run all test cases in the test target"
     )
     .option(
       "-e, --environmentId <uuid>",
-      "id of the environment you want to run against, if not provided will run all test cases against the default environment",
+      "id of the environment you want to run against, if not provided will run all test cases against the default environment"
     )
     .option(
       "-a, --testTargetId <uuid>",
-      "id of the test target of the test case",
+      "id of the test target of the test case"
     )
     .option(
       "--headless",
-      "if we should run headless without the UI of playwright and the browser",
+      "if we should run headless without the UI of playwright and the browser"
     )
     .option(
       "--persist",
-      "if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again",
+      "if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again"
     )
     .option("--grep <substring>", "filter test cases by substring")
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
-        options.testTargetId,
+        options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void runDebugtopus(options);
@@ -148,7 +148,7 @@ export const buildCmd = (): Command => {
     .option(
       "-v, --variables-to-overwrite <variables>",
       "JSON object of variables to overwrite",
-      toJSON,
+      toJSON
     )
     .action(async (options) => {
       const testTargetId = await resolveTestTargetId(options.testTargetId);
@@ -192,7 +192,7 @@ export const buildCmd = (): Command => {
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
-        options.testTargetId,
+        options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void listEnvironments(options);
@@ -207,7 +207,7 @@ export const buildCmd = (): Command => {
     .option("--test-account-password <password>", "Test account password")
     .option(
       "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key",
+      "Test account OTP initializer key"
     )
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
@@ -216,7 +216,7 @@ export const buildCmd = (): Command => {
       createEnvironment({
         ...options,
         testTargetId: await resolveTestTargetId(options.testTargetId),
-      }),
+      })
     );
 
   createCommandWithCommonOptions("update-environment")
@@ -229,7 +229,7 @@ export const buildCmd = (): Command => {
     .option("--test-account-password <password>", "Test account password")
     .option(
       "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key",
+      "Test account OTP initializer key"
     )
     .option("--basic-auth-username <username>", "Basic auth username")
     .option("--basic-auth-password <password>", "Basic auth password")
@@ -238,7 +238,7 @@ export const buildCmd = (): Command => {
       updateEnvironment({
         ...options,
         testTargetId: await resolveTestTargetId(options.testTargetId),
-      }),
+      })
     );
 
   createCommandWithCommonOptions("delete-environment")
@@ -270,7 +270,7 @@ export const buildCmd = (): Command => {
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
-        options.testTargetId,
+        options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void listNotifications(options);
@@ -282,7 +282,7 @@ export const buildCmd = (): Command => {
     .option("-t, --test-target-id <id>", "Test target ID")
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
-        options.testTargetId,
+        options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void listTestCase(options);
@@ -299,12 +299,12 @@ export const buildCmd = (): Command => {
     .option(
       "--assigned-tag-ids <ids>",
       "Comma-separated list of tag IDs",
-      splitter,
+      splitter
     )
     .option("--folder-id <id>", "Folder ID")
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
-        options.testTargetId,
+        options.testTargetId
       );
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void createDiscovery(options);
