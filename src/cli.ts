@@ -253,9 +253,9 @@ export const buildCmd = (): Command => {
   program
     .command("start-private-location")
     .description("Start a private location worker, see https://octomind.dev/docs/proxy/private-location")
-    .option("-n, --name <name>", "Location name")
-    .option("-u, --username <username>", "Proxy user")
-    .option("-p, --password <password>", "Proxy password")
+    .option("-n, --name [name]", "Location name")
+    .option("-u, --username [username]", "Proxy user")
+    .option("-p, --password [password]", "Proxy password")
     .option(
       "-l, --host-network",
       "Use host network (default: false). If set you can use localhost directly",
@@ -313,7 +313,7 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("list-test-cases")
     .description("List all test cases")
-    .option("-t, --test-target-id <id>", "Test target ID")
+    .addOption(testTargetIdOption)
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
         options.testTargetId,

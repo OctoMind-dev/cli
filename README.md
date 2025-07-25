@@ -274,6 +274,19 @@ Create a new test case discovery
 | `--assigned-tag-ids [ids]` | Comma-separated list of tag IDs | No |  |
 | `--folder-id [id]` | Folder ID | No |  |
 
+## list-test-cases
+
+List all test cases
+
+**Usage:** `list-test-cases [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
 
 
 ## Output Formats
