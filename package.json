@@ -11,12 +11,12 @@
     "octomind": "./dist/index.js"
   },
   "scripts": {
-    "lint": "npx genversion -des src/version.ts && eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
+    "lint": "pnpm apigen &&npx genversion -des src/version.ts && eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
     "apigen": "openapi-typescript ./openapi.yaml --output src/api.ts",
-    "build": "npx genversion -des src/version.ts && pnpm apigen && tsc --project tsconfig.build.json",
-    "octomind": "tsx src/index.ts",
+    "build": "pnpm apigen && npx genversion -des src/version.ts && tsc --project tsconfig.build.json",
+    "octomind": "pnpm apigen && tsx src/index.ts",
     "test": "pnpm apigen && npx genversion -des src/version.ts && jest",
-    "test:watch": "npx genversion -e src/version.ts && jest --watch"
+    "test:watch": "pnpm apigen && npx genversion -e src/version.ts && jest --watch"
   },
   "keywords": [],
   "author": "",
