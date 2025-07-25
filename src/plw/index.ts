@@ -101,7 +101,13 @@ export const startPrivateLocationWorker = async (options: {
       "API key is required. Please configure it first by running 'octomind init'",
     );
   }
-  const command = createDockerCommand({ name, username, password, apiKey, hostNetwork: options.hostNetwork });
+  const command = createDockerCommand({
+    name,
+    username,
+    password,
+    apiKey,
+    hostNetwork: options.hostNetwork,
+  });
 
   if (!(await checkDockerDaemon())) {
     console.error(
@@ -110,7 +116,9 @@ export const startPrivateLocationWorker = async (options: {
     return;
   }
 
-  console.log(`executing command : '${command.replace(/APIKEY=[^\s&]*/g, 'APIKEY=***')}'`);
+  console.log(
+    `executing command : '${command.replace(/APIKEY=[^\s&]*/g, "APIKEY=***")}'`,
+  );
   const args = command.split(" ");
   const result = await spawnAndStreamLines(args[0], args.slice(1), 10);
   console.log(`Captured ${result.lines.length} lines`);
