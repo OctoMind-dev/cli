@@ -97,7 +97,7 @@ describe("config overwrite behaviour", () => {
       "debug",
       "--url",
       "https://example.com",
-      "--testTargetId",
+      "--test-target-id",
       providedTestTargetId,
     ]);
 
