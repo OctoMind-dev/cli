@@ -79,8 +79,9 @@ const createDockerCommand = (options: {
   name?: string;
   username?: string;
   password?: string;
+  hostNetwork?: boolean;
 }): string => {
-  return `docker run --rm --name PLW -e PLW_NAME=${options.name} -e PROXY_USER=${options.username} -e PROXY_PASS=${options.password} -e APIKEY=${options.apiKey}  eu.gcr.io/octomind-dev/plw:latest`;
+  return `docker run --rm --name PLW ${options.hostNetwork ? "--network host" : ""} -e PLW_NAME=${options.name} -e PROXY_USER=${options.username} -e PROXY_PASS=${options.password} -e APIKEY=${options.apiKey} eu.gcr.io/octomind-dev/plw:latest`;
 };
 
 export const startPrivateLocationWorker = async (options: {
@@ -88,6 +89,7 @@ export const startPrivateLocationWorker = async (options: {
   username?: string;
   password?: string;
   apikey: string;
+  hostNetwork?: boolean;
 }) => {
   const name = options.name || "default-plw";
   const username = options.username || randomUUID().replace(/-/g, "");
@@ -99,7 +101,7 @@ export const startPrivateLocationWorker = async (options: {
       "API key is required. Please configure it first by running 'octomind init'",
     );
   }
-  const command = createDockerCommand({ name, username, password, apiKey });
+  const command = createDockerCommand({ name, username, password, apiKey, hostNetwork: options.hostNetwork });
 
   if (!(await checkDockerDaemon())) {
     console.error(
@@ -108,7 +110,7 @@ export const startPrivateLocationWorker = async (options: {
     return;
   }
 
-  console.log(`executing command : '${command}'`);
+  console.log(`executing command : '${command.replace(/APIKEY=[^\s&]*/g, 'APIKEY=***')}'`);
   const args = command.split(" ");
   const result = await spawnAndStreamLines(args[0], args.slice(1), 10);
   console.log(`Captured ${result.lines.length} lines`);
