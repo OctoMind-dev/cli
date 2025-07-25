@@ -12,14 +12,20 @@ export function getConfigPath(): string {
   return path.join(process.cwd(), OCTOMIND_CONFIG_FILE);
 }
 
-export async function loadConfig(): Promise<Config> {
+export async function loadConfig(force?: boolean): Promise<Config> {
   try {
     const configPath = getConfigPath();
     const data = await fs.readFile(configPath, "utf8");
     return JSON.parse(data);
   } catch (error) {
-    console.error("❌ Error parsing configuration:", (error as Error).message);
-
+    // only exit on overwrite attempt
+    if (force) {
+      console.error(
+        "❌ Error parsing configuration:",
+        (error as Error).message
+      );
+      process.exit(1);
+    }
     return {};
   }
 }
