@@ -252,6 +252,7 @@ export const buildCmd = (): Command => {
     .option("-n, --name <name>", "Location name")
     .option("-u, --username <username>", "Proxy user")
     .option("-p, --password <password>", "Proxy password")
+    .option("-l, --host-network", "Use host network (default: false). If set you can use localhost directly", false)
     .action(startPrivateLocationWorker);
 
     program.command("stop-private-location")
