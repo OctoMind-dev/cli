@@ -1,8 +1,22 @@
 import { program } from "commander";
 import { buildCmd } from "../src/cli";
 import { executeTests } from "../src/tools";
+import { runDebugtopus } from "../src/debugtopus";
+import { loadConfig } from "../src/config";
 
 jest.mock("../src/tools");
+jest.mock("../src/debugtopus");
+jest.mock("../src/config", () => ({
+  ...jest.requireActual("../src/config"),
+  loadConfig: jest.fn(),
+}));
+
+beforeAll(() => {
+  buildCmd();
+  program.exitOverride((err) => {
+    throw err;
+  });
+});
 
 describe("CLI Commands parsing options", () => {
   const stdArgs = [
@@ -14,13 +28,6 @@ describe("CLI Commands parsing options", () => {
     "--test-target-id",
     "test-target-123",
   ];
-
-  beforeAll(() => {
-    buildCmd();
-    program.exitOverride((err) => {
-      throw err;
-    });
-  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -71,6 +78,57 @@ describe("CLI Commands parsing options", () => {
     expect(executeTests).toHaveBeenCalledWith(
       expect.objectContaining({
         variablesToOverwrite: { foo: ["bar"] },
+      }),
+    );
+  });
+});
+
+describe("config overwrite behaviour", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should resolve testTargetId from parameter when provided", async () => {
+    const providedTestTargetId = "provided-test-target-123";
+
+    await program.parseAsync([
+      "node",
+      "cli.js",
+      "debug",
+      "--url",
+      "https://example.com",
+      "--testTargetId",
+      providedTestTargetId,
+    ]);
+
+    expect(runDebugtopus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: "https://example.com",
+        testTargetId: providedTestTargetId,
+      }),
+    );
+  });
+
+  it("should resolve testTargetId from config when not provided as parameter", async () => {
+    const mockResolvedId = "config-test-target-456";
+    const mockConfig = {
+      apiKey: "test-api-key",
+      testTargetId: mockResolvedId,
+    };
+    (loadConfig as jest.Mock).mockResolvedValue(mockConfig);
+
+    await program.parseAsync([
+      "node",
+      "cli.js",
+      "debug",
+      "--url",
+      "https://example.com",
+    ]);
+
+    expect(runDebugtopus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: "https://example.com",
+        testTargetId: mockResolvedId,
       }),
     );
   });
