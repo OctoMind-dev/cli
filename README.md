@@ -11,275 +11,270 @@ See [API documentation](https://octomind.dev/docs/api-reference/)
 1. Install the package - `npm i -g @octomind/octomind` and use it directly e.g. `octomind -h`
 2. Use the cli through npx e.g. `npx @octomind/octomind -h`
 
+
+# octomind
+
+Octomind cli tool. Version: 1.0.5. Additional documentation see https://octomind.dev/docs/api-reference/
+
+**Usage:** `octomind [options] [command]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-V, --version` | output the version number | No |  |
+
+# octomind CLI Documentation
+
+Octomind cli tool. Version: 1.0.5. Additional documentation see https://octomind.dev/docs/api-reference/
+
 ## Commands
 
-### Init
+## init
 
-Initialize configuration by setting up your API key and optionally a test target ID. This allows you to avoid passing these parameters for subsequent commands.
+Initialize configuration by setting up API key
 
-```bash
-octomind init \
-  [--api-key <key>] \
-  [--test-target-id <id>] \
-  [--force]
-```
+**Usage:** `init [options]`
 
-Options:
-- `-k, --api-key`: Your Octomind API key (will prompt if not provided)
-- `-t, --test-target-id`: Test target ID (optional)
-- `-f, --force`: Force overwrite existing configuration
+### Options
 
-If you don't provide the API key via the command line option, the CLI will prompt you to enter it interactively. You can get your API key from https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key.
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-t, --test-target-id <id>` | Test target ID | Yes |  |
+| `-k, --api-key <key>` | the api key for authentication | Yes |  |
+| `-f, --force` | Force overwrite existing configuration | No |  |
 
-### Execute Tests
+## debug
 
-Run test cases against a specified URL.
+run test cases against local build
 
-```bash
-octomind execute \
-  --url <url> \
-  [--api-key <key>] \
-  [--test-target-id <id>] \
-  [--environment <name>] \
-  [--tags <list of tags>] \
-  [-v, --variables-to-overwrite <variables>] \
-  [--description <text>] \
-  [--json]
-```
+**Usage:** `debug [options]`
 
-Options:
-- `-u, --url` (required): URL to test
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
-- `-e, --environment`: Environment name (default: "default")
-- `-d, --description`: Test description
-- `-g, --tags`: comma separated list of tags for tests to execute
-- `-v, --variables-to-overwrite`: JSON object for variables to override for this run e.g. `{ "key": ["v1", "v2"]}`
-- `-j, --json`: Output raw JSON response
+### Options
 
-### Get Test Report
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-u, --url <url>` | url the tests should run against | Yes |  |
+| `-i, --id [uuid]` | id of the test case you want to run, if not provided will run all test cases in the test target | No |  |
+| `-e, --environment-id [uuid]` | id of the environment you want to run against, if not provided will run all test cases against the default environment | No |  |
+| `-a, --test-target-id [uuid]` | id of the test target of the test case, if not provided will use the test target id from the config | No |  |
+| `--headless` | if we should run headless without the UI of playwright and the browser | No |  |
+| `--persist` | if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again | No |  |
+| `--grep [substring]` | filter test cases by substring | No |  |
 
-Retrieve details about a specific test report.
+## execute
 
-```bash
-octomind report \
-  --report-id <id> \
-  [--api-key <key>] \
-  [--test-target-id <id>] \
-  [--json]
-```
+Execute test cases
 
-Options:
-- `-r, --report-id` (required): Test report ID
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
-- `-j, --json`: Output raw JSON response
+**Usage:** `execute [options]`
 
-Example text output:
-```
-Test Report Details:
-Status: PASSED
-Execution URL: https://example.com
+### Options
 
-Test Results:
-- Test abc-123-456: PASSED
-  Trace: https://storage.googleapis.com/automagically-traces/abc-123-trace.zip
-- Test def-456-789: PASSED
-  Trace: https://storage.googleapis.com/automagically-traces/def-456-trace.zip
-```
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-u, --url <url>` | URL to test | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-e, --environment-name [name]` | Environment name | No | default |
+| `-d, --description [text]` | Test description | No |  |
+| `-g, --tags [tags]` | comma separated list of tags | No |  |
+| `-v, --variables-to-overwrite [variables]` | JSON object of variables to overwrite | No |  |
 
-Example JSON output:
-```json
-{
-  "id": "826c15af-644b-4b28-89b4-f50ff34e46b7",
-  "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-  "status": "PASSED",
-  "executionUrl": "https://example.com",
-  "testResults": [
-    {
-      "id": "abc-123-456",
-      "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-      "testCaseId": "test-1",
-      "status": "PASSED",
-      "traceUrl": "https://storage.googleapis.com/automagically-traces/abc-123-trace.zip"
-    },
-    {
-      "id": "def-456-789",
-      "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-      "testCaseId": "test-2",
-      "status": "PASSED",
-      "traceUrl": "https://storage.googleapis.com/automagically-traces/def-456-trace.zip"
-    }
-  ]
-}
-```
+## test-report
 
-### Register Private Location
+Get test report details
 
-Register a new private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) it will register itself on startup automatically.
+**Usage:** `test-report [options]`
 
-```bash
-octomind register-location \
-  --name <name> \
-  --proxypass <password> \
-  --proxyuser <user> \
-  --address <address> \
-  [--api-key <key>] \
-  [--json]
-```
+### Options
 
-Options:
-- `-n, --name` (required): Location name
-- `-p, --proxypass` (required): Proxy password
-- `-u, --proxyuser` (required): Proxy user
-- `-a, --address` (required): Location address (format: IP:PORT)
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-j, --json`: Output raw JSON response
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-r, --test-report-id <id>` | Test report ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
-### Unregister Private Location
+## register-location
 
-Remove a registered private location worker. If you use the [private location worker](https://github.com/OctoMind-dev/private-location-worker) it will unregister itself when going offline automatically.
+Register a private location
 
-```bash
-octomind unregister-location \
-  --name <name> \
-  [--api-key <key>] \
-  [--json]
-```
+**Usage:** `register-location [options]`
 
-Options:
-- `-n, --name` (required): Location name
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-j, --json`: Output raw JSON response
+### Options
 
-### List Private Locations
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-n, --name <name>` | Location name | Yes |  |
+| `-p, --password <password>` | Proxy password | Yes |  |
+| `-u, --username <user>` | Proxy user | Yes |  |
+| `-a, --address <address>` | Location address | Yes |  |
 
-List all registered private locations.
+## unregister-location
 
-```bash
-octomind list-private-locations \
-  [--api-key <key>] \
-  [--json]
-```
+Unregister a private location
 
-Options:
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-j, --json`: Output raw JSON response
+**Usage:** `unregister-location [options]`
 
-Example text output:
-```
-Private Locations:
-- Name: location-1
-  Status: ONLINE
-  Address: https://location-1.example.com
-- Name: location-2
-  Status: OFFLINE
-  Address: https://location-2.example.com
-```
+### Options
 
-### List Environments
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-n, --name <name>` | Location name | Yes |  |
 
-List all available environments.
+## list-private-locations
 
-```bash
-octomind list-environments \
-  [--api-key <key>] \
-  [--test-target-id <id>] \
-  [--json]
-```
+List all private locations
 
-Options:
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
-- `-j, --json`: Output raw JSON response
+**Usage:** `list-private-locations [options]`
 
-### Create Environment
+### Options
 
-Create a new environment for a test target.
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
 
-```bash
-octomind create-environment \
-  --name <name> \
-  --discovery-url <url> \
-  [--api-key <key>] \
-  [--test-target-id <id>] \
-  [--test-account-username <username>] \
-  [--test-account-password <password>] \
-  [--test-account-otp-initializer-key <key>] \
-  [--basic-auth-username <username>] \
-  [--basic-auth-password <password>] \
-  [--private-location-name <name>] \
-  [--additional-header-fields <fields>] \
-  [--json]
-```
+## list-environments
 
-Options:
-- `-n, --name` (required): Environment name
-- `-d, --discovery-url` (required): Discovery URL
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
-- `--test-account-username`: Test account username
-- `--test-account-password`: Test account password
-- `--test-account-otp-initializer-key`: OTP initializer key for test account
-- `--basic-auth-username`: Basic auth username
-- `--basic-auth-password`: Basic auth password
-- `--private-location-name`: Private location name
-- `--additional-header-fields`: Additional header fields (JSON string)
-- `-j, --json`: Output raw JSON response
+List all environments
 
-### Update Environment
+**Usage:** `list-environments [options]`
 
-Update an existing environment.
+### Options
 
-```bash
-octomind update-environment \
-  --environment-id <id> \
-  [--api-key <key>] \
-  [--test-target-id <id>] \
-  [--name <name>] \
-  [--discovery-url <url>] \
-  [--test-account-username <username>] \
-  [--test-account-password <password>] \
-  [--test-account-otp-initializer-key <key>] \
-  [--basic-auth-username <username>] \
-  [--basic-auth-password <password>] \
-  [--private-location-name <name>] \
-  [--additional-header-fields <fields>] \
-  [--json]
-```
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
-Options:
-- `-e, --environment-id` (required): Environment ID
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
-- `-n, --name`: New environment name
-- `-d, --discovery-url`: New discovery URL
-- `--test-account-username`: New test account username
-- `--test-account-password`: New test account password
-- `--test-account-otp-initializer-key`: New OTP initializer key for test account
-- `--basic-auth-username`: New basic auth username
-- `--basic-auth-password`: New basic auth password
-- `--private-location-name`: New private location name
-- `--additional-header-fields`: New additional header fields (JSON string)
-- `-j, --json`: Output raw JSON response
+## create-environment
 
-### Delete Environment
+Create a new environment
 
-Delete an existing environment.
+**Usage:** `create-environment [options]`
 
-```bash
-octomind delete-environment \
-  --environment-id <id> \
-  [--api-key <key>] \
-  [--test-target-id <id>] \
-  [--json]
-```
+### Options
 
-Options:
-- `-e, --environment-id` (required): Environment ID
-- `-k, --api-key`: Your Octomind API key (optional if configured via `init`)
-- `-t, --test-target-id`: Test target ID (optional if configured via `init`)
-- `-j, --json`: Output raw JSON response
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-n, --name <name>` | Environment name | Yes |  |
+| `-d, --discovery-url <url>` | Discovery URL | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `--test-account-username [username]` | Test account username | No |  |
+| `--test-account-password [password]` | Test account password | No |  |
+| `--test-account-otp-initializer-key [key]` | Test account OTP initializer key | No |  |
+| `--basic-auth-username [username]` | Basic auth username | No |  |
+| `--basic-auth-password [password]` | Basic auth password | No |  |
+| `--private-location-name [name]` | Private location name | No |  |
+
+## update-environment
+
+Update an existing environment
+
+**Usage:** `update-environment [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-e, --environment-id <id>` | Environment ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-n, --name [name]` | Environment name | No |  |
+| `-d, --discovery-url [url]` | Discovery URL | No |  |
+| `--test-account-username [username]` | Test account username | No |  |
+| `--test-account-password [password]` | Test account password | No |  |
+| `--test-account-otp-initializer-key [key]` | Test account OTP initializer key | No |  |
+| `--basic-auth-username [username]` | Basic auth username | No |  |
+| `--basic-auth-password [password]` | Basic auth password | No |  |
+| `--private-location-name [name]` | Private location name | No |  |
+
+## delete-environment
+
+Delete an environment
+
+**Usage:** `delete-environment [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-e, --environment-id <id>` | Environment ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## start-private-location
+
+Start a private location worker
+
+**Usage:** `start-private-location [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-n, --name [name]` | Location name | No |  |
+| `-u, --username [username]` | Proxy user | No |  |
+| `-p, --password [password]` | Proxy password | No |  |
+| `-l, --host-network` | Use host network (default: false). If set you can use localhost directly | No | false |
+
+## stop-private-location
+
+Stop a private location worker
+
+**Usage:** `stop-private-location [options]`
+
+## notifications
+
+Get notifications for a test target
+
+**Usage:** `notifications [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## test-case
+
+Get details of a specific test case
+
+**Usage:** `test-case [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-c, --test-case-id <id>` | Test case ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## create-discovery
+
+Create a new test case discovery
+
+**Usage:** `create-discovery [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-n, --name <name>` | Discovery name | Yes |  |
+| `-p, --prompt <prompt>` | Discovery prompt | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-e, --entry-point-url-path [path]` | Entry point URL path | No |  |
+| `--prerequisite-id [id]` | Prerequisite test case ID | No |  |
+| `--external-id [id]` | External identifier | No |  |
+| `--assigned-tag-ids [ids]` | Comma-separated list of tag IDs | No |  |
+| `--folder-id [id]` | Folder ID | No |  |
+
+
 
 ## Output Formats
 
