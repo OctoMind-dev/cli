@@ -315,7 +315,9 @@ pnpm install
 ```
 
 The CLI is written in TypeScript and uses the following dependencies:
-- `commander`: For command-line argument parsing
+- [commander](https://github.com/tj/commander.js): For command-line argument parsing
+- [openapi-fetch](https://openapi-ts.dev/openapi-fetch/): For making openapi API calls
+- [openapi-typescript](https://openapi-ts.dev/introduction): For generating types from openapi spec
 
 To build from source:
 ```bash
