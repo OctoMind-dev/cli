@@ -1,4 +1,4 @@
-import { program, Command } from "commander";
+import { program, Command, Option } from "commander";
 import { version } from "./version";
 import {
   createDiscovery,
@@ -30,11 +30,14 @@ const createCommandWithCommonOptions = (command: string): Command => {
 const splitter = (value: string): string[] => value.split(/,| |\|/);
 const toJSON = (value: string): object => JSON.parse(value);
 
+const testTargetIdOption = new Option("-t, --test-target-id [id]", 
+  "Test target ID, if not provided will use the test target id from the config");
+
 export const buildCmd = (): Command => {
   program
-    .name("octomind-cli")
+    .name("octomind")
     .description(
-      `Octomind CLI tool. Version: ${version}. see https://octomind.dev/docs/api-reference/`
+      `Octomind cli tool. Version: ${version}. Additional documentation see https://octomind.dev/docs/api-reference/`,
     )
     .version(version);
 
@@ -110,16 +113,16 @@ export const buildCmd = (): Command => {
     .description("run test cases against local build")
     .requiredOption("-u, --url <url>", "url the tests should run against")
     .option(
-      "-i, --id <uuid>",
-      "id of the test case you want to run, if not provided will run all test cases in the test target"
+      "-i, --id [uuid]",
+      "id of the test case you want to run, if not provided will run all test cases in the test target",
     )
     .option(
-      "-e, --environmentId <uuid>",
-      "id of the environment you want to run against, if not provided will run all test cases against the default environment"
+      "-e, --environment-id [uuid]",
+      "id of the environment you want to run against, if not provided will run all test cases against the default environment",
     )
     .option(
-      "-a, --testTargetId <uuid>",
-      "id of the test target of the test case"
+      "-a, --test-target-id [uuid]",
+      "id of the test target of the test case, if not provided will use the test target id from the config",
     )
     .option(
       "--headless",
@@ -129,7 +132,7 @@ export const buildCmd = (): Command => {
       "--persist",
       "if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again"
     )
-    .option("--grep <substring>", "filter test cases by substring")
+    .option("--grep [substring]", "filter test cases by substring")
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
         options.testTargetId
@@ -141,12 +144,12 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("execute")
     .description("Execute test cases")
     .requiredOption("-u, --url <url>", "URL to test")
-    .option("-t, --test-target-id <id>", "Test target ID")
-    .option("-e, --environmentName <name>", "Environment name", "default")
-    .option("-d, --description <text>", "Test description")
-    .option("-g, --tags <tags>", "comma separated list of tags", splitter)
+    .addOption(testTargetIdOption)
+    .option("-e, --environment-name [name]", "Environment name", "default")
+    .option("-d, --description [text]", "Test description")
+    .option("-g, --tags [tags]", "comma separated list of tags", splitter)
     .option(
-      "-v, --variables-to-overwrite <variables>",
+      "-v, --variables-to-overwrite [variables]",
       "JSON object of variables to overwrite",
       toJSON
     )
@@ -161,7 +164,7 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("test-report")
     .description("Get test report details")
     .requiredOption("-r, --test-report-id <id>", "Test report ID")
-    .option("-t, --test-target-id <id>", "Test target ID")
+    .addOption(testTargetIdOption)
     .action(async (options) => {
       const testTargetId = await resolveTestTargetId(options.testTargetId);
       await listTestReport({
@@ -189,7 +192,7 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("list-environments")
     .description("List all environments")
-    .option("-t, --test-target-id <id>", "Test target ID")
+    .addOption(testTargetIdOption)
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
         options.testTargetId
@@ -202,16 +205,16 @@ export const buildCmd = (): Command => {
     .description("Create a new environment")
     .requiredOption("-n, --name <name>", "Environment name")
     .requiredOption("-d, --discovery-url <url>", "Discovery URL")
-    .option("-t, --test-target-id <id>", "Test target ID")
-    .option("--test-account-username <username>", "Test account username")
-    .option("--test-account-password <password>", "Test account password")
+    .addOption(testTargetIdOption)
+    .option("--test-account-username [username]", "Test account username")
+    .option("--test-account-password [password]", "Test account password")
     .option(
-      "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key"
+      "--test-account-otp-initializer-key [key]",
+      "Test account OTP initializer key",
     )
-    .option("--basic-auth-username <username>", "Basic auth username")
-    .option("--basic-auth-password <password>", "Basic auth password")
-    .option("--private-location-name <name>", "Private location name")
+    .option("--basic-auth-username [username]", "Basic auth username")
+    .option("--basic-auth-password [password]", "Basic auth password")
+    .option("--private-location-name [name]", "Private location name")
     .action(async (_, options) =>
       createEnvironment({
         ...options,
@@ -222,18 +225,18 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("update-environment")
     .description("Update an existing environment")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
-    .option("-t, --test-target-id <id>", "Test target ID")
-    .option("-n, --name <name>", "Environment name")
-    .option("-d, --discovery-url <url>", "Discovery URL")
-    .option("--test-account-username <username>", "Test account username")
-    .option("--test-account-password <password>", "Test account password")
+    .addOption(testTargetIdOption)
+    .option("-n, --name [name]", "Environment name")
+    .option("-d, --discovery-url [url]", "Discovery URL")
+    .option("--test-account-username [username]", "Test account username")
+    .option("--test-account-password [password]", "Test account password")
     .option(
-      "--test-account-otp-initializer-key <key>",
-      "Test account OTP initializer key"
+      "--test-account-otp-initializer-key [key]",
+      "Test account OTP initializer key",
     )
-    .option("--basic-auth-username <username>", "Basic auth username")
-    .option("--basic-auth-password <password>", "Basic auth password")
-    .option("--private-location-name <name>", "Private location name")
+    .option("--basic-auth-username [username]", "Basic auth username")
+    .option("--basic-auth-password [password]", "Basic auth password")
+    .option("--private-location-name [name]", "Private location name")
     .action(async (_, options) =>
       updateEnvironment({
         ...options,
@@ -244,15 +247,15 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("delete-environment")
     .description("Delete an environment")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
-    .option("-t, --test-target-id <id>", "Test target ID")
+    .addOption(testTargetIdOption)
     .action(deleteEnvironment);
 
   program
     .command("start-private-location")
-    .description("Start a private location worker")
-    .option("-n, --name <name>", "Location name")
-    .option("-u, --username <username>", "Proxy user")
-    .option("-p, --password <password>", "Proxy password")
+    .description("Start a private location worker, see https://octomind.dev/docs/proxy/private-location")
+    .option("-n, --name [name]", "Location name")
+    .option("-u, --username [username]", "Proxy user")
+    .option("-p, --password [password]", "Proxy password")
     .option(
       "-l, --host-network",
       "Use host network (default: false). If set you can use localhost directly",
@@ -262,12 +265,12 @@ export const buildCmd = (): Command => {
 
   program
     .command("stop-private-location")
-    .description("Stop a private location worker")
+    .description("Stop a private location worker, see https://octomind.dev/docs/proxy/private-location")
     .action(stopPLW);
 
   createCommandWithCommonOptions("notifications")
     .description("Get notifications for a test target")
-    .option("-t, --test-target-id <id>", "Test target ID")
+    .addOption(testTargetIdOption)
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
         options.testTargetId
@@ -279,7 +282,7 @@ export const buildCmd = (): Command => {
   createCommandWithCommonOptions("test-case")
     .description("Get details of a specific test case")
     .requiredOption("-c, --test-case-id <id>", "Test case ID")
-    .option("-t, --test-target-id <id>", "Test target ID")
+    .addOption(testTargetIdOption)
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
         options.testTargetId
@@ -292,16 +295,14 @@ export const buildCmd = (): Command => {
     .description("Create a new test case discovery")
     .requiredOption("-n, --name <name>", "Discovery name")
     .requiredOption("-p, --prompt <prompt>", "Discovery prompt")
-    .option("-t, --test-target-id <id>", "Test target ID")
-    .option("-e, --entry-point-url-path <path>", "Entry point URL path")
-    .option("--prerequisite-id <id>", "Prerequisite test case ID")
-    .option("--external-id <id>", "External identifier")
+    .addOption(testTargetIdOption)
+    .option("-e, --entry-point-url-path [path]", "Entry point URL path")
+    .option("--prerequisite-id [id]", "Prerequisite test case ID")
+    .option("--external-id [id]", "External identifier")
     .option(
-      "--assigned-tag-ids <ids>",
-      "Comma-separated list of tag IDs",
-      splitter
+      "--assigned-tag-ids [ids]", "Comma-separated list of tag IDs", splitter,
     )
-    .option("--folder-id <id>", "Folder ID")
+    .option("--folder-id [id]", "Folder ID")
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
         options.testTargetId
@@ -312,7 +313,7 @@ export const buildCmd = (): Command => {
 
   createCommandWithCommonOptions("list-test-cases")
     .description("List all test cases")
-    .option("-t, --test-target-id <id>", "Test target ID")
+    .addOption(testTargetIdOption)
     .action(async (options, command) => {
       const resolvedTestTargetId = await resolveTestTargetId(
         options.testTargetId
