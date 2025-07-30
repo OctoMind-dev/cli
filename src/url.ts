@@ -15,20 +15,20 @@ export const getUrl = async (
 ): Promise<string> => {
   const relevantBaseUrl = new URL(BASE_URL).origin;
   const config = await loadConfig();
-  const testTargetId = config.testTargetId;
-  if (!testTargetId) {
-    throw new Error("Test target id is not set");
+  const configuredTestTargetId = config.testTargetId;
+  if (!configuredTestTargetId && input.entityType !== "test-target") {
+    return "";
   }
   switch (input.entityType) {
     case "test-case":
-      return `${relevantBaseUrl}/testtargets/${testTargetId}/testcases?testCaseId=${input.testCaseId}`;
+      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testcases?testCaseId=${input.testCaseId}`;
     case "test-target":
-      return `${relevantBaseUrl}/testtargets/${testTargetId}`;
+      return `${relevantBaseUrl}/testtargets/${input.testTargetId}`;
     case "test-report":
-      return `${relevantBaseUrl}/testtargets/${testTargetId}/testreports/${input.testReportId}`;
+      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testreports/${input.testReportId}`;
     case "test-result":
-      return `${relevantBaseUrl}/testtargets/${testTargetId}/testreports/${input.testReportId}/testresults/${input.testResultId}`;
+      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testreports/${input.testReportId}/testresults/${input.testResultId}`;
     case "discovery":
-      return `${relevantBaseUrl}/testtargets/${testTargetId}/testcases/${input.testCaseId}`;
+      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testcases/${input.testCaseId}`;
   }
 };
