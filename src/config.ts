@@ -6,12 +6,12 @@ import { existsSync } from 'fs';
 const OCTOMIND_CONFIG_FILE = "octomind.json";
 const CONFIG_DIR = ".config";
 
-export async function getConfigPath(): Promise<string> {
+export async function getConfigPath(ensureDir?: boolean): Promise<string> {
   const homeDir = homedir();
   const configDir = join(homeDir, CONFIG_DIR);
   const configPath = join(configDir, OCTOMIND_CONFIG_FILE);
   
-  if (!existsSync(configDir)) {
+  if (ensureDir && !existsSync(configDir)) {
     await fs.mkdir(configDir, { recursive: true });
   }
   
@@ -43,7 +43,7 @@ export async function loadConfig(force?: boolean): Promise<Config> {
 
 export async function saveConfig(config: Config): Promise<void> {
   try {
-    const configPath = await getConfigPath();
+    const configPath = await getConfigPath(true);
     await fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
     console.log(`✅ Configuration saved to ${configPath}`);
   } catch (error) {
