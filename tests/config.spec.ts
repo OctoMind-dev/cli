@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { loadConfig, Config } from "../src/config";
-
+import { homedir } from "os";
 jest.mock("fs/promises");
 const mockedFs = fs as jest.Mocked<typeof fs>;
 
@@ -29,7 +29,7 @@ describe("Config", () => {
 
       expect(result).toEqual(mockConfig);
       expect(mockedFs.readFile).toHaveBeenCalledWith(
-        path.join(process.cwd(), "octomind.config.json"),
+        path.join(homedir(), ".config", "octomind.json"),
         "utf8",
       );
     });

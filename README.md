@@ -14,7 +14,7 @@ See [API documentation](https://octomind.dev/docs/api-reference/)
 
 # octomind
 
-Octomind cli tool. Version: 1.0.5. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.1.1. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -26,7 +26,7 @@ Octomind cli tool. Version: 1.0.5. Additional documentation see https://octomind
 
 # octomind CLI Documentation
 
-Octomind cli tool. Version: 1.0.5. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.1.1. Additional documentation see https://octomind.dev/docs/api-reference/
 
 ## Commands
 
@@ -43,6 +43,12 @@ Initialize configuration by setting up API key
 | `-t, --test-target-id <id>` | Test target ID | Yes |  |
 | `-k, --api-key <key>` | the api key for authentication | Yes |  |
 | `-f, --force` | Force overwrite existing configuration | No |  |
+
+## switch-test-target
+
+Switch to a different test target
+
+**Usage:** `switch-test-target [options]`
 
 ## debug
 
@@ -286,6 +292,18 @@ List all test cases
 |--------|-------------|----------|--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## list-test-targets
+
+List all test targets
+
+**Usage:** `list-test-targets [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
 
 
 
