@@ -1,27 +1,27 @@
-import { program, Command, Option } from "commander";
-import { version } from "./version";
+import { Command, Option, program } from "commander";
+
+import { Config, loadConfig, saveConfig } from "./config";
+import { runDebugtopus } from "./debugtopus";
+import { promptUser, resolveTestTargetId } from "./helpers";
+import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
   createDiscovery,
   createEnvironment,
   deleteEnvironment,
   executeTests,
-  listNotifications,
-  listTestCase,
-  listTestReport,
   listEnvironments,
+  listNotifications,
   listPrivateLocations,
+  listTestCase,
+  listTestCases,
+  listTestReport,
   registerLocation,
   unregisterLocation,
   updateEnvironment,
-  listTestCases,
   deleteTestCase,
 } from "./tools";
-import { Config, loadConfig, saveConfig } from "./config";
-import { promptUser, resolveTestTargetId } from "./helpers";
-import { runDebugtopus } from "./debugtopus";
-
-import { startPrivateLocationWorker, stopPLW } from "./plw";
 import { getTestTargets, listTestTargets } from "./tools/test-targets";
+import { version } from "./version";
 
 const createCommandWithCommonOptions = (command: string): Command => {
   return program
