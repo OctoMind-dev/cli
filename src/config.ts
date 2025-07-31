@@ -23,11 +23,24 @@ export interface Config {
   testTargetId?: string;
 }
 
+let configLoaded = false;
+let config: Config = {};
+
+export function resetConfig() {
+  configLoaded = false;
+  config = {};
+}
+
 export async function loadConfig(force?: boolean): Promise<Config> {
+  if(configLoaded && !force) {
+    return config;
+  }
   try {
     const configPath = await getConfigPath();
     const data = await fs.readFile(configPath, "utf8");
-    return JSON.parse(data);
+    config = JSON.parse(data);
+    configLoaded = true;
+    return config;
   } catch (error) {
     // only exit on overwrite attempt
     if (force) {
