@@ -1,6 +1,6 @@
 {
   "name": "@octomind/octomind",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
   "packageManager": "pnpm@10.13.1",
