@@ -1,7 +1,7 @@
 import fs from "fs/promises";
-import { homedir } from 'os';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { homedir } from "os";
+import { join } from "path";
+import { existsSync } from "fs";
 
 const OCTOMIND_CONFIG_FILE = "octomind.json";
 const CONFIG_DIR = ".config";
@@ -10,11 +10,11 @@ export async function getConfigPath(ensureDir?: boolean): Promise<string> {
   const homeDir = homedir();
   const configDir = join(homeDir, CONFIG_DIR);
   const configPath = join(configDir, OCTOMIND_CONFIG_FILE);
-  
+
   if (ensureDir && !existsSync(configDir)) {
     await fs.mkdir(configDir, { recursive: true });
   }
-  
+
   return configPath;
 }
 
@@ -46,7 +46,7 @@ export async function loadConfig(force?: boolean): Promise<Config> {
     if (force) {
       console.error(
         "❌ Error parsing configuration:",
-        (error as Error).message
+        (error as Error).message,
       );
       process.exit(1);
     }
