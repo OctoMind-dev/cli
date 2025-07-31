@@ -6,15 +6,27 @@ A command-line interface for interacting with the Octomind API.
 This CLI allows you to execute tests, retrieve test reports, and manage private locations as well as environments.
 See [API documentation](https://octomind.dev/docs/api-reference/)
 
-## Usage
+## Usage / Installation
 
-1. Install the package - `npm i -g @octomind/octomind` and use it directly e.g. `octomind -h`
+1. To install the package globally do **NOT** just a `npm i -g @octomind/octomind` but instead 
+```bash
+mkdir -p ~/.local/packages
+cd ~/.local/packages
+npm install @octomind/octomind@latest
+# either create an alias
+alias octomind="node ~/.local/packages/node_modules/@octomind/octomind/dist/index.js"
+# or create a symlink
+sudo ln -s ~/.local/packages/node_modules/@octomind/octomind/dist/index.js /usr/local/bin/octomind
+```
+
+this will install the package to `~/.local/packages` and create symlinks in `/usr/local/bin` or creates an alias. 
+This is necessary for the cli to work and avoid dependency conflicts, when installing the package globally.
+
 2. Use the cli through npx e.g. `npx @octomind/octomind -h`
-
 
 # octomind
 
-Octomind cli tool. Version: 1.1.1. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.1.2. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -26,7 +38,7 @@ Octomind cli tool. Version: 1.1.1. Additional documentation see https://octomind
 
 # octomind CLI Documentation
 
-Octomind cli tool. Version: 1.1.1. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.1.2. Additional documentation see https://octomind.dev/docs/api-reference/
 
 ## Commands
 
