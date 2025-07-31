@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { loadConfig, Config } from "../src/config";
+import { loadConfig, Config, resetConfig } from "../src/config";
 import { homedir } from "os";
 jest.mock("fs/promises");
 const mockedFs = fs as jest.Mocked<typeof fs>;
@@ -10,6 +10,7 @@ const originalConsoleError = console.error;
 describe("Config", () => {
   beforeEach(() => {
     console.error = jest.fn();
+    resetConfig();
   });
 
   afterEach(() => {

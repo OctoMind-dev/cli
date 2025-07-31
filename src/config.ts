@@ -26,6 +26,11 @@ export interface Config {
 let configLoaded = false;
 let config: Config = {};
 
+export function resetConfig() {
+  configLoaded = false;
+  config = {};
+}
+
 export async function loadConfig(force?: boolean): Promise<Config> {
   if(configLoaded && !force) {
     return config;
