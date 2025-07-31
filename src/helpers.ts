@@ -1,5 +1,6 @@
-import { createInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
+import { createInterface } from "node:readline";
+
 import { loadConfig } from "./config";
 
 export function promptUser(question: string): Promise<string> {

@@ -7,7 +7,8 @@
       "test/**",
       "biome.json",
       "jest.config.ts",
-      "tsconfig.json"
+      "tsconfig.json",
+      "!src/api.ts"
     ]
   },
   "formatter": {
@@ -149,6 +150,23 @@
   ],
   "assist": {
     "enabled": true,
-    "actions": { "source": { "organizeImports": "on" } }
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ":NODE:",
+              ":BLANK_LINE:",
+              ":PACKAGE:",
+              ":BLANK_LINE:",
+              ":ALIAS:",
+              ":BLANK_LINE:",
+              ":PATH:"
+            ]
+          }
+        }
+      }
+    }
   }
 }
