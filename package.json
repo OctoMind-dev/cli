@@ -4,6 +4,13 @@
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
   "packageManager": "pnpm@10.13.1",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
   "engines": {
     "node": ">=20.0.0"
   },
@@ -26,7 +33,7 @@
     "@playwright/test": "^1.54.1",
     "commander": "^14.0.0",
     "openapi-fetch": "^0.14.0",
-    "tsx": "^4.19.3"
+    "otplib": "^12.0.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

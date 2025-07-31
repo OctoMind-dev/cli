@@ -8,7 +8,7 @@ See [API documentation](https://octomind.dev/docs/api-reference/)
 
 ## Usage
 
-1. Install the package - `npm i -g @octomind/octomind` and use it directly e.g. `octomind -h`
+1. To install the package, run `curl https://github.com/OctoMind-dev/cli/blob/main/install.sh | bash` this will install the package to `~/.local/packages` and create symlinks in `~/.local/bin`. This is necessary for the cli to work and avoid dependency conflicts.
 2. Use the cli through npx e.g. `npx @octomind/octomind -h`
 
 
