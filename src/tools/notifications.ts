@@ -34,11 +34,15 @@ export const listNotifications = async (
     console.log(`Created At: ${notification.createdAt}`);
     if (notification.payload?.testReportId) {
       console.log(`Test Report ID: ${notification.payload.testReportId}`);
-      console.log(`URL: ${await getUrl({ testReportId: notification.payload.testReportId, entityType: "test-report" })}`);
+      console.log(
+        `URL: ${await getUrl({ testReportId: notification.payload.testReportId, entityType: "test-report" })}`,
+      );
     }
     if (notification.payload?.testCaseId) {
       console.log(`Test Case ID: ${notification.payload.testCaseId}`);
-      console.log(`URL: ${await getUrl({ testCaseId: notification.payload.testCaseId, entityType: "test-case" })}`);
+      console.log(
+        `URL: ${await getUrl({ testCaseId: notification.payload.testCaseId, entityType: "test-case" })}`,
+      );
     }
     if (notification.payload?.failed !== undefined) {
       console.log(`Failed: ${notification.payload.failed}`);
