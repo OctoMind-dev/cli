@@ -39,7 +39,7 @@
         "noUselessStringConcat": "error",
         "noUselessThisAlias": "error",
         "noUselessTypeConstraint": "error",
-        "useArrowFunction": "off"
+        "useArrowFunction": "error"
       },
       "correctness": {
         "noConstAssign": "error",
@@ -51,7 +51,6 @@
         "noInvalidConstructorSuper": "error",
         "noSelfAssign": "error",
         "noSwitchDeclarations": "error",
-        "noUndeclaredDependencies": "off",
         "noUndeclaredVariables": "error",
         "noUnreachable": "error",
         "noUnreachableSuper": "error",
@@ -113,40 +112,20 @@
       }
     }
   },
-  "javascript": { "formatter": { "quoteStyle": "double" } },
-  "overrides": [
-    {
-      "includes": ["*.ts", "*.tsx", "*.mts", "*.cts"],
-      "linter": {
-        "rules": {
-          "complexity": { "noArguments": "error" },
-          "correctness": {
-            "noConstAssign": "off",
-            "noGlobalObjectCalls": "off",
-            "noInvalidBuiltinInstantiation": "off",
-            "noInvalidConstructorSuper": "off",
-            "noSetterReturn": "off",
-            "noUndeclaredVariables": "off",
-            "noUnreachable": "off",
-            "noUnreachableSuper": "off"
-          },
-          "style": { "useConst": "error" },
-          "suspicious": {
-            "noClassAssign": "off",
-            "noDuplicateClassMembers": "off",
-            "noDuplicateObjectKeys": "off",
-            "noDuplicateParameters": "off",
-            "noFunctionAssign": "off",
-            "noImportAssign": "off",
-            "noRedeclare": "off",
-            "noUnsafeNegation": "off",
-            "noVar": "error",
-            "useGetterReturn": "off"
-          }
-        }
-      }
-    }
-  ],
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "all",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "double",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    },
+    "globals": []
+  },
   "assist": {
     "enabled": true,
     "actions": {
