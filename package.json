@@ -19,7 +19,7 @@
   },
   "scripts": {
     "gendoc": "tsx scripts/generate-docs.ts > README.md",
-    "lint": "pnpm apigen &&npx genversion -des src/version.ts && eslint src/**/*.ts tests/**/*.ts --max-warnings=0",
+    "lint": "pnpm apigen &&npx genversion -des src/version.ts && biome check",
     "apigen": "openapi-typescript https://app.octomind.dev/openapi.yaml --output src/api.ts",
     "build": "pnpm apigen && npx genversion -des src/version.ts && pnpm gendoc && tsc --project tsconfig.build.json",
     "octomind": "pnpm apigen && tsx src/index.ts",
@@ -41,7 +41,6 @@
     "@types/node": "^24.0.1",
     "jest": "^30.0.0",
     "openapi-typescript": "^7.8.0",
-    "prettier": "^3.0.1",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.1",
     "tsx": "^4.19.3",

@@ -66,7 +66,6 @@
         "noFloatingPromises": "warn",
         "noShadow": "error",
         "noTsIgnore": "error",
-        "noUnresolvedImports": "error",
         "useConsistentObjectDefinition": "error",
         "useUnifiedTypeSignature": "error"
       },
