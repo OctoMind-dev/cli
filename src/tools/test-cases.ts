@@ -7,6 +7,31 @@ export type TestCasesResponse = components["schemas"]["TestCasesResponse"];
 export type GetTestCaseParams =
   paths["/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}"]["get"]["parameters"]["path"];
 
+export const deleteTestCase = async (
+  options: GetTestCaseParams & ListOptions,
+): Promise<void> => {
+  const { data, error } = await client.DELETE(
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+          testCaseId: options.testCaseId,
+        },
+      },
+    },
+  );
+
+  handleError(error);
+
+  if (options.json) {
+    logJson(data);
+    return;
+  }
+
+  console.log("Test Case deleted successfully");
+};
+
 export const listTestCase = async (
   options: GetTestCaseParams & ListOptions,
 ): Promise<void> => {

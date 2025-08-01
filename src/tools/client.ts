@@ -4,7 +4,12 @@ import { loadConfig } from "../config";
 
 export const BASE_URL =
   process.env.OCTOMIND_API_URL || "https://app.octomind.dev/api";
-type ErrorResponse = components["schemas"]["ZodResponse"] | string | undefined;
+type ErrorResponse =
+  | components["schemas"]["ZodResponse"]
+  | string
+  | { status: "error"; error: string }
+  | { status: "has dependencies"; dependencyIds: string[] }
+  | undefined;
 
 const client = createClient<paths>({ baseUrl: BASE_URL });
 

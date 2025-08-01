@@ -26,7 +26,7 @@ This is necessary for the cli to work and avoid dependency conflicts, when insta
 
 # octomind
 
-Octomind cli tool. Version: 1.1.2. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.1.3. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -38,7 +38,7 @@ Octomind cli tool. Version: 1.1.2. Additional documentation see https://octomind
 
 # octomind CLI Documentation
 
-Octomind cli tool. Version: 1.1.2. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.1.3. Additional documentation see https://octomind.dev/docs/api-reference/
 
 ## Commands
 
@@ -258,6 +258,33 @@ Get notifications for a test target
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
+## list-test-cases
+
+List all test cases
+
+**Usage:** `list-test-cases [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## delete-test-case
+
+Delete a test case
+
+**Usage:** `delete-test-case [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-c, --test-case-id <id>` | Test case ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
 ## test-case
 
 Get details of a specific test case
@@ -291,19 +318,6 @@ Create a new test case discovery
 | `--external-id [id]` | External identifier | No |  |
 | `--assigned-tag-ids [ids]` | Comma-separated list of tag IDs | No |  |
 | `--folder-id [id]` | Folder ID | No |  |
-
-## list-test-cases
-
-List all test cases
-
-**Usage:** `list-test-cases [options]`
-
-### Options
-
-| Option | Description | Required | Default |
-|--------|-------------|----------|--------|
-| `-j, --json` | Output raw JSON response | No |  |
-| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
 ## list-test-targets
 
