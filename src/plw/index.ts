@@ -1,7 +1,8 @@
+import { ChildProcess, spawn } from "child_process";
 import { randomUUID } from "crypto";
-import { loadConfig } from "../config";
-import { spawn, ChildProcess } from "child_process";
 import { createInterface } from "readline";
+
+import { loadConfig } from "../config";
 
 interface StreamResult {
   lines: string[];

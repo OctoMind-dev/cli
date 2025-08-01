@@ -1,16 +1,17 @@
-import { existsSync, writeFileSync } from "fs";
-import { promisify } from "util";
 import { exec } from "child_process";
 import { randomUUID } from "crypto";
-import path, { dirname } from "path";
+import { existsSync, writeFileSync } from "fs";
 import fs from "fs/promises";
-import { ensureChromiumIsInstalled } from "./installation";
+import path, { dirname } from "path";
+import { promisify } from "util";
+
 import {
   getEnvironments,
   getPlaywrightCode,
   getPlaywrightConfig,
   getTestCases,
 } from "../tools";
+import { ensureChromiumIsInstalled } from "./installation";
 
 type DebugtopusOptions = {
   id?: string;
