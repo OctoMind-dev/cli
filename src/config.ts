@@ -54,10 +54,10 @@ export async function loadConfig(force?: boolean): Promise<Config> {
   }
 }
 
-export async function saveConfig(config: Config): Promise<void> {
+export async function saveConfig(newConfig: Config): Promise<void> {
   try {
     const configPath = await getConfigPath(true);
-    await fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
+    await fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), "utf8");
     console.log(`✅ Configuration saved to ${configPath}`);
   } catch (error) {
     console.error("❌ Error saving configuration:", (error as Error).message);
