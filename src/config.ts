@@ -32,7 +32,7 @@ export function resetConfig() {
 }
 
 export async function loadConfig(force?: boolean): Promise<Config> {
-  if(configLoaded && !force) {
+  if (configLoaded && !force) {
     return config;
   }
   try {
