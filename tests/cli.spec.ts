@@ -14,8 +14,8 @@ jest.mock("../src/config", () => ({
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 
-beforeAll(() => {
-  buildCmd();
+beforeAll(async () => {
+  await buildCmd();
   program.exitOverride((err) => {
     throw err;
   });

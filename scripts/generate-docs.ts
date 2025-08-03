@@ -48,16 +48,64 @@ function generateCommandDocs(command: Command, level = 1): string {
   // Process subcommands
   const subcommands = command.commands;
   if (subcommands && subcommands.length > 0) {
-    // If this is the root command, add a title
+    // If this is the root command, group commands by help group
     if (level === 1) {
       docs += `# ${command.name()} CLI Documentation\n\n`;
       docs += `${command.description()}\n\n`;
-      docs += '## Commands\n\n';
+      
+      // Group commands by help group
+      const commandsByGroup = new Map<string, Command[]>();
+      const ungroupedCommands: Command[] = [];
+      
+      subcommands.forEach(subcommand => {
+        const helpGroup = subcommand.helpGroup();
+        if (helpGroup) {
+          if (!commandsByGroup.has(helpGroup)) {
+            commandsByGroup.set(helpGroup, []);
+          }
+          const groupCommands = commandsByGroup.get(helpGroup);
+          if (groupCommands) {
+            groupCommands.push(subcommand);
+          }
+        } else {
+          ungroupedCommands.push(subcommand);
+        }
+      });
+      
+      // Generate documentation for each group, with setup first
+      const allGroups = Array.from(commandsByGroup.keys());
+      const setupGroup = allGroups.find(group => group === 'setup');
+      const otherGroups = allGroups.filter(group => group !== 'setup').sort();
+      const sortedGroups = setupGroup ? [setupGroup, ...otherGroups] : otherGroups;
+      
+      sortedGroups.forEach(groupName => {
+        const groupCommands = commandsByGroup.get(groupName);
+        if (groupCommands) {
+          const capitalizedGroupName = groupName.split('-').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+          ).join(' ');
+          
+          docs += `## ${capitalizedGroupName}\n\n`;
+          
+          groupCommands.forEach(subcommand => {
+            docs += generateCommandDocs(subcommand, level + 1);
+          });
+        }
+      });
+      
+      // Add ungrouped commands at the end
+      if (ungroupedCommands.length > 0) {
+        docs += '## Other Commands\n\n';
+        ungroupedCommands.forEach(subcommand => {
+          docs += generateCommandDocs(subcommand, level + 1);
+        });
+      }
+    } else {
+      // For non-root commands, process subcommands normally
+      subcommands.forEach(subcommand => {
+        docs += generateCommandDocs(subcommand, level + 1);
+      });
     }
-    
-    subcommands.forEach(subcommand => {
-      docs += generateCommandDocs(subcommand, level + 1);
-    });
   }
   
   return docs;
@@ -69,7 +117,7 @@ function generateCommandDocs(command: Command, level = 1): string {
 async function main() {
   try {
     // Get the program object from buildCmd
-    const program = buildCmd();
+    const program = await buildCmd();
     
     // Generate markdown documentation
     const markdown = generateCommandDocs(program);
