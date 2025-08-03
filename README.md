@@ -196,9 +196,9 @@ run test cases against local build
 |--------|-------------|----------|--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-u, --url <url>` | url the tests should run against | Yes |  |
-| `-i, --id [uuid]` | id of the test case you want to run, if not provided will run all test cases in the test target | No |  |
+| `-c, --test-case-id [uuid]` | id of the test case you want to run, if not provided will run all test cases in the test target | No |  |
 | `-e, --environment-id [uuid]` | id of the environment you want to run against, if not provided will run all test cases against the default environment | No |  |
-| `-a, --test-target-id [uuid]` | id of the test target of the test case, if not provided will use the test target id from the config | No |  |
+| `-t, --test-target-id [uuid]` | id of the test target of the test case, if not provided will use the test target id from the config | No |  |
 | `--headless` | if we should run headless without the UI of playwright and the browser | No |  |
 | `--persist` | if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again | No |  |
 | `--grep [substring]` | filter test cases by substring | No |  |
