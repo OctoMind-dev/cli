@@ -1,6 +1,12 @@
-import { environmentIdCompleter, optionsCompleter, testCaseIdCompleter, testReportIdCompleter, testTargetIdCompleter } from "../src/completion";
+import {
+  environmentIdCompleter,
+  optionsCompleter,
+  testCaseIdCompleter,
+  testReportIdCompleter,
+  testTargetIdCompleter,
+  CompletableCommand,
+} from "../src/completion";
 import tabtab, { TabtabEnv } from "tabtab";
-import { CompletableCommand } from "../src/completion";
 import { getTestTargets } from "../src/tools/test-targets";
 import { getEnvironments } from "../src/tools/environments";
 import { loadConfig } from "../src/config";
@@ -15,11 +21,10 @@ jest.mock("../src/tools/test-cases");
 jest.mock("../src/tools/test-reports");
 
 describe("completion", () => {
-
   const env: TabtabEnv = {
     line: "debug --test-target-id",
     prev: "--test-target-id",
-    complete: false ,
+    complete: false,
     words: 3,
     point: 0,
     partial: "",
@@ -68,7 +73,6 @@ describe("completion", () => {
   });
 
   it("should complete test target id", async () => {
-
     (getTestTargets as jest.Mock).mockResolvedValue([
       {
         id: "test-target-1",
@@ -175,7 +179,11 @@ describe("completion", () => {
   it("should complete options of command", async () => {
     const result = await optionsCompleter(mockCommand, env);
     expect(result).toEqual(true);
-    expect(tabtab.log).toHaveBeenNthCalledWith(1, ["--environment-id", "--test-case-id", "--test-report-id"]);
+    expect(tabtab.log).toHaveBeenNthCalledWith(1, [
+      "--environment-id",
+      "--test-case-id",
+      "--test-report-id",
+    ]);
     expect(tabtab.log).toHaveBeenNthCalledWith(2, ["-e", "-c", "-r"]);
   });
 });
