@@ -56,6 +56,25 @@ export const executeTests = async (
   }
 };
 
+export const getTestReports = async (options: {
+  testTargetId: string;
+}): Promise<TestReport[] | undefined> => {
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/test-reports",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+    },
+  );
+
+  handleError(error);
+
+  return data?.data;
+};
+
 export const listTestReport = async (
   options: GetTestReportParams & ListOptions,
 ): Promise<void> => {

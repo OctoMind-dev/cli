@@ -172,7 +172,7 @@ export const getEnvironment = async (
   }
 
   if (options.json) {
-    logJson({ success: true });
+    logJson({ environment });
     return;
   }
 
