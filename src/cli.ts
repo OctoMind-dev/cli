@@ -26,90 +26,23 @@ import {
 import { Config, loadConfig, saveConfig } from "./config";
 import { promptUser, resolveTestTargetId } from "./helpers";
 import { runDebugtopus } from "./debugtopus";
-import tabtab, { TabtabEnv } from "tabtab";
+
 
 import { startPrivateLocationWorker, stopPLW } from "./plw";
 import { getTestTargets, listTestTargets } from "./tools/test-targets";
+import { installCompletion, tabCompletion, uninstallCompletion } from "./completion";
 
-const BINARY_NAME = "octomind";
-
-const logOptions = async (command: Command, line: string) => {
-  const argv = line.split(" ");
-  const usedOptions = command.options.filter((option) => argv.includes(option.long!) || argv.includes(option.short!)).map((option) => option.flags);
-  tabtab.log(command.options.filter((option) => option.long)
-    .filter((option) => !usedOptions.includes(option.flags))
-    .map((option) => option.long!));
-  tabtab.log(command.options.filter((option) => option.short)
-    .filter((option) => !usedOptions.includes(option.flags))
-    .map((option) => option.short!));
-}
-
-const completion = async (env: TabtabEnv, program: Command) => {
-  if (!env.complete) return;
- 
-  const argv = env.line.split(" ");
-
-  const command = program.commands.find((command) => command.name() === argv[1]);
-  if (command) {
-    if( env.prev === "-t" || env.prev === "--test-target-id") {
-      const testTargets = await getTestTargets();
-      tabtab.log(testTargets.map((testTarget) => testTarget.id));
-      return;
+function Completable<T extends new (...args: any[]) => {}>(Base: T) {
+  return class extends Base {
+    timestamp = Date.now();
+    
+    completer() {
+      return this;
     }
-    if( command.name() === "test-case" && (env.prev === "-c" || env.prev === "--test-case-id") ) {
-      const config = await loadConfig();
-        if( config.testTargetId ) {
-        const testCases = await getTestCases({ testTargetId: config.testTargetId, status: "ENABLED" });
-        tabtab.log(testCases.map((testCase) => testCase.id));
-        return;
-      }
-    }
-    if( (command.name() === "update-environment" || command.name() === "delete-environment"|| command.name() === "environment") 
-        && (env.prev === "-e" || env.prev === "--environment-id") ) {
-      const config = await loadConfig();
-        if( config.testTargetId ) {
-        const environments = await getEnvironments({ testTargetId: config.testTargetId });
-        tabtab.log(environments.map((environment) => environment.id));
-        return;
-      }
-    }
-    await logOptions(command, env.line);
-    return;
-  }
-
-  tabtab.log(["--help"]);
-  tabtab.log(program.options.filter((option) => option.long).map((option) => option.long!));
-  tabtab.log(program.options.filter((option) => option.short).map((option) => option.short!));
-  tabtab.log(program.commands.map((command) => command.name()));
-};
-
-const installCompletion = async () => {
-  await tabtab
-    .install({
-      name: BINARY_NAME,
-      completer: BINARY_NAME
-    })
-    .catch(err => console.error('INSTALL ERROR', err));
+  };
 }
 
-const uninstallCompletion = async () => {
-  await tabtab
-    .uninstall({
-      name: BINARY_NAME,
-    })
-    .catch(err => console.error('UNINSTALL ERROR', err));
-}
-
-const tabCompletion = async (program: Command) => {
-  const env = tabtab.parseEnv(process.env);
-  await completion(env, program);
-}
-
-const createCommandWithCommonOptions = (command: string): Command => {
-  return program
-    .command(command)
-    .option("-j, --json", "Output raw JSON response");
-};
+export const BINARY_NAME = "octomind";
 
 const splitter = (value: string): string[] => value.split(/,| |\|/);
 const toJSON = (value: string): object => JSON.parse(value);
@@ -150,9 +83,19 @@ const selectTestTarget = async (): Promise<string> => {
 const testTargetIdOption = new Option("-t, --test-target-id [id]", 
   "Test target ID, if not provided will use the test target id from the config");
 
+const createCommandWithCommonOptions = (program: Command, command: string): Command => {
+  return program
+    .command(command)
+    .option("-j, --json", "Output raw JSON response");
+};
+
 export const buildCmd = async (): Promise<Command> => {
+  const completableProgram = Completable(Command);
+  const program = new completableProgram();
+
   program
     .name(BINARY_NAME)
+    .completer()
     .description(
       `Octomind cli tool. Version: ${version}. Additional documentation see https://octomind.dev/docs/api-reference/`,
     )
@@ -244,7 +187,7 @@ export const buildCmd = async (): Promise<Command> => {
       console.log(`✨ Switched to test target: ${testTargetId}`);
     });
 
-  createCommandWithCommonOptions("debug")
+  createCommandWithCommonOptions(program, "debug")
     .description("run test cases against local build")
     .helpGroup("execute")
     .requiredOption("-u, --url <url>", "url the tests should run against")
@@ -271,7 +214,7 @@ export const buildCmd = async (): Promise<Command> => {
     .option("--grep [substring]", "filter test cases by substring")
     .action(addTestTargetWrapper(runDebugtopus));
 
-  createCommandWithCommonOptions("execute")
+  createCommandWithCommonOptions(program, "execute")
     .description("Execute test cases to create a test report")
     .helpGroup("execute")
     .requiredOption("-u, --url <url>", "URL to test")
@@ -286,14 +229,14 @@ export const buildCmd = async (): Promise<Command> => {
     )
     .action(addTestTargetWrapper(executeTests));
 
-  createCommandWithCommonOptions("test-report")
+  createCommandWithCommonOptions(program, "test-report")
     .description("Get test report details")
     .helpGroup("test-reports")
     .requiredOption("-r, --test-report-id <id>", "Test report ID")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listTestReport));
 
-  createCommandWithCommonOptions("register-location")
+  createCommandWithCommonOptions(program, "register-location")
     .description("Register a private location")
     .helpGroup("private-locations")
     .requiredOption("-n, --name <name>", "Location name")
@@ -302,24 +245,24 @@ export const buildCmd = async (): Promise<Command> => {
     .requiredOption("-a, --address <address>", "Location address")
     .action(registerLocation);
 
-  createCommandWithCommonOptions("unregister-location")
+  createCommandWithCommonOptions(program, "unregister-location")
     .description("Unregister a private location")
     .helpGroup("private-locations")
     .requiredOption("-n, --name <name>", "Location name")
     .action(unregisterLocation);
 
-  createCommandWithCommonOptions("list-private-locations")
+  createCommandWithCommonOptions(program, "list-private-locations")
     .description("List all private locations")
     .helpGroup("private-locations")
     .action(listPrivateLocations);
 
-  createCommandWithCommonOptions("list-environments")
+  createCommandWithCommonOptions(program, "list-environments")
     .description("List all environments")
     .helpGroup("environments")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listEnvironments));
 
-  createCommandWithCommonOptions("create-environment")
+  createCommandWithCommonOptions(program, "create-environment")
     .description("Create a new environment")
     .helpGroup("environments")
     .requiredOption("-n, --name <name>", "Environment name")
@@ -336,14 +279,14 @@ export const buildCmd = async (): Promise<Command> => {
     .option("--private-location-name [name]", "Private location name")
     .action(addTestTargetWrapper(createEnvironment));
 
-  createCommandWithCommonOptions("environment")
+  createCommandWithCommonOptions(program, "environment")
     .description("Get an environment")
     .helpGroup("environments")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(getEnvironment));
 
-  createCommandWithCommonOptions("update-environment")
+  createCommandWithCommonOptions(program, "update-environment")
     .description("Update an existing environment")
     .helpGroup("environments")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
@@ -361,7 +304,7 @@ export const buildCmd = async (): Promise<Command> => {
     .option("--private-location-name [name]", "Private location name")
     .action(addTestTargetWrapper(updateEnvironment));
 
-  createCommandWithCommonOptions("delete-environment")
+  createCommandWithCommonOptions(program, "delete-environment")
     .description("Delete an environment")
     .helpGroup("environments")
     .requiredOption("-e, --environment-id <id>", "Environment ID")
@@ -388,20 +331,20 @@ export const buildCmd = async (): Promise<Command> => {
     .helpGroup("private-locations")
     .action(stopPLW);
 
-  createCommandWithCommonOptions("notifications")
+  createCommandWithCommonOptions(program, "notifications")
     .description("Get notifications for a test target")
     .helpGroup("notifications")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listNotifications));
 
-  createCommandWithCommonOptions("test-case")
+  createCommandWithCommonOptions(program, "test-case")
     .description("Get details of a specific test case")
     .helpGroup("test-cases")
     .requiredOption("-c, --test-case-id <id>", "Test case ID")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listTestCase));
 
-  createCommandWithCommonOptions("create-discovery")
+  createCommandWithCommonOptions(program, "create-discovery")
     .description("Create a new test case discovery")
     .helpGroup("execute")
     .requiredOption("-n, --name <name>", "Discovery name")
@@ -416,13 +359,13 @@ export const buildCmd = async (): Promise<Command> => {
     .option("--folder-id [id]", "Folder ID")
     .action(addTestTargetWrapper(createDiscovery));
 
-  createCommandWithCommonOptions("list-test-cases")
+  createCommandWithCommonOptions(program, "list-test-cases")
     .description("List all test cases")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listTestCases));
 
-  createCommandWithCommonOptions("list-test-targets")
+  createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")
     .helpGroup("test-targets")
     .action(listTestTargets);
