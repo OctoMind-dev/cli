@@ -5,3 +5,4 @@ export * from "./test-cases";
 export * from "./notifications";
 export * from "./discoveries";
 export * from "./playwright";
+export * from "./test-targets";
