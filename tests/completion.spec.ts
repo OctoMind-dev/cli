@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default-member */
 import {
   environmentIdCompleter,
   optionsCompleter,
@@ -6,6 +7,7 @@ import {
   testTargetIdCompleter,
   CompletableCommand,
 } from "../src/completion";
+
 import tabtab, { TabtabEnv } from "tabtab";
 import { getTestTargets } from "../src/tools/test-targets";
 import { getEnvironments } from "../src/tools/environments";
