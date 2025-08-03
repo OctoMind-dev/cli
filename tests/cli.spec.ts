@@ -1,4 +1,4 @@
-import { program } from "commander";
+import { Command } from "commander";
 import { buildCmd } from "../src/cli";
 import { executeTests } from "../src/tools";
 import { runDebugtopus } from "../src/debugtopus";
@@ -13,9 +13,10 @@ jest.mock("../src/config", () => ({
 
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
+let program: Command;
 
 beforeAll(async () => {
-  await buildCmd();
+  program = await buildCmd();
   program.exitOverride((err) => {
     throw err;
   });
