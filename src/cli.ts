@@ -20,6 +20,7 @@ import {
   GetEnvironmentOptions,
   GetTestCaseParams,
   getEnvironment,
+  deleteTestCase,
 } from "./tools";
 import { Config, loadConfig, saveConfig } from "./config";
 import { promptUser, resolveTestTargetId } from "./helpers";
@@ -350,6 +351,15 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("notifications")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listNotifications));
+
+  createCommandWithCommonOptions("delete-test-case")
+  .completer(testCaseIdCompleter)
+  .description("Delete a test case")
+  .requiredOption("-c, --test-case-id <id>", "Test case ID")
+  .addOption(testTargetIdOption)
+  .helpGroup("test-cases")
+  .action(addTestTargetWrapper(deleteTestCase));
+  
 
   createCommandWithCommonOptions(program, "test-case")
     .completer(testCaseIdCompleter)

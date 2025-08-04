@@ -322,6 +322,33 @@ Stop a private location worker, see https://octomind.dev/docs/proxy/private-loca
 
 ## Test Cases
 
+## list-test-cases
+
+List all test cases
+
+**Usage:** `list-test-cases [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## delete-test-case
+
+Delete a test case
+
+**Usage:** `delete-test-case [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-c, --test-case-id <id>` | Test case ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
 ## test-case
 
 Get details of a specific test case
@@ -367,64 +394,3 @@ Get test report details
 
 ## Test Targets
 
-## list-test-targets
-
-List all test targets
-
-**Usage:** `list-test-targets [options]`
-
-### Options
-
-| Option | Description | Required | Default |
-|--------|-------------|----------|--------|
-| `-j, --json` | Output raw JSON response | No |  |
-
-
-
-## Output Formats
-
-By default, the CLI provides formatted text output for better readability. Add the `--json` flag to any command to get the raw JSON response instead. This is useful for scripting or when you need to process the output programmatically.
-
-Example of JSON output:
-```json
-{
-  "id": "826c15af-644b-4b28-89b4-f50ff34e46b7",
-  "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-  "status": "PASSED",
-  "executionUrl": "https://example.com",
-  "testResults": [
-    {
-      "id": "abc-123-456",
-      "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-      "testCaseId": "test-1",
-      "status": "PASSED",
-      "traceUrl": "https://storage.googleapis.com/automagically-traces/abc-123-trace.zip"
-    },
-    {
-      "id": "def-456-789",
-      "testTargetId": "3435918b-3d29-4ebd-8c68-9a540532f45a",
-      "testCaseId": "test-2",
-      "status": "PASSED",
-      "traceUrl": "https://storage.googleapis.com/automagically-traces/def-456-trace.zip"
-    }
-  ]
-}
-```
-
-## Development
-
-1. Clone the repository
-2. Install dependencies:
-```bash
-pnpm install
-```
-
-The CLI is written in TypeScript and uses the following dependencies:
-- [commander](https://github.com/tj/commander.js): For command-line argument parsing
-- [openapi-fetch](https://openapi-ts.dev/openapi-fetch/): For making openapi API calls
-- [openapi-typescript](https://openapi-ts.dev/introduction): For generating types from openapi spec
-
-To build from source:
-```bash
-pnpm run build
-```
