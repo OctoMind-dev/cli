@@ -8,6 +8,7 @@ import {
   createDiscovery,
   createEnvironment,
   deleteEnvironment,
+  deleteTestCase,
   executeTests,
   listEnvironments,
   listNotifications,
@@ -18,7 +19,6 @@ import {
   registerLocation,
   unregisterLocation,
   updateEnvironment,
-  deleteTestCase,
 } from "./tools";
 import { getTestTargets, listTestTargets } from "./tools/test-targets";
 import { version } from "./version";
@@ -326,27 +326,27 @@ export const buildCmd = (): Command => {
     });
 
   createCommandWithCommonOptions("list-test-cases")
-  .description("List all test cases")
-  .addOption(testTargetIdOption)
-  .action(async (options, command) => {
-    const resolvedTestTargetId = await resolveTestTargetId(
-      options.testTargetId
-    );
-    command.setOptionValue("testTargetId", resolvedTestTargetId);
-    void listTestCases({ ...options, status: "ENABLED" });
-  });
+    .description("List all test cases")
+    .addOption(testTargetIdOption)
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void listTestCases({ ...options, status: "ENABLED" });
+    });
 
   createCommandWithCommonOptions("delete-test-case")
-  .description("Delete a test case")
-  .requiredOption("-c, --test-case-id <id>", "Test case ID")
-  .addOption(testTargetIdOption)
-  .action(async (options, command) => {
-    const resolvedTestTargetId = await resolveTestTargetId(
-      options.testTargetId
-    );
-    command.setOptionValue("testTargetId", resolvedTestTargetId);
-    void deleteTestCase({ ...options, testTargetId: resolvedTestTargetId });
-  });
+    .description("Delete a test case")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .addOption(testTargetIdOption)
+    .action(async (options, command) => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      command.setOptionValue("testTargetId", resolvedTestTargetId);
+      void deleteTestCase({ ...options, testTargetId: resolvedTestTargetId });
+    });
 
   createCommandWithCommonOptions("test-case")
     .description("Get details of a specific test case")
@@ -381,7 +381,6 @@ export const buildCmd = (): Command => {
       command.setOptionValue("testTargetId", resolvedTestTargetId);
       void createDiscovery(options);
     });
-
 
   createCommandWithCommonOptions("list-test-targets")
     .description("List all test targets")
