@@ -39,6 +39,9 @@ importers:
       '@types/node':
         specifier: 24.1.0
         version: 24.1.0
+      '@types/tabtab':
+        specifier: 3.0.4
+        version: 3.0.4
       jest:
         specifier: 30.0.5
         version: 30.0.5(@types/node@24.1.0)(ts-node@10.9.2(@types/node@24.1.0)(typescript@5.7.3))
@@ -652,6 +655,9 @@ packages:
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
+
+  '@types/tabtab@3.0.4':
+    resolution: {integrity: sha512-gmh8JsmIYPGRqk8Xb4dmulV37TpLwg0Quo3GJ0LgEcl4v0O92F14PGebBd7LHv9GBEw2KbmBSrvU0/NzIy5AoA==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -2597,6 +2603,10 @@ snapshots:
   '@types/shell-quote@1.7.5': {}
 
   '@types/stack-utils@2.0.3': {}
+
+  '@types/tabtab@3.0.4':
+    dependencies:
+      '@types/node': 24.1.0
 
   '@types/yargs-parser@21.0.3': {}
 
