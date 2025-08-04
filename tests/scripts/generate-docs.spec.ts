@@ -3,7 +3,7 @@ import { Command } from "commander";
 
 describe("generateCommandDocs", () => {
   const mockCommand = new Command();
-  mockCommand.command("test").description("test");
+  mockCommand.command("test").description("test").option("-t, --test", "test");
   mockCommand.command("test2").description("test2").helpGroup("test");
   mockCommand.command("test3").description("test3").helpGroup("setup");
   it("should generate documentation", () => {
@@ -40,6 +40,12 @@ test2
 test
 
 **Usage:** \`test [options]\`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| \`-t, --test\` | test | No |  |
 
 "
 `);
