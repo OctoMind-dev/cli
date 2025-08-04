@@ -7,7 +7,7 @@ import * as path from 'path';
 /**
  * Generate markdown documentation for all commands in the CLI
  */
-function generateCommandDocs(command: Command, level = 1): string {
+export function generateCommandDocs(command: Command, level = 1): string {
   let docs = '';
   
   // Skip the root command if it's the first level
@@ -19,13 +19,11 @@ function generateCommandDocs(command: Command, level = 1): string {
       docs += `${command.description()}\n\n`;
     }
     
-    // Add usage information
     const usage = command.usage();
     if (usage) {
       docs += `**Usage:** \`${command.name()} ${usage}\`\n\n`;
     }
     
-    // Add options
     const options = command.options;
     if (options && options.length > 0) {
       docs += '### Options\n\n';
@@ -45,15 +43,12 @@ function generateCommandDocs(command: Command, level = 1): string {
     }
   }
   
-  // Process subcommands
   const subcommands = command.commands;
   if (subcommands && subcommands.length > 0) {
-    // If this is the root command, group commands by help group
     if (level === 1) {
       docs += `# ${command.name()} CLI Documentation\n\n`;
       docs += `${command.description()}\n\n`;
       
-      // Group commands by help group
       const commandsByGroup = new Map<string, Command[]>();
       const ungroupedCommands: Command[] = [];
       
@@ -72,7 +67,6 @@ function generateCommandDocs(command: Command, level = 1): string {
         }
       });
       
-      // Generate documentation for each group, with setup first
       const allGroups = Array.from(commandsByGroup.keys());
       const setupGroup = allGroups.find(group => group === 'setup');
       const otherGroups = allGroups.filter(group => group !== 'setup').sort();
@@ -93,7 +87,6 @@ function generateCommandDocs(command: Command, level = 1): string {
         }
       });
       
-      // Add ungrouped commands at the end
       if (ungroupedCommands.length > 0) {
         docs += '## Other Commands\n\n';
         ungroupedCommands.forEach(subcommand => {
@@ -101,7 +94,6 @@ function generateCommandDocs(command: Command, level = 1): string {
         });
       }
     } else {
-      // For non-root commands, process subcommands normally
       subcommands.forEach(subcommand => {
         docs += generateCommandDocs(subcommand, level + 1);
       });
@@ -116,23 +108,17 @@ function generateCommandDocs(command: Command, level = 1): string {
  */
 async function main() {
   try {
-    // Get the program object from buildCmd
     const program = buildCmd();
     
-    // Generate markdown documentation
     const markdown = generateCommandDocs(program);
     
-    // Check if README template exists
     const templatePath = path.join(__dirname, '..', 'README-template.md');
     if (fs.existsSync(templatePath)) {
-      // Load template and replace ${commands} with generated docs
       const template = fs.readFileSync(templatePath, 'utf8');
       const result = template.replace('${commands}', markdown);
       
-      // Output the result to console (can be redirected to a file)
       console.log(result);
     } else {
-      // If template doesn't exist, just output the docs
       console.log(markdown);
     }
   } catch (error) {
@@ -141,5 +127,6 @@ async function main() {
   }
 }
 
-// Run the main function
-main().catch(console.error);
+if (require.main === module) {
+  main().catch(console.error);
+}
