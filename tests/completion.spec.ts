@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default-member */
 import {
   environmentIdCompleter,
   optionsCompleter,
@@ -8,7 +7,7 @@ import {
   CompletableCommand,
 } from "../src/completion";
 
-import tabtab, { TabtabEnv } from "tabtab";
+import { TabtabEnv, log } from "tabtab";
 import { getTestTargets } from "../src/tools/test-targets";
 import { getEnvironments } from "../src/tools/environments";
 import { loadConfig } from "../src/config";
@@ -71,7 +70,6 @@ describe("completion", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    tabtab.log = jest.fn();
   });
 
   it("should complete test target id", async () => {
@@ -87,14 +85,14 @@ describe("completion", () => {
     ]);
     const result = await testTargetIdCompleter(mockCommand, env);
     expect(result).toEqual(true);
-    expect(tabtab.log).toHaveBeenCalledWith(["test-target-1", "test-target-2"]);
+    expect(log).toHaveBeenCalledWith(["test-target-1", "test-target-2"]);
   });
 
   it("should not complete test target id when prev is not --test-target-id", async () => {
     env.prev = "-c";
     const result = await testTargetIdCompleter(mockCommand, env);
     expect(result).toEqual(false);
-    expect(tabtab.log).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
   });
 
   it("should complete environment id", async () => {
@@ -114,14 +112,14 @@ describe("completion", () => {
     env.prev = "-e";
     const result = await environmentIdCompleter(mockCommand, env);
     expect(result).toEqual(true);
-    expect(tabtab.log).toHaveBeenCalledWith(["environment-1", "environment-2"]);
+    expect(log).toHaveBeenCalledWith(["environment-1", "environment-2"]);
   });
 
   it("should not complete environment id when prev is not --environment-id", async () => {
     env.prev = "-c";
     const result = await environmentIdCompleter(mockCommand, env);
     expect(result).toEqual(false);
-    expect(tabtab.log).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
   });
 
   it("should complete test case id", async () => {
@@ -141,14 +139,14 @@ describe("completion", () => {
     env.prev = "-c";
     const result = await testCaseIdCompleter(mockCommand, env);
     expect(result).toEqual(true);
-    expect(tabtab.log).toHaveBeenCalledWith(["test-case-1", "test-case-2"]);
+    expect(log).toHaveBeenCalledWith(["test-case-1", "test-case-2"]);
   });
 
   it("should not complete test case id when prev is not --test-case-id", async () => {
     env.prev = "-r";
     const result = await testCaseIdCompleter(mockCommand, env);
     expect(result).toEqual(false);
-    expect(tabtab.log).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
   });
 
   it("should complete test report id", async () => {
@@ -168,24 +166,24 @@ describe("completion", () => {
     env.prev = "-r";
     const result = await testReportIdCompleter(mockCommand, env);
     expect(result).toEqual(true);
-    expect(tabtab.log).toHaveBeenCalledWith(["test-report-1", "test-report-2"]);
+    expect(log).toHaveBeenCalledWith(["test-report-1", "test-report-2"]);
   });
 
   it("should not complete test report id when prev is not --test-report-id", async () => {
     env.prev = "-c";
     const result = await testReportIdCompleter(mockCommand, env);
     expect(result).toEqual(false);
-    expect(tabtab.log).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
   });
 
   it("should complete options of command", async () => {
     const result = await optionsCompleter(mockCommand, env);
     expect(result).toEqual(true);
-    expect(tabtab.log).toHaveBeenNthCalledWith(1, [
+    expect(log).toHaveBeenNthCalledWith(1, [
       "--environment-id",
       "--test-case-id",
       "--test-report-id",
     ]);
-    expect(tabtab.log).toHaveBeenNthCalledWith(2, ["-e", "-c", "-r"]);
+    expect(log).toHaveBeenNthCalledWith(2, ["-e", "-c", "-r"]);
   });
 });

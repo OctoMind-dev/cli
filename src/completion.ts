@@ -1,4 +1,4 @@
-import tabtab, { TabtabEnv } from "tabtab";
+import { TabtabEnv, log, parseEnv, install, uninstall } from "tabtab";
 import { parse } from 'shell-quote';
 import { Command } from "commander";
 import { getTestCases } from "./tools/test-cases";
@@ -43,10 +43,10 @@ export class CompletableCommand extends Command {
 const logOptions = async (command: CompletableCommand, line: string) => {
   const argv = parse(line).map((arg) => arg.toString());
   const usedOptions = command.options.filter((option) => argv.includes(option.long!) || argv.includes(option.short!)).map((option) => option.flags);
-  tabtab.log(command.options.filter((option) => option.long)
+  log(command.options.filter((option) => option.long)
     .filter((option) => !usedOptions.includes(option.flags))
     .map((option) => option.long!));
-  tabtab.log(command.options.filter((option) => option.short)
+  log(command.options.filter((option) => option.short)
     .filter((option) => !usedOptions.includes(option.flags))
     .map((option) => option.short!));
 }
@@ -59,7 +59,7 @@ export const optionsCompleter = async (command: CompletableCommand, env: TabtabE
 export const testTargetIdCompleter = async (_command: CompletableCommand, env: TabtabEnv): Promise<boolean> => {
   if( env.prev === "-t" || env.prev === "--test-target-id") {
     const testTargets = await getTestTargets();
-    tabtab.log(testTargets.map((testTarget) => testTarget.id));
+    log(testTargets.map((testTarget) => testTarget.id));
     return true;
   }
   return false;
@@ -70,7 +70,7 @@ export const environmentIdCompleter = async (_command: CompletableCommand, env: 
     const config = await loadConfig();
     if( config.testTargetId ) {
       const environments = await getEnvironments({ testTargetId: config.testTargetId });
-      tabtab.log(environments.map((environment) => environment.id));
+      log(environments.map((environment) => environment.id));
       return true;
     }
   }
@@ -82,7 +82,7 @@ export const testCaseIdCompleter = async (_command: CompletableCommand, env: Tab
     const config = await loadConfig();
     if( config.testTargetId ) {
       const testCases = await getTestCases({ testTargetId: config.testTargetId, status: "ENABLED" });
-      tabtab.log(testCases.map((testCase) => testCase.id));
+      log(testCases.map((testCase) => testCase.id));
       return true;
     }
   }
@@ -95,7 +95,7 @@ export const testReportIdCompleter = async (_command: CompletableCommand, env: T
     if( config.testTargetId ) {
       const testReports = await getTestReports({ testTargetId: config.testTargetId });
       if(testReports) {
-        tabtab.log(testReports.map((testReport) => testReport?.id ?? ""));
+        log(testReports.map((testReport) => testReport?.id ?? ""));
       }
     }
     return true;
@@ -104,7 +104,7 @@ export const testReportIdCompleter = async (_command: CompletableCommand, env: T
 }
 
 export const tabCompletion = async (program: CompletableCommand) => {
-  const env = tabtab.parseEnv(process.env);
+  const env = parseEnv(process.env);
   if (!env.complete) return;
 
   const argv = parse(env.line).map((arg) => arg.toString());
@@ -123,26 +123,24 @@ export const tabCompletion = async (program: CompletableCommand) => {
     return;
   }
 
-  tabtab.log(["--help"]);
-  tabtab.log(program.options.filter((option) => option.long).map((option) => option.long!));
-  tabtab.log(program.options.filter((option) => option.short).map((option) => option.short!));
-  tabtab.log(program.commands.map((command) => command.name()));
+  log(["--help"]);
+  log(program.options.filter((option) => option.long).map((option) => option.long!));
+  log(program.options.filter((option) => option.short).map((option) => option.short!));
+  log(program.commands.map((command) => command.name()));
 };
 
 export const installCompletion = async () => {
-  await tabtab
-    .install({
-      name: BINARY_NAME,
-      completer: BINARY_NAME
-    })
+  await install({
+    name: BINARY_NAME,
+    completer: BINARY_NAME
+  })
     .catch(err => console.error('INSTALL ERROR', err));
 }
 
 export const uninstallCompletion = async () => {
-  await tabtab
-    .uninstall({
-      name: BINARY_NAME,
-    })
+  await uninstall({
+    name: BINARY_NAME,
+  })
     .catch(err => console.error('UNINSTALL ERROR', err));
 }
 
