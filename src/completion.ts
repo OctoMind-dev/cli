@@ -47,24 +47,35 @@ export class CompletableCommand extends Command {
   }
 }
 
+const includesOrUndefined = <T>(
+  array: (T | undefined)[],
+  value: T | undefined,
+): boolean => {
+  return (
+    array.includes(value) || (value === undefined && array.includes(undefined))
+  );
+};
+
 const logOptions = async (command: CompletableCommand, line: string) => {
   const argv = parse(line).map((arg) => arg.toString());
   const usedOptions = command.options
     .filter(
-      (option) => argv.includes(option.long!) || argv.includes(option.short!),
+      (option) =>
+        includesOrUndefined(argv, option.long) ||
+        includesOrUndefined(argv, option.short),
     )
     .map((option) => option.flags);
   log(
     command.options
       .filter((option) => option.long)
       .filter((option) => !usedOptions.includes(option.flags))
-      .map((option) => option.long!),
+      .map((option) => option.long ?? ""),
   );
   log(
     command.options
       .filter((option) => option.short)
       .filter((option) => !usedOptions.includes(option.flags))
-      .map((option) => option.short!),
+      .map((option) => option.short ?? ""),
   );
 };
 
@@ -149,7 +160,7 @@ export const tabCompletion = async (program: CompletableCommand) => {
   const argv = parse(env.line).map((arg) => arg.toString());
 
   const command = program.commands.find(
-    (command) => command.name() === argv[1],
+    (c) => c.name() === argv[1],
   ) as CompletableCommand;
   if (command) {
     const completers = command.getCompleter();
@@ -168,14 +179,14 @@ export const tabCompletion = async (program: CompletableCommand) => {
   log(
     program.options
       .filter((option) => option.long)
-      .map((option) => option.long!),
+      .map((option) => option.long ?? ""),
   );
   log(
     program.options
       .filter((option) => option.short)
-      .map((option) => option.short!),
+      .map((option) => option.short ?? ""),
   );
-  log(program.commands.map((command) => command.name()));
+  log(program.commands.map((c) => c.name()));
 };
 
 export const installCompletion = async () => {
