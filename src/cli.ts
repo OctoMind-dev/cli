@@ -352,14 +352,13 @@ export const buildCmd = (): CompletableCommand => {
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listNotifications));
 
-  createCommandWithCommonOptions("delete-test-case")
-  .completer(testCaseIdCompleter)
-  .description("Delete a test case")
-  .requiredOption("-c, --test-case-id <id>", "Test case ID")
-  .addOption(testTargetIdOption)
-  .helpGroup("test-cases")
-  .action(addTestTargetWrapper(deleteTestCase));
-  
+  createCommandWithCommonOptions(program,"delete-test-case")
+    .completer(testCaseIdCompleter)
+    .description("Delete a test case")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .addOption(testTargetIdOption)
+    .helpGroup("test-cases")
+    .action(addTestTargetWrapper(deleteTestCase));
 
   createCommandWithCommonOptions(program, "test-case")
     .completer(testCaseIdCompleter)
