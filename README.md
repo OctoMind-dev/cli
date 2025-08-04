@@ -26,7 +26,7 @@ This is necessary for the cli to work and avoid dependency conflicts, when insta
 
 ## Autocompletion
 
-On macOS and linux you can enable autocompletion by running the following command:
+On macOS and linux you can enable autocompletion by running the following command (works for bash, zsh & fish):
 ```bash
 npx @octomind/octomind install-completion
 ```
