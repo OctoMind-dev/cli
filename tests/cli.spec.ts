@@ -15,8 +15,8 @@ const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 let program: Command;
 
-beforeAll(async () => {
-  program = await buildCmd();
+beforeAll(() => {
+  program = buildCmd();
   program.exitOverride((err) => {
     throw err;
   });

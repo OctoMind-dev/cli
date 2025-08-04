@@ -77,7 +77,7 @@ const createCommandWithCommonOptions = (program: CompletableCommand, command: st
     .option("-j, --json", "Output raw JSON response") as CompletableCommand;
 };
 
-export const buildCmd = async (): Promise<Command> => {
+export const buildCmd = (): CompletableCommand => {
   const program = new CompletableCommand();
 
   program

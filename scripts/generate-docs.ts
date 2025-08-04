@@ -117,7 +117,7 @@ function generateCommandDocs(command: Command, level = 1): string {
 async function main() {
   try {
     // Get the program object from buildCmd
-    const program = await buildCmd();
+    const program = buildCmd();
     
     // Generate markdown documentation
     const markdown = generateCommandDocs(program);
