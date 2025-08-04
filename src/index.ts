@@ -3,4 +3,3 @@
 import { buildCmd } from "./cli";
 
 buildCmd().parse();
-
