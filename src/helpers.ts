@@ -1,5 +1,6 @@
-import { createInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
+import { createInterface } from "node:readline";
+
 import { loadConfig } from "./config";
 
 export function promptUser(question: string): Promise<string> {
@@ -14,7 +15,7 @@ export function promptUser(question: string): Promise<string> {
 }
 
 export const resolveTestTargetId = async (
-  providedTestTargetId?: string
+  providedTestTargetId?: string,
 ): Promise<string> => {
   if (providedTestTargetId) {
     return providedTestTargetId;
@@ -23,7 +24,7 @@ export const resolveTestTargetId = async (
   const config = await loadConfig();
   if (!config.testTargetId) {
     throw new Error(
-      "testTargetId is required. Please provide it as a parameter or configure it first by running 'octomind init'"
+      "testTargetId is required. Please provide it as a parameter or configure it first by running 'octomind init'",
     );
   }
   return config.testTargetId;
