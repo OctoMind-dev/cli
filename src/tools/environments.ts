@@ -11,6 +11,11 @@ export type UpdateEnvironmentOptions =
   paths["/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}"]["patch"]["requestBody"]["content"]["application/json"];
 export type EnvironmentResponse = components["schemas"]["EnvironmentResponse"];
 
+export type GetEnvironmentOptions = {
+  testTargetId: string;
+  environmentId: string;
+};
+
 export const listEnvironments = async (
   options: GetEnvironmentsOptions & ListOptions,
 ): Promise<void> => {
@@ -102,16 +107,15 @@ export const createEnvironment = async (
 };
 
 export const updateEnvironment = async (
-  options: UpdateEnvironmentOptions & {
-    testTargetId: string;
-    environmentId: string;
-    testAccountUsername?: string;
-    testAccountPassword?: string;
-    basicAuthUsername?: string;
-    basicAuthPassword?: string;
-    privateLocationName?: string;
-    testAccountOtpInitializerKey?: string;
-  } & ListOptions,
+  options: UpdateEnvironmentOptions &
+    GetEnvironmentOptions & {
+      testAccountUsername?: string;
+      testAccountPassword?: string;
+      basicAuthUsername?: string;
+      basicAuthPassword?: string;
+      privateLocationName?: string;
+      testAccountOtpInitializerKey?: string;
+    } & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.PATCH(
     "/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}",
@@ -155,11 +159,32 @@ export const updateEnvironment = async (
   console.log(`  Updated At: ${response.updatedAt}`);
 };
 
+export const getEnvironment = async (
+  options: GetEnvironmentOptions & ListOptions,
+): Promise<void> => {
+  const environments = await getEnvironments({
+    testTargetId: options.testTargetId,
+  });
+
+  const environment = environments.find((e) => e.id === options.environmentId);
+  if (!environment) {
+    throw new Error("environment not found");
+  }
+
+  if (options.json) {
+    logJson({ environment });
+    return;
+  }
+
+  console.log("Environment:");
+  console.log(`- Name: ${environment.name}`);
+  console.log(`  ID: ${environment.id}`);
+  console.log(`  Discovery URL: ${environment.discoveryUrl}`);
+  console.log(`  Updated At: ${environment.updatedAt}`);
+};
+
 export const deleteEnvironment = async (
-  options: {
-    testTargetId: string;
-    environmentId: string;
-  } & ListOptions,
+  options: GetEnvironmentOptions & ListOptions,
 ): Promise<void> => {
   const { error } = await client.DELETE(
     "/apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}",

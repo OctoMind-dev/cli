@@ -24,9 +24,23 @@ This is necessary for the cli to work and avoid dependency conflicts, when insta
 
 2. Use the cli through npx e.g. `npx @octomind/octomind -h`
 
+## Autocompletion
+
+On macOS and linux you can enable autocompletion by running the following command (works for bash, zsh & fish):
+```bash
+npx @octomind/octomind install-completion
+```
+You can disable autocompletion by running the following command:
+```bash
+npx @octomind/octomind uninstall-completion
+```
+
+Autocompletion will only work if you have installed the package globally and created a config file with `npx @octomind/octomind init`.
+This way even entityIds like environmentIds or testCaseIds will be autocompleted.
+
 # octomind
 
-Octomind cli tool. Version: 1.1.3. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.3.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -38,13 +52,13 @@ Octomind cli tool. Version: 1.1.3. Additional documentation see https://octomind
 
 # octomind CLI Documentation
 
-Octomind cli tool. Version: 1.1.3. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.3.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
-## Commands
+## Setup
 
 ## init
 
-Initialize configuration by setting up API key
+Initialize configuration by setting up API key. This will create a config file in ~/.config/octomind.json
 
 **Usage:** `init [options]`
 
@@ -58,9 +72,117 @@ Initialize configuration by setting up API key
 
 ## switch-test-target
 
-Switch to a different test target
+Switch to a different test target. This will list all available test targets and update the config file in ~/.config/octomind.json
 
 **Usage:** `switch-test-target [options]`
+
+## Completion
+
+## install-completion
+
+Install tab completion
+
+**Usage:** `install-completion [options]`
+
+## uninstall-completion
+
+Uninstall tab completion
+
+**Usage:** `uninstall-completion [options]`
+
+## completion
+
+Tab completion
+
+**Usage:** `completion [options]`
+
+## Environments
+
+## list-environments
+
+List all environments
+
+**Usage:** `list-environments [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## create-environment
+
+Create a new environment
+
+**Usage:** `create-environment [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-n, --name <name>` | Environment name | Yes |  |
+| `-d, --discovery-url <url>` | Discovery URL | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `--test-account-username [username]` | Test account username | No |  |
+| `--test-account-password [password]` | Test account password | No |  |
+| `--test-account-otp-initializer-key [key]` | Test account OTP initializer key | No |  |
+| `--basic-auth-username [username]` | Basic auth username | No |  |
+| `--basic-auth-password [password]` | Basic auth password | No |  |
+| `--private-location-name [name]` | Private location name | No |  |
+
+## environment
+
+Get an environment
+
+**Usage:** `environment [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-e, --environment-id <id>` | Environment ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## update-environment
+
+Update an existing environment
+
+**Usage:** `update-environment [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-e, --environment-id <id>` | Environment ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-n, --name [name]` | Environment name | No |  |
+| `-d, --discovery-url [url]` | Discovery URL | No |  |
+| `--test-account-username [username]` | Test account username | No |  |
+| `--test-account-password [password]` | Test account password | No |  |
+| `--test-account-otp-initializer-key [key]` | Test account OTP initializer key | No |  |
+| `--basic-auth-username [username]` | Basic auth username | No |  |
+| `--basic-auth-password [password]` | Basic auth password | No |  |
+| `--private-location-name [name]` | Private location name | No |  |
+
+## delete-environment
+
+Delete an environment
+
+**Usage:** `delete-environment [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-e, --environment-id <id>` | Environment ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## Execute
 
 ## debug
 
@@ -74,16 +196,16 @@ run test cases against local build
 |--------|-------------|----------|--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-u, --url <url>` | url the tests should run against | Yes |  |
-| `-i, --id [uuid]` | id of the test case you want to run, if not provided will run all test cases in the test target | No |  |
+| `-c, --test-case-id [uuid]` | id of the test case you want to run, if not provided will run all test cases in the test target | No |  |
 | `-e, --environment-id [uuid]` | id of the environment you want to run against, if not provided will run all test cases against the default environment | No |  |
-| `-a, --test-target-id [uuid]` | id of the test target of the test case, if not provided will use the test target id from the config | No |  |
+| `-t, --test-target-id [uuid]` | id of the test target of the test case, if not provided will use the test target id from the config | No |  |
 | `--headless` | if we should run headless without the UI of playwright and the browser | No |  |
 | `--persist` | if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again | No |  |
 | `--grep [substring]` | filter test cases by substring | No |  |
 
 ## execute
 
-Execute test cases
+Execute test cases to create a test report
 
 **Usage:** `execute [options]`
 
@@ -99,19 +221,42 @@ Execute test cases
 | `-g, --tags [tags]` | comma separated list of tags | No |  |
 | `-v, --variables-to-overwrite [variables]` | JSON object of variables to overwrite | No |  |
 
-## test-report
+## create-discovery
 
-Get test report details
+Create a new test case discovery
 
-**Usage:** `test-report [options]`
+**Usage:** `create-discovery [options]`
 
 ### Options
 
 | Option | Description | Required | Default |
 |--------|-------------|----------|--------|
 | `-j, --json` | Output raw JSON response | No |  |
-| `-r, --test-report-id <id>` | Test report ID | Yes |  |
+| `-n, --name <name>` | Discovery name | Yes |  |
+| `-p, --prompt <prompt>` | Discovery prompt | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-e, --entry-point-url-path [path]` | Entry point URL path | No |  |
+| `--prerequisite-id [id]` | Prerequisite test case ID | No |  |
+| `--external-id [id]` | External identifier | No |  |
+| `--assigned-tag-ids [ids]` | Comma-separated list of tag IDs | No |  |
+| `--folder-id [id]` | Folder ID | No |  |
+
+## Notifications
+
+## notifications
+
+Get notifications for a test target
+
+**Usage:** `notifications [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## Private Locations
 
 ## register-location
 
@@ -154,76 +299,6 @@ List all private locations
 |--------|-------------|----------|--------|
 | `-j, --json` | Output raw JSON response | No |  |
 
-## list-environments
-
-List all environments
-
-**Usage:** `list-environments [options]`
-
-### Options
-
-| Option | Description | Required | Default |
-|--------|-------------|----------|--------|
-| `-j, --json` | Output raw JSON response | No |  |
-| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-
-## create-environment
-
-Create a new environment
-
-**Usage:** `create-environment [options]`
-
-### Options
-
-| Option | Description | Required | Default |
-|--------|-------------|----------|--------|
-| `-j, --json` | Output raw JSON response | No |  |
-| `-n, --name <name>` | Environment name | Yes |  |
-| `-d, --discovery-url <url>` | Discovery URL | Yes |  |
-| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-| `--test-account-username [username]` | Test account username | No |  |
-| `--test-account-password [password]` | Test account password | No |  |
-| `--test-account-otp-initializer-key [key]` | Test account OTP initializer key | No |  |
-| `--basic-auth-username [username]` | Basic auth username | No |  |
-| `--basic-auth-password [password]` | Basic auth password | No |  |
-| `--private-location-name [name]` | Private location name | No |  |
-
-## update-environment
-
-Update an existing environment
-
-**Usage:** `update-environment [options]`
-
-### Options
-
-| Option | Description | Required | Default |
-|--------|-------------|----------|--------|
-| `-j, --json` | Output raw JSON response | No |  |
-| `-e, --environment-id <id>` | Environment ID | Yes |  |
-| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-| `-n, --name [name]` | Environment name | No |  |
-| `-d, --discovery-url [url]` | Discovery URL | No |  |
-| `--test-account-username [username]` | Test account username | No |  |
-| `--test-account-password [password]` | Test account password | No |  |
-| `--test-account-otp-initializer-key [key]` | Test account OTP initializer key | No |  |
-| `--basic-auth-username [username]` | Basic auth username | No |  |
-| `--basic-auth-password [password]` | Basic auth password | No |  |
-| `--private-location-name [name]` | Private location name | No |  |
-
-## delete-environment
-
-Delete an environment
-
-**Usage:** `delete-environment [options]`
-
-### Options
-
-| Option | Description | Required | Default |
-|--------|-------------|----------|--------|
-| `-j, --json` | Output raw JSON response | No |  |
-| `-e, --environment-id <id>` | Environment ID | Yes |  |
-| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-
 ## start-private-location
 
 Start a private location worker, see https://octomind.dev/docs/proxy/private-location
@@ -245,31 +320,7 @@ Stop a private location worker, see https://octomind.dev/docs/proxy/private-loca
 
 **Usage:** `stop-private-location [options]`
 
-## notifications
-
-Get notifications for a test target
-
-**Usage:** `notifications [options]`
-
-### Options
-
-| Option | Description | Required | Default |
-|--------|-------------|----------|--------|
-| `-j, --json` | Output raw JSON response | No |  |
-| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-
-## list-test-cases
-
-List all test cases
-
-**Usage:** `list-test-cases [options]`
-
-### Options
-
-| Option | Description | Required | Default |
-|--------|-------------|----------|--------|
-| `-j, --json` | Output raw JSON response | No |  |
-| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+## Test Cases
 
 ## delete-test-case
 
@@ -299,25 +350,36 @@ Get details of a specific test case
 | `-c, --test-case-id <id>` | Test case ID | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
-## create-discovery
+## list-test-cases
 
-Create a new test case discovery
+List all test cases
 
-**Usage:** `create-discovery [options]`
+**Usage:** `list-test-cases [options]`
 
 ### Options
 
 | Option | Description | Required | Default |
 |--------|-------------|----------|--------|
 | `-j, --json` | Output raw JSON response | No |  |
-| `-n, --name <name>` | Discovery name | Yes |  |
-| `-p, --prompt <prompt>` | Discovery prompt | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-| `-e, --entry-point-url-path [path]` | Entry point URL path | No |  |
-| `--prerequisite-id [id]` | Prerequisite test case ID | No |  |
-| `--external-id [id]` | External identifier | No |  |
-| `--assigned-tag-ids [ids]` | Comma-separated list of tag IDs | No |  |
-| `--folder-id [id]` | Folder ID | No |  |
+
+## Test Reports
+
+## test-report
+
+Get test report details
+
+**Usage:** `test-report [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|--------|-------------|----------|--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-r, --test-report-id <id>` | Test report ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## Test Targets
 
 ## list-test-targets
 

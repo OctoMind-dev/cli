@@ -5,3 +5,4 @@ export * from "./playwright";
 export * from "./private-locations";
 export * from "./test-cases";
 export * from "./test-reports";
+export * from "./test-targets";

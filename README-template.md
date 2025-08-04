@@ -24,6 +24,20 @@ This is necessary for the cli to work and avoid dependency conflicts, when insta
 
 2. Use the cli through npx e.g. `npx @octomind/octomind -h`
 
+## Autocompletion
+
+On macOS and linux you can enable autocompletion by running the following command (works for bash, zsh & fish):
+```bash
+npx @octomind/octomind install-completion
+```
+You can disable autocompletion by running the following command:
+```bash
+npx @octomind/octomind uninstall-completion
+```
+
+Autocompletion will only work if you have installed the package globally and created a config file with `npx @octomind/octomind init`.
+This way even entityIds like environmentIds or testCaseIds will be autocompleted.
+
 ${commands}
 
 ## Output Formats

@@ -40,8 +40,8 @@ export const executeTests = async (
     console.log("Test execution started successfully!");
     console.log("Test Report URL:", data.testReportUrl);
     console.log("Report Status:", data.testReport?.status);
-
-    if (data.testReport?.testResults?.length ?? 0 > 0) {
+    const numberOfTestResults = data.testReport?.testResults?.length ?? 0;
+    if (numberOfTestResults > 0) {
       console.log("\nTest Results:");
       data.testReport?.testResults?.forEach((result) => {
         console.log(`- Test ${result.testCaseId}: ${result.status}`);
@@ -54,6 +54,25 @@ export const executeTests = async (
       });
     }
   }
+};
+
+export const getTestReports = async (options: {
+  testTargetId: string;
+}): Promise<TestReport[] | undefined> => {
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/test-reports",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+    },
+  );
+
+  handleError(error);
+
+  return data?.data;
 };
 
 export const listTestReport = async (
@@ -82,8 +101,8 @@ export const listTestReport = async (
   console.log("Test Report Details:");
   console.log("Status:", response.status);
   console.log("Execution URL:", response.executionUrl);
-
-  if ((response.testResults ?? []).length > 0) {
+  const numberOfTestResults = response.testResults?.length ?? 0;
+  if (numberOfTestResults > 0) {
     console.log("\nTest Results:");
     for (const result of response.testResults ?? []) {
       console.log(`- Test ${result.testCaseId}: ${result.status}`);
