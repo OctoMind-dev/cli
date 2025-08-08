@@ -34,7 +34,7 @@
     "tabtab": "^3.0.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.3",
+    "@biomejs/biome": "2.1.4",
     "@types/jest": "30.0.0",
     "@types/node": "24.2.0",
     "@types/tabtab": "3.0.4",
