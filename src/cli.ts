@@ -37,7 +37,8 @@ import {
   unregisterLocation,
   updateEnvironment,
 } from "./tools";
-import { getTestTargets, listTestTargets } from "./tools/test-targets";
+import { init, switchTestTarget } from "./tools/init";
+import { listTestTargets } from "./tools/test-targets";
 import { version } from "./version";
 
 export const BINARY_NAME = "octomind";
@@ -60,38 +61,6 @@ const addTestTargetWrapper =
     void fn({ ...options, testTargetId: resolvedTestTargetId });
   };
 
-const selectTestTarget = async (): Promise<string> => {
-  const testTargets = await getTestTargets();
-  await listTestTargets({});
-
-  if (testTargets.length === 1) {
-    console.log(
-      `Only one test target found, using it: ${testTargets[0].app} (${testTargets[0].id})`,
-    );
-    return testTargets[0].id;
-  }
-
-  const testTargetIndex = await promptUser(
-    "Enter number of the test target you want to use (optional, press Enter to skip): ",
-  );
-  const testTargetIndexAsInt = Number.parseInt(testTargetIndex);
-
-  if (
-    Number.isNaN(testTargetIndexAsInt) ||
-    testTargetIndexAsInt < 1 ||
-    testTargetIndexAsInt > testTargets.length
-  ) {
-    console.log("❌ could not find a test target with the index you provided");
-    process.exit(1);
-  }
-  const testTargetId = testTargets[testTargetIndexAsInt - 1].id;
-  if (!testTargetId) {
-    console.log("❌ could not find a test target with the index you provided");
-    process.exit(1);
-  }
-
-  return testTargetId;
-};
 const testTargetIdOption = new Option(
   "-t, --test-target-id [id]",
   "Test target ID, if not provided will use the test target id from the config",
@@ -127,71 +96,7 @@ export const buildCmd = (): CompletableCommand => {
     .option("-t, --test-target-id <id>", "Test target ID")
     .option("-k, --api-key <key>", "the api key for authentication")
     .option("-f, --force", "Force overwrite existing configuration")
-    .action(
-      async (options: {
-        testTargetId?: string;
-        apiKey: string;
-        force?: boolean;
-      }) => {
-        try {
-          console.log("🚀 Initializing configuration...\n");
-
-          const existingConfig = await loadConfig(options.force);
-
-          if (existingConfig.apiKey && !options.force) {
-            console.log("⚠️  Configuration already exists.");
-            const overwrite = await promptUser(
-              "Do you want to overwrite it? (y/N): ",
-            );
-
-            if (
-              overwrite.toLowerCase() !== "y" &&
-              overwrite.toLowerCase() !== "yes"
-            ) {
-              console.log("Configuration unchanged.");
-              return;
-            }
-          }
-
-          let apiKey: string = "";
-          if (!options.apiKey) {
-            apiKey = await promptUser(
-              "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: ",
-            );
-            if (!apiKey) {
-              console.log("❌ API key is required.");
-              process.exit(1);
-            }
-          }
-          // saving here to be able to use the api key for the test targets
-          const newApiKeyConfig = {
-            ...existingConfig,
-
-            apiKey: options.apiKey,
-          };
-
-          await saveConfig(newApiKeyConfig);
-
-          const testTargetId = await selectTestTarget();
-
-          const newConfig: Config = {
-            ...existingConfig,
-            apiKey: options.apiKey,
-            testTargetId: options.testTargetId ?? testTargetId,
-          };
-
-          await saveConfig(newConfig);
-
-          console.log("\n✨ Initialization complete!");
-        } catch (error) {
-          console.error(
-            "❌ Error during initialization:",
-            (error as Error).message,
-          );
-          process.exit(1);
-        }
-      },
-    );
+    .action(init);
 
   program
     .completableCommand("switch-test-target")
@@ -199,16 +104,7 @@ export const buildCmd = (): CompletableCommand => {
       "Switch to a different test target. This will list all available test targets and update the config file in ~/.config/octomind.json",
     )
     .helpGroup("setup")
-    .action(async () => {
-      const testTargetId = await selectTestTarget();
-      const existingConfig = await loadConfig();
-      const newConfig: Config = {
-        ...existingConfig,
-        testTargetId,
-      };
-      await saveConfig(newConfig);
-      console.log(`✨ Switched to test target: ${testTargetId}`);
-    });
+    .action(switchTestTarget);
 
   createCommandWithCommonOptions(program, "debug")
     .completer(environmentIdCompleter)
