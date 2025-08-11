@@ -42,19 +42,15 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 1.3.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.3.1. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-V, --version` | output the version number | No |  |
-
-# octomind CLI Documentation
-
-Octomind cli tool. Version: 1.3.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 ## Setup
 
@@ -67,7 +63,7 @@ Initialize configuration by setting up API key. This will create a config file i
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-t, --test-target-id <id>` | Test target ID | Yes |  |
 | `-k, --api-key <key>` | the api key for authentication | Yes |  |
 | `-f, --force` | Force overwrite existing configuration | No |  |
@@ -109,7 +105,7 @@ List all environments
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
@@ -122,7 +118,7 @@ Create a new environment
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-n, --name <name>` | Environment name | Yes |  |
 | `-d, --discovery-url <url>` | Discovery URL | Yes |  |
@@ -143,7 +139,7 @@ Get an environment
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-e, --environment-id <id>` | Environment ID | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
@@ -157,7 +153,7 @@ Update an existing environment
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-e, --environment-id <id>` | Environment ID | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
@@ -179,7 +175,7 @@ Delete an environment
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-e, --environment-id <id>` | Environment ID | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
@@ -195,7 +191,7 @@ run test cases against local build
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-u, --url <url>` | url the tests should run against | Yes |  |
 | `-c, --test-case-id [uuid]` | id of the test case you want to run, if not provided will run all test cases in the test target | No |  |
@@ -214,7 +210,7 @@ Execute test cases to create a test report
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-u, --url <url>` | URL to test | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
@@ -232,7 +228,7 @@ Create a new test case discovery
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-n, --name <name>` | Discovery name | Yes |  |
 | `-p, --prompt <prompt>` | Discovery prompt | Yes |  |
@@ -254,7 +250,7 @@ Get notifications for a test target
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
@@ -269,7 +265,7 @@ Register a private location
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-n, --name <name>` | Location name | Yes |  |
 | `-p, --password <password>` | Proxy password | Yes |  |
@@ -285,7 +281,7 @@ Unregister a private location
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-n, --name <name>` | Location name | Yes |  |
 
@@ -298,7 +294,7 @@ List all private locations
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 
 ## start-private-location
@@ -310,7 +306,7 @@ Start a private location worker, see https://octomind.dev/docs/proxy/private-loc
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-n, --name [name]` | Location name | No |  |
 | `-u, --username [username]` | Proxy user | No |  |
 | `-p, --password [password]` | Proxy password | No |  |
@@ -333,7 +329,7 @@ Delete a test case
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-c, --test-case-id <id>` | Test case ID | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
@@ -347,7 +343,7 @@ Get details of a specific test case
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-c, --test-case-id <id>` | Test case ID | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
@@ -361,7 +357,7 @@ List all test cases
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
@@ -376,7 +372,7 @@ Get test report details
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-r, --test-report-id <id>` | Test report ID | Yes |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
@@ -392,7 +388,7 @@ List all test targets
 ### Options
 
 | Option | Description | Required | Default |
-|--------|-------------|----------|--------|
+|:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 
 
