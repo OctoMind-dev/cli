@@ -28,7 +28,7 @@ export function generateCommandDocs(command: Command, level = 1): string {
     if (options && options.length > 0) {
       docs += '### Options\n\n';
       docs += '| Option | Description | Required | Default |\n';
-      docs += '|--------|-------------|----------|--------|\n';
+      docs += '|:-------|:----------|:---------|:--------|\n';
       
       options.forEach(option => {
         const flags = option.flags;
@@ -46,9 +46,6 @@ export function generateCommandDocs(command: Command, level = 1): string {
   const subcommands = command.commands;
   if (subcommands && subcommands.length > 0) {
     if (level === 1) {
-      docs += `# ${command.name()} CLI Documentation\n\n`;
-      docs += `${command.description()}\n\n`;
-      
       const commandsByGroup = new Map<string, Command[]>();
       const ungroupedCommands: Command[] = [];
       

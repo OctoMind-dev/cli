@@ -125,6 +125,9 @@ export const getTestCases = async (
 export const listTestCases = async (
   options: GetTestCasesOptions & ListOptions,
 ): Promise<void> => {
+  if (!options.status) {
+    options.status = "ENABLED";
+  }
   const testCases = await getTestCases(options);
 
   if (options.json) {
