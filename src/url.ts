@@ -11,7 +11,8 @@ export const getUrl = async (
         testResultId: string;
         entityType: "test-result";
       }
-    | { testCaseId: string; entityType: "discovery" },
+    | { testCaseId: string; entityType: "discovery" }
+    | { batchGenerationId: string; entityType: "batch-generation" },
 ): Promise<string> => {
   const relevantBaseUrl = new URL(BASE_URL).origin;
   const config = await loadConfig();
@@ -30,5 +31,7 @@ export const getUrl = async (
       return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testreports/${input.testReportId}/testresults/${input.testResultId}`;
     case "discovery":
       return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testcases/${input.testCaseId}`;
+    case "batch-generation":
+      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/batch-generations/${input.batchGenerationId}`;
   }
 };

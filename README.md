@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 1.3.1. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.3.2. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -238,6 +238,25 @@ Create a new test case discovery
 | `--external-id [id]` | External identifier | No |  |
 | `--assigned-tag-ids [ids]` | Comma-separated list of tag IDs | No |  |
 | `--folder-id [id]` | Folder ID | No |  |
+
+## Execution
+
+## batch-generation
+
+Batch generation
+
+**Usage:** `batch-generation [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|:-------|:----------|:---------|:--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-p, --prompt <prompt>` | Batch generation prompt | Yes |  |
+| `-u, --url <url>` | Start url for generation | Yes |  |
+| `-e, --environment-id <id>` | Environment ID | Yes |  |
+| `-d, --prerequisite-id <id>` | Prerequisite ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 
 ## Notifications
 
