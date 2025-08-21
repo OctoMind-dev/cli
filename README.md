@@ -239,11 +239,9 @@ Create a new test case discovery
 | `--assigned-tag-ids [ids]` | Comma-separated list of tag IDs | No |  |
 | `--folder-id [id]` | Folder ID | No |  |
 
-## Execution
-
 ## batch-generation
 
-Batch generation
+Batch generation of test cases
 
 **Usage:** `batch-generation [options]`
 

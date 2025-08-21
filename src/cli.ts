@@ -342,12 +342,12 @@ export const buildCmd = (): CompletableCommand => {
   createCommandWithCommonOptions(program, "batch-generation")
     .completer(testTargetIdCompleter)
     .completer(optionsCompleter)
-    .description("Batch generation")
+    .description("Batch generation of test cases")
     .requiredOption("-p, --prompt <prompt>", "Batch generation prompt")
     .requiredOption("-u, --url <url>", "Start url for generation")
     .option("-e, --environment-id <id>", "Environment ID")
     .option("-d, --prerequisite-id <id>", "Prerequisite ID")
-    .helpGroup("execution")
+    .helpGroup("execute")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(batchGeneration));
 
