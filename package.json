@@ -4,7 +4,13 @@
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
   "packageManager": "pnpm@10.13.1",
-  "files": ["dist", "src", "README.md", "LICENSE", "package.json"],
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
   "engines": {
     "node": ">=20.0.0"
   },
@@ -34,7 +40,7 @@
     "tabtab": "^3.0.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.4",
+    "@biomejs/biome": "2.2.2",
     "@types/jest": "30.0.0",
     "@types/node": "24.2.1",
     "@types/tabtab": "3.0.4",
