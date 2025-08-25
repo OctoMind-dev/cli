@@ -5,6 +5,56 @@ import { client, handleError, ListOptions, logJson } from "./client";
 export type CreateDiscoveryBody =
   components["schemas"]["ExternalDiscoveryBody"];
 export type DiscoveryResponse = components["schemas"]["DiscoveryResponse"];
+export type BatchGenerationResponse =
+  components["schemas"]["BatchGenerationResponse"];
+export type BatchGenerationParams =
+  components["schemas"]["ExternalBatchGenerationBody"];
+export const batchGeneration = async (
+  options: {
+    environmentId: string;
+    prompt: string;
+    prerequisiteId?: string;
+    testTargetId: string;
+    url: string;
+  } & ListOptions,
+): Promise<void> => {
+  const { data, error } = await client.POST(
+    "/apiKey/v2/test-targets/{testTargetId}/batch-generations",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+      body: {
+        environmentId: options.environmentId,
+        prompt: options.prompt,
+        prerequisiteId: options.prerequisiteId,
+        entryPointUrlPath: options.url,
+      },
+    },
+  );
+
+  handleError(error);
+
+  const response = data as BatchGenerationResponse;
+  if (options.json) {
+    logJson(response);
+    return;
+  }
+  if (!response.batchGenerationId) {
+    throw new Error("Batch generation ID is missing");
+  }
+
+  console.log("Batch generation created successfully!");
+  console.log(`Batch generation ID: ${response.batchGenerationId}`);
+  console.log(
+    `Batch generation URL: ${await getUrl({
+      batchGenerationId: response.batchGenerationId,
+      entityType: "batch-generation",
+    })}`,
+  );
+};
 
 export const createDiscovery = async (
   options: CreateDiscoveryBody & { testTargetId: string } & ListOptions,

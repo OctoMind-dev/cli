@@ -16,6 +16,7 @@ import { runDebugtopus } from "./debugtopus";
 import { promptUser, resolveTestTargetId } from "./helpers";
 import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
+  batchGeneration,
   CreateDiscoveryBody,
   createDiscovery,
   createEnvironment,
@@ -257,7 +258,6 @@ export const buildCmd = (): CompletableCommand => {
     .action(addTestTargetWrapper(deleteEnvironment));
 
   program
-
     .completer(optionsCompleter)
     .completableCommand("start-private-location")
     .description(
@@ -276,14 +276,12 @@ export const buildCmd = (): CompletableCommand => {
     .action(startPrivateLocationWorker);
 
   program
-
     .completableCommand("stop-private-location")
     .completer(optionsCompleter)
     .description(
       "Stop a private location worker, see https://octomind.dev/docs/proxy/private-location",
     )
     .helpGroup("private-locations")
-
     .action(stopPLW);
 
   createCommandWithCommonOptions(program, "notifications")
@@ -291,7 +289,6 @@ export const buildCmd = (): CompletableCommand => {
     .description("Get notifications for a test target")
     .helpGroup("notifications")
     .addOption(testTargetIdOption)
-
     .action(addTestTargetWrapper(listNotifications));
 
   createCommandWithCommonOptions(program, "delete-test-case")
@@ -328,7 +325,6 @@ export const buildCmd = (): CompletableCommand => {
       splitter,
     )
     .option("--folder-id [id]", "Folder ID")
-
     .action(addTestTargetWrapper(createDiscovery));
 
   createCommandWithCommonOptions(program, "list-test-cases")
@@ -342,6 +338,18 @@ export const buildCmd = (): CompletableCommand => {
     .description("List all test targets")
     .helpGroup("test-targets")
     .action(listTestTargets);
+
+  createCommandWithCommonOptions(program, "batch-generation")
+    .completer(testTargetIdCompleter)
+    .completer(optionsCompleter)
+    .description("Batch generation of test cases")
+    .requiredOption("-p, --prompt <prompt>", "Batch generation prompt")
+    .requiredOption("-u, --url <url>", "Start url for generation")
+    .option("-e, --environment-id <id>", "Environment ID")
+    .option("-d, --prerequisite-id <id>", "Prerequisite ID")
+    .helpGroup("execute")
+    .addOption(testTargetIdOption)
+    .action(addTestTargetWrapper(batchGeneration));
 
   program
     .completableCommand("install-completion")
