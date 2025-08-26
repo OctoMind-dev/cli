@@ -50,6 +50,11 @@ export { client };
 export const handleError = (error: ErrorResponse) => {
   if (error) {
     console.error(error);
+    if (typeof error === "string" && error.startsWith("403")) {
+      console.error(
+        "You are not authorized. Check your API key or do a 'octomind init' to set it up.",
+      );
+    }
     process.exit(1);
   }
 };
