@@ -28,6 +28,7 @@ import {
   GetTestCaseParams,
   GetTestReportParams,
   getEnvironment,
+  getTestCaseCode,
   listEnvironments,
   listNotifications,
   listPrivateLocations,
@@ -298,6 +299,17 @@ export const buildCmd = (): CompletableCommand => {
     .addOption(testTargetIdOption)
     .helpGroup("test-cases")
     .action(addTestTargetWrapper(deleteTestCase));
+
+  createCommandWithCommonOptions(program, "code")
+    .completer(testCaseIdCompleter)
+    .completer(testTargetIdCompleter)
+    .description("Get code of a specific test case")
+    .helpGroup("test-cases")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .requiredOption("-u, --url <url>", "URL to execute the test case against")
+    .option("-e, --environment-id [id]", "Environment ID", "default")
+    .addOption(testTargetIdOption)
+    .action(addTestTargetWrapper(getTestCaseCode));
 
   createCommandWithCommonOptions(program, "test-case")
     .completer(testCaseIdCompleter)
