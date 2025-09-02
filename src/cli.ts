@@ -37,6 +37,7 @@ import {
   registerLocation,
   unregisterLocation,
   updateEnvironment,
+  getTestCaseCode,
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
 import { listTestTargets } from "./tools/test-targets";
@@ -299,6 +300,17 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("test-cases")
     .action(addTestTargetWrapper(deleteTestCase));
 
+  createCommandWithCommonOptions(program, "code")
+    .completer(testCaseIdCompleter)
+    .completer(testTargetIdCompleter)
+    .description("Get code of a specific test case")
+    .helpGroup("test-cases")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .requiredOption("-u, --url <url>", "URL to execute the test case against")
+    .option("-e, --environment-id [id]", "Environment ID", "default")
+    .addOption(testTargetIdOption)
+    .action(addTestTargetWrapper(getTestCaseCode));
+
   createCommandWithCommonOptions(program, "test-case")
     .completer(testCaseIdCompleter)
     .completer(testTargetIdCompleter)
@@ -307,6 +319,7 @@ export const buildCmd = (): CompletableCommand => {
     .requiredOption("-c, --test-case-id <id>", "Test case ID")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listTestCase));
+
 
   createCommandWithCommonOptions(program, "create-discovery")
     .completer(testTargetIdCompleter)
