@@ -28,6 +28,7 @@ import {
   GetTestCaseParams,
   GetTestReportParams,
   getEnvironment,
+  getTestCaseCode,
   listEnvironments,
   listNotifications,
   listPrivateLocations,
@@ -37,7 +38,6 @@ import {
   registerLocation,
   unregisterLocation,
   updateEnvironment,
-  getTestCaseCode,
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
 import { listTestTargets } from "./tools/test-targets";
@@ -319,7 +319,6 @@ export const buildCmd = (): CompletableCommand => {
     .requiredOption("-c, --test-case-id <id>", "Test case ID")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listTestCase));
-
 
   createCommandWithCommonOptions(program, "create-discovery")
     .completer(testTargetIdCompleter)

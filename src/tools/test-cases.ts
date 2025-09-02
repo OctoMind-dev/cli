@@ -125,13 +125,16 @@ export const getTestCases = async (
 };
 
 export const getTestCaseCode = async (
-  options: GetTestCaseParams & ListOptions & {
-    url: string;
-    environmentId?: string;
-  },
+  options: GetTestCaseParams &
+    ListOptions & {
+      url: string;
+      environmentId?: string;
+    },
 ): Promise<void> => {
   if (options.environmentId === "default") {
-    const environments = await getEnvironments({ testTargetId: options.testTargetId });
+    const environments = await getEnvironments({
+      testTargetId: options.testTargetId,
+    });
     options.environmentId = environments.find((e) => e.type === "DEFAULT")?.id;
     if (!options.environmentId) {
       throw new Error("no default environment found");
