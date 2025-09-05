@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 1.3.1. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 1.3.4. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -218,6 +218,9 @@ Execute test cases to create a test report
 | `-d, --description [text]` | Test description | No |  |
 | `-g, --tags [tags]` | comma separated list of tags | No |  |
 | `-v, --variables-to-overwrite [variables]` | JSON object of variables to overwrite | No |  |
+| `-b, --browser [type]` | Browser type [CHROMIUM, FIREFOX, SAFARI] | No | CHROMIUM |
+| `-r, --breakpoint [name]` | Breakpoint [DESKTOP, MOBILE, TABLET] | No | DESKTOP |
+| `-p, --private-location [name]` | Private location name | No |  |
 
 ## create-discovery
 

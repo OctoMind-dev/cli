@@ -26,7 +26,7 @@ export const executeTests = async (
       environmentName: options.environmentName,
       tags: options.tags,
       variablesToOverwrite: options.variablesToOverwrite,
-      browserType: options.browserType,
+      browser: options.browser,
       breakpoint: options.breakpoint,
     },
   });
