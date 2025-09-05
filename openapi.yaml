@@ -1,0 +1,2341 @@
+openapi: 3.0.3
+info:
+  title: Octomind external  API
+  description: Octomind API that allows you to execute test cases, fetch reports and register private location workers by providing a URL and an ID.
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://octomind.dev/docs
+    email: support@octomind.dev
+externalDocs:
+  description: Find out more
+  url: https://octomind.dev/docs/
+tags:
+  - name: Test targets
+    description: Operations for managing test targets
+  - name: Execute
+    description: Operations for executing tests
+  - name: Environments
+    description: Operations for managing test environments
+  - name: Reports
+    description: Operations for retrieving test reports
+  - name: Notifications
+    description: Operations for retrieving notifications
+  - name: Private locations
+    description: Operations for managing private locations
+  - name: Test Cases
+    description: Operations for retrieving test cases
+  - name: Discoveries
+    description: Operations for creating test discoveries
+servers:
+  - url: https://app.octomind.dev/api
+    description: Main API Endpoint
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    TestCaseElement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        index:
+          type: integer
+        interaction:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: uuid
+            action:
+              type: string
+              enum:
+                [
+                  EXTRACT,
+                  ENTER_TEXT,
+                  CLICK,
+                  SELECT_OPTION,
+                  TYPE_TEXT,
+                  KEY_PRESS,
+                  HOVER,
+                  UPLOAD,
+                  GO_TO,
+                  DRAG_AND_DROP,
+                  CLOSE_PAGE,
+                  OPEN_EMAIL,
+                ]
+            calledWith:
+              type: string
+              nullable: true
+            testCaseElementId:
+              type: string
+              format: uuid
+        assertion:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              format: uuid
+            expectation:
+              type: string
+              enum:
+                [
+                  VISIBLE,
+                  NOT_VISIBLE,
+                  TO_BE_CHECKED,
+                  NOT_TO_BE_CHECKED,
+                  TO_HAVE_VALUE,
+                  TO_CONTAIN_TEXT,
+                  TO_HAVE_STYLE,
+                ]
+            calledWith:
+              type: string
+              nullable: true
+            testCaseElementId:
+              type: string
+              format: uuid
+        selectors:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              index:
+                type: integer
+              selector:
+                type: string
+              selectorType:
+                type: string
+                enum: [TEXT, LABEL, PLACEHOLDER, ROLE]
+              options:
+                type: object
+                nullable: true
+              testCaseElementId:
+                type: string
+                format: uuid
+        testCaseId:
+          type: string
+          format: uuid
+        ignoreFailure:
+          type: boolean
+    Breakpoint:
+      type: string
+      enum: ["MOBILE", "TABLET", "DESKTOP"]
+      description: The breakpoint to run the test cases against.
+      example: "DESKTOP"
+      default: "DESKTOP"
+    Browser:
+      type: string
+      enum: ["CHROMIUM", "FIREFOX", "SAFARI"]
+      description: The browser to run the test cases against.
+      example: "CHROMIUM"
+      default: "CHROMIUM"
+    ExecutionContext:
+      oneOf:
+        - type: object
+          properties:
+            source:
+              type: string
+              enum: ["github"]
+              example: "github"
+            issueNumber:
+              type: integer
+              nullable: true
+              example: 123
+            ref:
+              type: string
+              nullable: true
+              example: "refs/heads/main"
+            sha:
+              type: string
+              nullable: true
+              example: "abc123def456"
+            repo:
+              type: string
+              example: "my-repo"
+            owner:
+              type: string
+              example: "repo-owner"
+            triggeredBy:
+              type: object
+              nullable: true
+              properties:
+                type:
+                  type: string
+                  enum: ["USER"]
+                  example: "USER"
+                userId:
+                  type: string
+                  example: "user123"
+            nodeId:
+              type: string
+              nullable: true
+              example: "node-123"
+
+        - type: object
+          properties:
+            source:
+              type: string
+              enum: ["azureDevOps"]
+              example: "azureDevOps"
+            accessToken:
+              type: string
+              example: "token123"
+            organization:
+              type: string
+              example: "my-org"
+            project:
+              type: string
+              example: "my-project"
+            repositoryId:
+              type: string
+              example: "repo-123"
+            sha:
+              type: string
+              nullable: true
+              example: "abc123def456"
+            ref:
+              type: string
+              nullable: true
+              example: "refs/heads/main"
+            pullRequestId:
+              type: integer
+              nullable: true
+              example: 101
+            triggeredBy:
+              type: object
+              nullable: true
+              properties:
+                type:
+                  type: string
+                  enum: ["USER"]
+                  example: "USER"
+                userId:
+                  type: string
+                  example: "user123"
+            threadId:
+              type: string
+              nullable: true
+              example: "thread-123"
+
+        - type: object
+          properties:
+            source:
+              type: string
+              enum: ["discovery"]
+              example: "discovery"
+            description:
+              type: string
+              example: "A discovery test"
+            triggeredBy:
+              oneOf:
+                - type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: ["INITIAL"]
+                      example: "INITIAL"
+                - type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: ["USER"]
+                      example: "USER"
+                    userId:
+                      type: string
+                      example: "user123"
+
+        - type: object
+          properties:
+            source:
+              type: string
+              enum: ["manual"]
+              example: "manual"
+            description:
+              type: string
+              example: "A manual trigger"
+            triggeredBy:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: ["USER"]
+                  example: "USER"
+                userId:
+                  type: string
+                  example: "user123"
+
+        - type: object
+          properties:
+            source:
+              type: string
+              enum: ["scheduled"]
+              example: "scheduled"
+            triggeredBy:
+              type: object
+              nullable: true
+              properties:
+                type:
+                  type: string
+                  enum: ["USER"]
+                  example: "USER"
+                userId:
+                  type: string
+                  example: "user123"
+
+        - type: object
+          properties:
+            source:
+              type: string
+              enum: ["proposal"]
+              example: "proposal"
+            description:
+              type: string
+              example: "A proposal trigger"
+            triggeredBy:
+              oneOf:
+                - type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: ["INITIAL"]
+                      example: "INITIAL"
+                - type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: ["USER"]
+                      example: "USER"
+                    userId:
+                      type: string
+                      example: "user123"
+
+    Variables:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+      description: The variables to overwrite exclusively for this test run.
+      example:
+        "SPACE_ID": ["64ee32b4-7365-47a6-b5b0-2903b6ad849d"]
+
+    TestTargetExecutionRequest:
+      type: object
+      properties:
+        testTargetId:
+          type: string
+          format: uuid
+          description: Unique identifier for the testTarget.
+          example: "2e2bb27b-a19c-47ce-a9b6-cd1bd31622dc"
+        url:
+          type: string
+          format: uri
+          description: The URL of the test target for this run.
+          example: "https://example.com"
+        context:
+          $ref: "#/components/schemas/ExecutionContext"
+        environmentName:
+          type: string
+          format: environment name
+          description: the environment name you want to run your test against
+          default: default
+        variablesToOverwrite:
+          $ref: "#/components/schemas/Variables"
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["tag1", "tag2"]
+          default: []
+          description: The tags to filter the test cases by.
+        breakpoint:
+          $ref: "#/components/schemas/Breakpoint"
+        browser:
+          $ref: "#/components/schemas/Browser"
+      required:
+        - testTargetId
+        - url
+        - context
+
+    TestResult:
+      type: object
+      example:
+        id: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+        testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+        createdAt: "2024-09-06T13:01:51.686Z"
+        updatedAt: "2024-09-06T13:05:23.412Z"
+        executionUrl: "https://en.wikipedia.org/"
+        status: "FAILED"
+        context:
+          source: "github"
+          issueNumber: 123
+          ref: "refs/heads/main"
+          sha: "abc123def456"
+          repo: "my-repo"
+          owner: "repo-owner"
+          triggeredBy:
+            type: "USER"
+            userId: "user123"
+          nodeId: "node-123"
+        testResults:
+          - id: "7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p"
+            testCaseId: "9876fedc-ba98-7654-3210-fedcba987654"
+            testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+            testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+            name: "User can search for information"
+            createdAt: "2024-09-06T13:01:51.686Z"
+            updatedAt: "2024-09-06T13:03:12.345Z"
+            status: "PASSED"
+            errorMessage: null
+            traceUrl: "https://storage.googleapis.com/automagically-traces/7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p-trace.zip"
+          - id: "2a3b4c5d-6e7f-8g9h-0i1j-2k3l4m5n6o7p"
+            testCaseId: "5432fedc-ba98-7654-3210-fedcba543210"
+            testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+            testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+            name: "User can navigate to article"
+            createdAt: "2024-09-06T13:01:51.686Z"
+            updatedAt: "2024-09-06T13:04:45.678Z"
+            status: "FAILED"
+            errorMessage: "TimeoutError: locator.click: Timeout 30000ms exceeded."
+            traceUrl: "https://storage.googleapis.com/automagically-traces/2a3b4c5d-6e7f-8g9h-0i1j-2k3l4m5n6o7p-trace.zip"
+          - id: "3a4b5c6d-7e8f-9g0h-1i2j-3k4l5m6n7o8p"
+            testCaseId: "1234abcd-ef56-7890-abcd-ef1234567890"
+            testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+            testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+            name: "User can create an account"
+            createdAt: "2024-09-06T13:01:51.686Z"
+            updatedAt: "2024-09-06T13:05:23.412Z"
+            status: "WAITING"
+            errorMessage: null
+            traceUrl: null
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the test result.
+          example: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+        testTargetId:
+          type: string
+          format: uuid
+          description: Unique identifier of the test report this result belongs to.
+          example: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+        testCaseId:
+          type: string
+          format: uuid
+          description: Unique identifier of the test case this result belongs to.
+          example: "5b844cf1-d597-4048-9e74-7c0f9ce3e2ee"
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the test result was created.
+          example: "2024-09-06T13:01:51.686Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the test result was last updated.
+          example: "2024-09-06T13:01:51.686Z"
+        status:
+          type: string
+          enum: ["WAITING", "PASSED", "FAILED", "ERROR"]
+          description: The status of the specific test result, will be WAITING as long as the result is running, FAILED if the execution failed, PASSED if it succeeded, and ERROR if an internal error occurred.
+        errorMessage:
+          type: string
+          nullable: true
+          description: The error that has occurred during execution - only set if the status is FAILED or ERROR.
+          example: "TimeoutError: locator.click: Timeout 30000ms exceeded."
+        traceUrl:
+          type: string
+          nullable: true
+          description: Link to the playwright trace of the test execution - only set once the test result is finished (PASSED or FAILED).
+          example: "https://storage.googleapis.com/automagically-traces/826c15af-644b-4b28-89b4-f50ff34e46b7-trace.zip"
+        breakpoint:
+          $ref: "#/components/schemas/Breakpoint"
+        browser:
+          $ref: "#/components/schemas/Browser"
+
+    TestReport:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the test report.
+          example: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+        testTargetId:
+          type: string
+          format: uuid
+          description: The unique identifier of the test target.
+          example: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the test report was created.
+          example: "2024-09-06T13:01:51.686Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the test report was last updated.
+          example: "2024-09-06T13:01:51.686Z"
+        executionUrl:
+          type: string
+          format: uri
+          description: The URL where the test execution was performed.
+          example: "https://en.wikipedia.org/"
+        status:
+          type: string
+          enum: ["WAITING", "PASSED", "FAILED"]
+          description: The status of the test report, will be WAITING as long as any result is running, FAILED if the report is done but has any failed result and PASSED if all test results are done and successful
+        context:
+          $ref: "#/components/schemas/ExecutionContext"
+        breakpoint:
+          $ref: "#/components/schemas/Breakpoint"
+        browser:
+          $ref: "#/components/schemas/Browser"
+        testResults:
+          type: array
+          items:
+            $ref: "#/components/schemas/TestResult"
+
+    PrivateLocationInfo:
+      type: array
+      items:
+        type: object
+        properties:
+          status:
+            type: string
+            enum:
+              - OFFLINE
+              - ONLINE
+          address:
+            type: string
+            format: uri
+            example: "https://example.com:3128"
+          name:
+            type: string
+            example: "my-private-location"
+        required:
+          - status
+          - address
+          - name
+
+    TestExecutionResponse:
+      type: object
+      properties:
+        testReportUrl:
+          type: string
+          format: uri
+          description: The URL where the test report can be accessed.
+          example: "https://app.octomind.dev/testreports/826c15af-644b-4b28-89b4-f50ff34e46b7"
+        testReport:
+          $ref: "#/components/schemas/TestReport"
+
+    TestCasesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/TestCaseResponse"
+    TestCaseResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        testTargetId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          nullable: true
+        elements:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              index:
+                type: integer
+              interaction:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  action:
+                    type: string
+                    enum:
+                      [
+                        EXTRACT,
+                        ENTER_TEXT,
+                        CLICK,
+                        SELECT_OPTION,
+                        TYPE_TEXT,
+                        KEY_PRESS,
+                        HOVER,
+                        UPLOAD,
+                        GO_TO,
+                        DRAG_AND_DROP,
+                        CLOSE_PAGE,
+                        OPEN_EMAIL,
+                      ]
+                  calledWith:
+                    type: string
+                    nullable: true
+                  testCaseElementId:
+                    type: string
+                    format: uuid
+              assertion:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  expectation:
+                    type: string
+                    enum:
+                      [
+                        VISIBLE,
+                        NOT_VISIBLE,
+                        TO_BE_CHECKED,
+                        NOT_TO_BE_CHECKED,
+                        TO_HAVE_VALUE,
+                        TO_CONTAIN_TEXT,
+                        TO_HAVE_STYLE,
+                      ]
+                  calledWith:
+                    type: string
+                    nullable: true
+                  testCaseElementId:
+                    type: string
+                    format: uuid
+              scrollState:
+                type: object
+                nullable: true
+              selectors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    index:
+                      type: integer
+                    selector:
+                      type: string
+                    selectorType:
+                      type: string
+                      enum: [TEXT, LABEL, PLACEHOLDER, ROLE]
+                    options:
+                      type: object
+                      nullable: true
+                      properties:
+                        name:
+                          type: string
+                    testCaseElementId:
+                      type: string
+                      format: uuid
+                    scrollStateId:
+                      type: string
+                      nullable: true
+              testCaseId:
+                type: string
+                format: uuid
+              ignoreFailure:
+                type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        status:
+          type: string
+          enum: [ENABLED, DRAFT]
+        externalId:
+          type: string
+          nullable: true
+        entryPointUrlPath:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        createdBy:
+          type: string
+          enum: [EDIT]
+        runStatus:
+          type: string
+          enum: [ON, OFF]
+        prerequisiteId:
+          type: string
+          nullable: true
+        proposalRunId:
+          type: string
+          nullable: true
+        folderId:
+          type: string
+          nullable: true
+        teardownTestCaseId:
+          type: string
+          nullable: true
+        discovery:
+          type: object
+          nullable: true
+          properties:
+            updatedAt:
+              type: string
+              format: date-time
+            freePrompt:
+              type: string
+            traceUrl:
+              type: string
+              nullable: true
+            status:
+              type: string
+              enum:
+                [
+                  CREATED,
+                  IN_PROGRESS,
+                  ERROR,
+                  SUCCESS,
+                  FAILED,
+                  INCOMPLETE,
+                  QUEUED,
+                  STOPPED,
+                  OUTDATED,
+                  PAUSED,
+                ]
+            abortCause:
+              type: string
+              nullable: true
+            message:
+              type: string
+              nullable: true
+      required:
+        - id
+        - testTargetId
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the operation was successful.
+          example: true
+
+    UnregisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        registrationData:
+          type: object
+          properties:
+            proxypass:
+              type: string
+              example: secret22
+            proxyuser:
+              type: string
+              example: user
+            address:
+              type: string
+              description: the address of the remote endpoint. IP and port
+              example: 34.45.23.22:23455
+
+    EnvironmentsResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/EnvironmentResponse"
+
+    EnvironmentSimpleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: ["DEFAULT", "ADDITIONAL"]
+          example: "DEFAULT"
+        discoveryUrl:
+          type: string
+          format: url
+          example: "https://example.com"
+        email:
+          type: string
+          example: "user@example.com"
+          description: The 2FA email of the environment to test email flows.
+    EnvironmentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          enum: ["DEFAULT", "ADDITIONAL"]
+          example: "DEFAULT"
+        testTargetId:
+          type: string
+          format: uuid
+        updatedAt:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum: ["DEFAULT", "ADDITIONAL"]
+          example: "DEFAULT"
+        discoveryUrl:
+          type: string
+          format: url
+        additionalHeaderFields:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+        testAccount:
+          type: object
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+            otpInitializerKey:
+              type: string
+              nullable: true
+            updatedAt:
+              type: string
+              format: date-time
+          nullable: true
+        basicAuth:
+          type: object
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+            updatedAt:
+              type: string
+              format: date-time
+          nullable: true
+        privateLocation:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            status:
+              type: string
+            type:
+              type: string
+      required:
+        - id
+        - name
+        - testTargetId
+        - type
+
+    CreateTestTargetBody:
+      type: object
+      properties:
+        testTarget:
+          type: object
+          properties:
+            app:
+              type: string
+              description: The app name or project name of the test target
+            discoveryUrl:
+              type: string
+              format: uri
+              description: The discovery URL of the test target. This is the URL that a discovery tool can use to discover the test target.
+          required:
+            - app
+            - discoveryUrl
+    TestTargetsResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/TestTargetResponse"
+    TestTargetResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        app:
+          type: string
+          description: The app name or project name of the test target
+        tags:
+          type: array
+          items:
+            type: string
+            nullable: true
+        environments:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnvironmentSimpleResponse"
+          description: The environments of the test target
+      required:
+        - id
+        - app
+    TestTargetUpdateRequest:
+      type: object
+      properties:
+        app:
+          type: string
+          nullable: true
+          description: The app name or project name of the test target
+        testIdAttribute:
+          type: string
+          nullable: true
+          description: The attribute name of the test ID
+          example: "test-automation-id"
+        testRailIntegration:
+          type: object
+          properties:
+            domain:
+              type: string
+              description: The domain of the TestRail instance
+              example: "https://mycompany.testrail.io"
+            username:
+              type: string
+              description: The username for the TestRail instance
+              example: "user"
+            projectId:
+              type: string
+              description: The project ID for the TestRail instance
+              example: "123"
+            apiKey:
+              type: string
+              description: The TestRail API key for the TestRail instance
+              example: "123123123"
+          nullable: true
+        timeoutPerStep:
+          type: number
+          format: int32
+          minimum: 5000
+          maximum: 30000
+          description: The timeout per step in milliseconds
+
+    ZodResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          code:
+            type: string
+            example: "invalid_type"
+            description: "What error code happened while parsing the request"
+          expected:
+            type: string
+            description: "What the expected type was"
+            example: "object"
+          received:
+            type: "string"
+            description: "What the actual passed type was"
+            example: "string"
+          path:
+            type: array
+            items:
+              type: string
+              description: "The json path to the wrong parameter"
+              example: "key"
+          message:
+            type: string
+            description: "Human-readable message of the error that occurred while parsing."
+            example: "Expected object, received string"
+
+    ExternalBatchGenerationBody:
+      type: object
+      properties:
+        prompt:
+          type: string
+          description: "Prompt to generate the test cases in this batch generation"
+        imageUrls:
+          type: array
+          items:
+            type: string
+          description: "Image URLs to generate the test cases in this batch generation"
+        entryPointUrlPath:
+          type: string
+          nullable: true
+          description: "Entry point URL path, where the batch generation will start"
+        environmentId:
+          type: string
+          nullable: true
+          description: "Environment ID, where the batch generation will be executed"
+        prerequisiteId:
+          type: string
+          nullable: true
+          description: "Prerequisite ID, which will be executed before the batch generation"
+        baseUrl:
+          type: string
+          nullable: true
+          description: "Base URL, where the batch generation will be executed"
+        context:
+          $ref: "#/components/schemas/ExecutionContext"
+
+    BatchGenerationResponse:
+      type: object
+      properties:
+        batchGenerationId:
+          type: string
+          format: uuid
+          description: "Unique identifier for the batch generation"
+          example: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the event.
+          example: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+        testTargetId:
+          type: string
+          format: uuid
+          description: The unique identifier of the test target this event belongs to.
+          example: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the event was created.
+          example: "2024-09-06T13:01:51.686Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the event was last updated.
+          example: "2024-09-06T13:01:51.686Z"
+        payload:
+          type: object
+          description: JSON payload containing event-specific data.
+          example: { testCaseId: "5deeef76-f37a-418b-8101-7d69529fa561" }
+        type:
+          type: string
+          enum:
+            [
+              "VALIDATION_PASSED",
+              "VALIDATION_FAILED",
+              "DISCOVERY_FINISHED",
+              "PROPOSAL_SUCCESS",
+              "PROPOSAL_FAILED",
+              "REPORT_EXECUTION_FINISHED",
+            ]
+          description: The type of event that occurred.
+          example: "VALIDATION_PASSED"
+        ack:
+          type: string
+          enum: ["IN_WEB_APP"]
+          description: Optional acknowledgment status of the event.
+          example: "IN_WEB_APP"
+          nullable: true
+      required:
+        - id
+        - testTargetId
+        - createdAt
+        - updatedAt
+        - payload
+        - type
+
+    ExternalDiscoveryBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the discovered test case
+          example: "Login Form Validation Test"
+        entryPointUrlPath:
+          type: string
+          description: Entry point URL path of the discovered test case
+          example: "/login"
+        prerequisiteName:
+          type: string
+          description: Prerequisite test case name
+          example: "Cookie Banner Acceptance"
+        externalId:
+          type: string
+          description: External ID of the discovered test case
+          example: "ext-test-001"
+        tagNames:
+          type: array
+          items:
+            type: string
+          description: Tags to assign to the discovered test case
+          example: ["authentication", "forms", "validation"]
+        prompt:
+          type: string
+          description: Prompt to generate the discovered test case
+          example: "Test the login form with valid and invalid credentials"
+        folderName:
+          type: string
+          description: Folder name of the discovered test case
+          example: "Authentication Tests"
+        type:
+          type: string
+          enum: ["LOGIN", "COOKIE_BANNER"]
+          description: Type of the discovered test case
+          example: "LOGIN"
+      required:
+        - name
+        - prompt
+
+    DiscoveryResponse:
+      type: object
+      required:
+        - discoveryId
+        - testCaseId
+      properties:
+        discoveryId:
+          type: string
+          format: uuid
+          description: The ID of the created discovery
+        testCaseId:
+          type: string
+          format: uuid
+          description: The ID of the associated test case
+paths:
+  /apiKey/v2/test-targets:
+    get:
+      summary: Retrieve all test targets
+      description: "Gets a list of test targets."
+      operationId: getTestTargets
+      tags:
+        - Test targets
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestTargetsResponse"
+        "401":
+          description: Invalid or missing API key
+        "500":
+          description: Internal server error
+    post:
+      summary: Create a new test target
+      description: "Creates a new test target."
+      operationId: createTestTarget
+      tags:
+        - Test targets
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTestTargetBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestTargetResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Invalid or missing API key
+        "500":
+          description: Internal server error
+
+  /apiKey/v2/test-targets/{testTargetId}:
+    get:
+      summary: Retrieve a test target
+      description: "Gets a test target by ID."
+      operationId: getTestTarget
+      tags:
+        - Test targets
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target to fetch
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestTargetResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Invalid or missing API key
+
+    patch:
+      summary: Update a test target
+      description: "Updates a test target by ID."
+      operationId: updateTestTarget
+      tags:
+        - Test targets
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target to update
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestTargetUpdateRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestTargetResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Invalid or missing API key
+        "500":
+          description: Internal server error
+    delete:
+      summary: Delete a test target
+      description: "Deletes a test target by ID."
+      operationId: deleteTestTarget
+      tags:
+        - Test targets
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target to delete
+      responses:
+        "204":
+          description: OK
+        "401":
+          description: Invalid or missing API key
+        "404":
+          description: Test target not found
+        "500":
+          description: Internal server error
+
+  /apiKey/v2/execute:
+    post:
+      summary: Execute tests of the given test target
+      description: |
+        This endpoint triggers a test execution by sending an test target id, an URL and optionally tags, an environment and variables.
+      operationId: executeTests
+      tags:
+        - Execute
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestTargetExecutionRequest"
+      responses:
+        "200":
+          description: Test executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestExecutionResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Invalid or missing API key
+        "500":
+          description: Internal server error
+
+  /apiKey/v2/test-targets/{testTargetId}/batch-generations:
+    post:
+      summary: Create a batch generation
+      description: "Creates a batch generation for the given test target."
+      operationId: createBatchGeneration
+      tags:
+        - Discoveries
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExternalBatchGenerationBody"
+      responses:
+        "200":
+          description: Batch generation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchGenerationResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Invalid or missing API key
+        "500":
+          description: Internal server error
+  /apiKey/v2/test-targets/{testTargetId}/config:
+    get:
+      summary: Retrieve test target configuration
+      description: Get the test target configuration for a specific environment
+      operationId: getTestTargetConfig
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Test targets
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uri
+          description: The execution URL for the test target
+        - name: outputDir
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The directory where test output will be stored
+        - name: headless
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Whether to run tests in headless mode (true/false)
+        - name: environmentId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional ID of the environment to use (defaults to the test target's default environment if not provided)
+      responses:
+        "200":
+          description: Test target configuration retrieved successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: The test target configuration as plain text
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Environment not found
+        "405":
+          description: Method not allowed
+
+  /apiKey/v2/test-targets/{testTargetId}/environments:
+    post:
+      summary: Create an environment
+      description: Create a custom environment.
+      operationId: createEnvironment
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Environments
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target to which the environment belongs to
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                discoveryUrl:
+                  type: string
+                  format: url
+                testAccount:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                    password:
+                      type: string
+                    otpInitializerKey:
+                      type: string
+                      nullable: true
+                  nullable: true
+                basicAuth:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                    password:
+                      type: string
+                  nullable: true
+                privateLocationName:
+                  type: string
+                  description: name of the private location
+                additionalHeaderFields:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  nullable: true
+
+      responses:
+        "201":
+          description: environment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Invalid or missing API key
+    get:
+      summary: Retrieve environments
+      description: get a list of all defined environments.
+      operationId: getEnvironments
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Environments
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target to which the test report belongs to
+      responses:
+        "200":
+          description: environments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentsResponse"
+
+  /apiKey/v2/test-targets/{testTargetId}/environments/{environmentId}:
+    patch:
+      summary: Update an environment
+      description: Updates an enviroment, all properties can be set separately
+      operationId: updateEnvironment
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Environments
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target to which the environment belongs to
+        - in: path
+          name: environmentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the environment to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+                discoveryUrl:
+                  type: string
+                  format: url
+                  nullable: true
+                testAccount:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                    password:
+                      type: string
+                    otpInitializerKey:
+                      type: string
+                      nullable: true
+                  nullable: true
+                basicAuth:
+                  type: object
+                  properties:
+                    username:
+                      type: string
+                    password:
+                      type: string
+                  nullable: true
+                privateLocationName:
+                  type: string
+                  nullable: true
+                  description: name of the private location
+                additionalHeaderFields:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  nullable: true
+      responses:
+        "200":
+          description: Environment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentResponse"
+    delete:
+      summary: Delete an environment
+      operationId: deleteEnvironment
+      description: deletes an enviroment. this operation is not reversable.
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Environments
+      responses:
+        "200":
+          description: Environment deleted successfully
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target to which the test report belongs to
+        - in: path
+          name: environmentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the environment to update
+
+  /apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}:
+    get:
+      summary: Retrieve information about a test report
+      description: Poll from within a CI-pipeline to wait for the completion of a report.
+      operationId: getTestReport
+      tags:
+        - Reports
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target to which the test report belongs to
+        - in: path
+          name: testReportId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test report to fetch
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Test Report information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestReport"
+              example:
+                id: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+                testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                createdAt: "2024-09-06T13:01:51.686Z"
+                updatedAt: "2024-09-06T13:05:23.412Z"
+                executionUrl: "https://en.wikipedia.org/"
+                status: "FAILED"
+                context:
+                  source: "github"
+                  issueNumber: 123
+                  ref: "refs/heads/main"
+                  sha: "abc123def456"
+                  repo: "my-repo"
+                  owner: "repo-owner"
+                  triggeredBy:
+                    type: "USER"
+                    userId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                  nodeId: "node-123"
+                testResults:
+                  - id: "9876fedc-ba98-7654-3210-fedcba987654"
+                    testCaseId: "9876fedc-ba98-7654-3210-fedcba987654"
+                    testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                    testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+                    name: "User can search for information"
+                    createdAt: "2024-09-06T13:01:51.686Z"
+                    updatedAt: "2024-09-06T13:03:12.345Z"
+                    status: "PASSED"
+                    errorMessage: null
+                    traceUrl: "https://storage.googleapis.com/automagically-traces/7a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p-trace.zip"
+                  - id: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                    testCaseId: "5432fedc-ba98-7654-3210-fedcba543210"
+                    testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                    testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+                    name: "User can navigate to article"
+                    createdAt: "2024-09-06T13:01:51.686Z"
+                    updatedAt: "2024-09-06T13:04:45.678Z"
+                    status: "FAILED"
+                    errorMessage: "TimeoutError: locator.click: Timeout 30000ms exceeded."
+                    traceUrl: "https://storage.googleapis.com/automagically-traces/2a3b4c5d-6e7f-8g9h-0i1j-2k3l4m5n6o7p-trace.zip"
+                  - id: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                    testCaseId: "1234abcd-ef56-7890-abcd-ef1234567890"
+                    testTargetId: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+                    testReportId: "826c15af-644b-4b28-89b4-f50ff34e46b7"
+                    name: "User can create an account"
+                    createdAt: "2024-09-06T13:01:51.686Z"
+                    updatedAt: "2024-09-06T13:05:23.412Z"
+                    status: "WAITING"
+                    errorMessage: null
+                    traceUrl: null
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Invalid or missing API key
+        "500":
+          description: Internal server error
+
+  /apiKey/v2/test-targets/{testTargetId}/test-reports:
+    get:
+      summary: Retrieve paginated information about test reports
+      description: Allow fetching the history of test reports for your test target.
+      operationId: getTestReports
+      tags:
+        - Reports
+      parameters:
+        - in: path
+          name: testTargetId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the test target for which to fetch the history for
+        - in: query
+          name: key
+          required: false
+          schema:
+            type: object
+            properties:
+              createdAt:
+                type: string
+                format: date-time
+                description: The timestamp of the key of the next page to fetch - See [Keyset Pagination](https://use-the-index-luke.com/no-offset)
+                example: "2024-09-06T13:01:51.686Z"
+        - in: query
+          name: filter
+          required: false
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                key:
+                  type: string
+                  description: "The name of the property to filter for, e.g. an environmentId"
+                  example: "environmentId"
+                operator:
+                  type: string
+                  enum: ["EQUALS"]
+                  description: How to compare the property in question, only EQUALS is supported so far.
+                value:
+                  type: string
+                  format: uuid
+                  description: The value to compare with to find matches.
+                  example: "3435918b-3d29-4ebd-8c68-9a540532f45a"
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: Test Reports information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TestReport"
+                  key:
+                    type: object
+                    properties:
+                      createdAt:
+                        type: string
+                        format: date-time
+                        description: The timestamp of the key of the next page to fetch - use this in the query when fetching the next page of reports - See [Keyset Pagination](https://use-the-index-luke.com/no-offset)
+                        example: "2024-09-06T13:01:51.686Z"
+                  hasNextPage:
+                    type: boolean
+                    description: If the query in question has another page to retrieve
+
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+
+        "401":
+          description: Invalid or missing API key
+        "500":
+          description: Internal server error
+
+  /apiKey/v2/test-targets/{testTargetId}/notifications:
+    get:
+      summary: Retrieve notifications
+      description: Get a list of notifications for a specific test target.
+      operationId: getNotifications
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Notifications
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+      responses:
+        "200":
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Test target not found
+
+  /apiKey/v1/private-location:
+    get:
+      security:
+        - ApiKeyAuth: []
+      summary: Retrieve all private locations
+      description: "gets a list of private location workers"
+      operationId: getPrivateLocations
+      tags:
+        - Private locations
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateLocationInfo"
+
+  /apiKey/v1/private-location/register:
+    put:
+      security:
+        - ApiKeyAuth: []
+      summary: Register a private location
+      description: "registers a private location worker"
+      operationId: registerPrivateLocation
+      tags:
+        - Private locations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "404":
+          description: private location of that name not found
+        "500":
+          description: Internal server error
+
+  /apiKey/v1/private-location/unregister:
+    put:
+      security:
+        - ApiKeyAuth: []
+      summary: Unregister a private location
+      description: "Unregisters a private location worker."
+      operationId: unregisterPrivateLocation
+      tags:
+        - Private locations
+      externalDocs:
+        url: https://octomind.dev/docs/proxy/private-location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnregisterRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "404":
+          description: private location of that name not found
+        "500":
+          description: Internal server error
+
+  /apiKey/v2/test-targets/{testTargetId}/test-cases:
+    get:
+      summary: List test cases
+      description: Get a list of test cases for a specific test target with optional filtering
+      operationId: getTestCases
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Test Cases
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            JSON string containing filter criteria for test cases. The filter supports the following fields:
+            - id: Filter by test case ID
+            - testTargetId: Filter by test target ID
+            - description: Filter by test case description
+            - status: Filter by test case status (ENABLED, DISABLED, DRAFT, OUTDATED, DELETED, PROVISIONAL)
+            - runStatus: Filter by run status (ON, OFF)
+            - folderId: Filter by folder ID
+            - externalId: Filter by external ID
+            - AND: Logical AND operator for combining multiple conditions
+            - OR: Logical OR operator for combining multiple conditions
+            - NOT: Logical NOT operator for negating conditions
+          example: '{"status":"ENABLED","folderId":"some-folder-id","OR":[{"description":"Login Test"},{"externalId":"TEST-123"}]}'
+      responses:
+        "200":
+          description: List of test cases
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestCasesResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Test target not found
+
+  /apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}:
+    get:
+      summary: Retrieve a test case
+      description: Get detailed information about a specific test case
+      operationId: getTestCase
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Test Cases
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+        - name: testCaseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test case
+      responses:
+        "200":
+          description: Test case details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestCaseResponse"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Test target or test case not found
+
+    patch:
+      summary: Update a test case
+      description: Update specific properties of a test case
+      operationId: patchTestCase
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Test Cases
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+        - name: testCaseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test case to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                elements:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/TestCaseElement"
+                description:
+                  type: string
+                entryPointUrlPath:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [ENABLED, DISABLED, DRAFT, OUTDATED, PROVISIONAL]
+                runStatus:
+                  type: string
+                  enum: [ON, OFF]
+                folderName:
+                  type: string
+                  nullable: true
+                interactionStatus:
+                  type: string
+                  enum: [NEW, EDITED, APPROVED, REJECTED]
+                createBackendDiscoveryPrompt:
+                  type: string
+                assignedTagNames:
+                  type: array
+                  items:
+                    type: string
+                externalId:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: Updated test case
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  testTargetId:
+                    type: string
+                    format: uuid
+                  description:
+                    type: string
+                  status:
+                    type: string
+                    enum: [ENABLED, DISABLED, DRAFT, OUTDATED, PROVISIONAL]
+                  runStatus:
+                    type: string
+                    enum: [ON, OFF]
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+                  entryPointUrlPath:
+                    type: string
+                    nullable: true
+                  elements:
+                    type: array
+                    items:
+                      type: object
+                  folderId:
+                    type: string
+                    nullable: true
+                  externalId:
+                    type: string
+                    nullable: true
+                  tags:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Test case, folder or tag not found
+
+    delete:
+      summary: Delete a test case
+      description: Delete a specific test case
+      operationId: deleteTestCase
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Test Cases
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+        - name: testCaseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test case
+      responses:
+        "200":
+          description: Test case deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: ["deleted"]
+                    description: Status of the deletion operation
+                required:
+                  - status
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ZodResponse"
+                  - type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: ["has dependencies"]
+                        description: Indicates the test case has dependencies
+                      dependencyIds:
+                        type: array
+                        items:
+                          type: string
+                          format: uuid
+                        description: List of test case IDs that depend on this test case
+                    required:
+                      - status
+                      - dependencyIds
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Test case not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: ["error"]
+                    description: Indicates an error occurred
+                  error:
+                    type: string
+                    description: Error message
+                required:
+                  - status
+                  - error
+
+  /apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/elements/{elementId}:
+    patch:
+      summary: Update a test case element
+      description: Update a the locator line of a specific test case element
+      operationId: updateTestCaseElement
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Test Cases
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+        - name: testCaseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test case
+        - name: elementId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test case element
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locatorLine:
+                  description: The locator line of the test case element
+                  type: string
+              required:
+                - locatorLine
+      responses:
+        "200":
+          description: Test case element updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestCaseElement"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Test target, test case or test case element not found
+        "500":
+          description: Internal server error
+
+  /apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code:
+    get:
+      summary: Retrieve code for a test case
+      description: Get the code representation of a specific test case
+      operationId: getTestCaseCode
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Test Cases
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+        - name: testCaseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test case
+        - name: executionUrl
+          in: query
+          required: true
+          schema:
+            type: string
+            format: url
+          description: URL of the app to test
+        - name: environmentId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional ID of the environment to use
+      responses:
+        "200":
+          description: Test case code retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  testCode:
+                    type: string
+                    description: The code representation of the test case
+                required:
+                  - testCode
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Test target, test case, or test code not found
+
+  /apiKey/v2/test-targets/{testTargetId}/discoveries:
+    post:
+      summary: Create a discovery
+      description: Create a new test case discovery with a given name and prompt
+      operationId: createDiscovery
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Discoveries
+      parameters:
+        - name: testTargetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the test target
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExternalDiscoveryBody"
+      responses:
+        "200":
+          description: Discovery created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiscoveryResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZodResponse"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+        "404":
+          description: Test target not found
+        "500":
+          description: Internal server error
