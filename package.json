@@ -27,7 +27,7 @@
   "dependencies": {
     "@playwright/test": "1.54.2",
     "@types/shell-quote": "1.7.5",
-    "commander": "14.0.0",
+    "commander": "14.0.1",
     "openapi-fetch": "0.14.0",
     "otplib": "12.0.1",
     "shell-quote": "1.8.3",
