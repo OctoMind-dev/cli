@@ -41,7 +41,7 @@
     "genversion": "3.2.0",
     "jest": "30.1.3",
     "openapi-typescript": "7.9.1",
-    "ts-jest": "29.4.1",
+    "ts-jest": "29.4.2",
     "ts-node": "10.9.2",
     "tsx": "4.20.5",
     "typescript": "5.9.2"
