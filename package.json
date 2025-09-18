@@ -25,7 +25,7 @@
   "author": "Stefan Rinke",
   "license": "MIT",
   "dependencies": {
-    "@playwright/test": "1.54.2",
+    "@playwright/test": "1.55.0",
     "@types/shell-quote": "1.7.5",
     "commander": "14.0.1",
     "openapi-fetch": "0.14.0",
