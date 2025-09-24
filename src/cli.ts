@@ -164,7 +164,6 @@ export const buildCmd = (): CompletableCommand => {
       "Breakpoint [DESKTOP, MOBILE, TABLET]",
       "DESKTOP",
     )
-    .option("-p, --private-location [name]", "Private location name")
     .action(addTestTargetWrapper(executeTests));
 
   createCommandWithCommonOptions(program, "test-report")
