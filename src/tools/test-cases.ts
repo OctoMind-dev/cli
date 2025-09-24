@@ -129,6 +129,7 @@ export const getTestCaseCode = async (
     ListOptions & {
       url: string;
       environmentId?: string;
+      simple?: boolean;
     },
 ): Promise<void> => {
   if (options.environmentId === "default") {
@@ -151,6 +152,7 @@ export const getTestCaseCode = async (
         query: {
           executionUrl: options.url,
           environmentId: options.environmentId,
+          simple: options.simple,
         },
       },
     },

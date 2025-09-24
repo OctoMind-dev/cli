@@ -308,6 +308,7 @@ export const buildCmd = (): CompletableCommand => {
     .requiredOption("-c, --test-case-id <id>", "Test case ID")
     .requiredOption("-u, --url <url>", "URL to execute the test case against")
     .option("-e, --environment-id [id]", "Environment ID", "default")
+    .option("-s, --simple", "get the simple code version")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(getTestCaseCode));
 
