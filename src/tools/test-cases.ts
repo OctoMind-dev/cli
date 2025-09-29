@@ -123,6 +123,55 @@ export const getTestCases = async (
 
   return data;
 };
+export const exportTestCase = async (
+  options: GetTestCaseParams & { format: "json" | "yaml" },
+): Promise<void> => {
+  const { data, error } = await client.GET(
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/export",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+          testCaseId: options.testCaseId,
+        },
+        query: {
+          format: options.format,
+        },
+      },
+    },
+  );
+
+  handleError(error);
+
+  if (!data) {
+    throw new Error("no test code found");
+  }
+  console.log(data);
+};
+
+export const importTestCase = async (
+  options: GetTestCaseParams 
+): Promise<void> => {
+  const { data, error } = await client.POST(
+    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/import",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+          testCaseId: options.testCaseId,
+        },
+        
+      },
+    },
+  );
+
+  handleError(error);
+
+  if (!data) {
+    throw new Error("no test code found");
+  }
+  console.log(data);
+};
 
 export const getTestCaseCode = async (
   options: GetTestCaseParams &
