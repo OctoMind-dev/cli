@@ -154,6 +154,16 @@ export const buildCmd = (): CompletableCommand => {
       "JSON object of variables to overwrite",
       toJSON,
     )
+    .option(
+      "-b, --browser [type]",
+      "Browser type [CHROMIUM, FIREFOX, SAFARI]",
+      "CHROMIUM",
+    )
+    .option(
+      "-r, --breakpoint [name]",
+      "Breakpoint [DESKTOP, MOBILE, TABLET]",
+      "DESKTOP",
+    )
     .action(addTestTargetWrapper(executeTests));
 
   createCommandWithCommonOptions(program, "test-report")

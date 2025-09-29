@@ -1,6 +1,6 @@
 {
   "name": "@octomind/octomind",
-  "version": "1.3.3",
+  "version": "1.4.1",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
   "packageManager": "pnpm@10.13.1",
@@ -9,7 +9,7 @@
     "node": ">=20.0.0"
   },
   "bin": {
-    "octomind": "./dist/index.js"
+    "octomind": "dist/index.js"
   },
   "scripts": {
     "gendoc": "tsx scripts/generate-docs.ts > README.md",
