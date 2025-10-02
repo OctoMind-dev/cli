@@ -38,6 +38,8 @@ import {
   registerLocation,
   unregisterLocation,
   updateEnvironment,
+  importTestCase,
+  exportTestCase,
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
 import { listTestTargets } from "./tools/test-targets";
@@ -309,6 +311,23 @@ export const buildCmd = (): CompletableCommand => {
     .addOption(testTargetIdOption)
     .helpGroup("test-cases")
     .action(addTestTargetWrapper(deleteTestCase));
+
+    createCommandWithCommonOptions(program, "export")
+    .completer(testCaseIdCompleter)
+    .completer(testTargetIdCompleter)
+    .description("Export a specific test case")
+    .helpGroup("test-cases")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .option("-f, --format [json/yaml]", "Export format", "json")
+    .addOption(testTargetIdOption)
+    .action(addTestTargetWrapper(exportTestCase));
+
+  createCommandWithCommonOptions(program, "import")
+    .completer(testCaseIdCompleter)
+    .completer(testTargetIdCompleter)
+    .description("Import a specific test case")
+    .helpGroup("test-cases")
+    .action(addTestTargetWrapper(importTestCase));
 
   createCommandWithCommonOptions(program, "code")
     .completer(testCaseIdCompleter)
