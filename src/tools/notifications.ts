@@ -3,14 +3,14 @@ import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 
 export type GetNotificationsParams =
-  paths["/apiKey/v2/test-targets/{testTargetId}/notifications"]["get"]["parameters"]["path"];
+  paths["/apiKey/v3/test-targets/{testTargetId}/notifications"]["get"]["parameters"]["path"];
 export type Notification = components["schemas"]["Notification"];
 
 export const listNotifications = async (
   options: GetNotificationsParams & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.GET(
-    "/apiKey/v2/test-targets/{testTargetId}/notifications",
+    "/apiKey/v3/test-targets/{testTargetId}/notifications",
     {
       params: {
         path: {
