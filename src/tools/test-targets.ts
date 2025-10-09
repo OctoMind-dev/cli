@@ -2,7 +2,7 @@ import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 
 export const getTestTargets = async () => {
-  const { data, error } = await client.GET("/apiKey/v2/test-targets");
+  const { data, error } = await client.GET("/apiKey/v3/test-targets");
 
   handleError(error);
 

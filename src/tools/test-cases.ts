@@ -6,15 +6,15 @@ import { getEnvironments } from "./environments";
 export type TestCaseResponse = components["schemas"]["TestCaseResponse"];
 export type TestCasesResponse = components["schemas"]["TestCasesResponse"];
 export type GetTestCaseParams =
-  paths["/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}"]["get"]["parameters"]["path"];
+  paths["/apiKey/v3/test-targets/{testTargetId}/test-cases/{testCaseId}"]["get"]["parameters"]["path"];
 export type DeleteTestCaseParams =
-  paths["/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}"]["delete"]["parameters"]["path"];
+  paths["/apiKey/v3/test-targets/{testTargetId}/test-cases/{testCaseId}"]["delete"]["parameters"]["path"];
 
 export const deleteTestCase = async (
   options: DeleteTestCaseParams & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.DELETE(
-    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}",
+    "/apiKey/v3/test-targets/{testTargetId}/test-cases/{testCaseId}",
     {
       params: {
         path: {
@@ -39,7 +39,7 @@ export const listTestCase = async (
   options: GetTestCaseParams & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.GET(
-    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}",
+    "/apiKey/v3/test-targets/{testTargetId}/test-cases/{testCaseId}",
     {
       params: {
         path: {
@@ -102,7 +102,7 @@ export const getTestCases = async (
   options: GetTestCasesOptions,
 ): Promise<TestCasesResponse> => {
   const { data, error } = await client.GET(
-    "/apiKey/v2/test-targets/{testTargetId}/test-cases",
+    "/apiKey/v3/test-targets/{testTargetId}/test-cases",
     {
       params: {
         path: {
@@ -141,7 +141,7 @@ export const getTestCaseCode = async (
     }
   }
   const { data, error } = await client.GET(
-    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
+    "/apiKey/v3/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
     {
       params: {
         path: {

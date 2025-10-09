@@ -5,13 +5,13 @@ import { client, handleError, ListOptions, logJson } from "./client";
 export type ExecuteTestsBody =
   components["schemas"]["TestTargetExecutionRequest"];
 export type GetTestReportParams =
-  paths["/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}"]["get"]["parameters"]["path"];
+  paths["/apiKey/v3/test-targets/{testTargetId}/test-reports/{testReportId}"]["get"]["parameters"]["path"];
 export type TestReport = components["schemas"]["TestReport"];
 
 export const executeTests = async (
   options: ExecuteTestsBody & { description?: string } & ListOptions,
 ): Promise<void> => {
-  const { data, error } = await client.POST("/apiKey/v2/execute", {
+  const { data, error } = await client.POST("/apiKey/v3/execute", {
     body: {
       testTargetId: options.testTargetId,
       url: options.url,
@@ -62,7 +62,7 @@ export const getTestReports = async (options: {
   testTargetId: string;
 }): Promise<TestReport[] | undefined> => {
   const { data, error } = await client.GET(
-    "/apiKey/v2/test-targets/{testTargetId}/test-reports",
+    "/apiKey/v3/test-targets/{testTargetId}/test-reports",
     {
       params: {
         path: {
@@ -81,7 +81,7 @@ export const listTestReport = async (
   options: GetTestReportParams & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.GET(
-    "/apiKey/v2/test-targets/{testTargetId}/test-reports/{testReportId}",
+    "/apiKey/v3/test-targets/{testTargetId}/test-reports/{testReportId}",
     {
       params: {
         path: {

@@ -8,7 +8,7 @@ export const getPlaywrightConfig = async (options: {
   headless?: boolean;
 }): Promise<string> => {
   const { data, error } = await client.GET(
-    "/apiKey/v2/test-targets/{testTargetId}/config",
+    "/apiKey/v3/test-targets/{testTargetId}/config",
     {
       params: {
         path: {
@@ -41,7 +41,7 @@ export const getPlaywrightCode = async (options: {
   executionUrl: string;
 }): Promise<string> => {
   const { data, error } = await client.GET(
-    "/apiKey/v2/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
+    "/apiKey/v3/test-targets/{testTargetId}/test-cases/{testCaseId}/code",
     {
       params: {
         path: {

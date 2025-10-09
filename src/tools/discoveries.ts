@@ -19,7 +19,7 @@ export const batchGeneration = async (
   } & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.POST(
-    "/apiKey/v2/test-targets/{testTargetId}/batch-generations",
+    "/apiKey/v3/test-targets/{testTargetId}/batch-generations",
     {
       params: {
         path: {
@@ -75,7 +75,7 @@ export const createDiscovery = async (
   };
 
   const { data, error } = await client.POST(
-    "/apiKey/v2/test-targets/{testTargetId}/discoveries",
+    "/apiKey/v3/test-targets/{testTargetId}/discoveries",
     {
       params: {
         path: {
