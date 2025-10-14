@@ -146,4 +146,32 @@ describe("config overwrite behaviour", () => {
       }),
     );
   });
+
+  it("should resolve testCaseId if provided from parameter", async () => {
+    const mockResolvedId = "config-test-target-456";
+    const mockConfig = {
+      apiKey: "test-api-key",
+      testTargetId: mockResolvedId,
+    };
+    (loadConfig as jest.Mock).mockResolvedValue(mockConfig);
+
+    await program.parseAsync([
+      "node",
+      "cli.js",
+      "debug",
+      "--url",
+      "https://example.com",
+      "--test-case-id",
+      "test-case-123",
+    ]);
+
+    expect(runDebugtopus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: "https://example.com",
+        testTargetId: mockResolvedId,
+        testCaseId: "test-case-123",
+      }),
+    );
+  });
+
 });
