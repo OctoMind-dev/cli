@@ -14,7 +14,7 @@ import {
 import { ensureChromiumIsInstalled } from "./installation";
 
 type DebugtopusOptions = {
-  id?: string;
+  testCaseId?: string;
   testTargetId: string;
   url: string;
   environmentId?: string;
@@ -170,12 +170,12 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
   };
 
   let testCasesWithCode: TestCaseCodeWithId[] = [];
-  if (options.id) {
+  if (options.testCaseId) {
     testCasesWithCode = [
       {
-        id: options.id,
+        id: options.testCaseId,
         code: await getPlaywrightCode({
-          testCaseId: options.id,
+          testCaseId: options.testCaseId,
           executionUrl: options.url,
           ...baseApiOptions,
         }),
