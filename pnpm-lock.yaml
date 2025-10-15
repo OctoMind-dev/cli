@@ -18,8 +18,8 @@ importers:
         specifier: 14.0.1
         version: 14.0.1
       openapi-fetch:
-        specifier: 0.14.1
-        version: 0.14.1
+        specifier: 0.15.0
+        version: 0.15.0
       otplib:
         specifier: 12.0.1
         version: 12.0.1
@@ -1594,8 +1594,8 @@ packages:
     resolution: {integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==}
     engines: {node: '>=6'}
 
-  openapi-fetch@0.14.1:
-    resolution: {integrity: sha512-l7RarRHxlEZYjMLd/PR0slfMVse2/vvIAGm75/F7J6MlQ8/b9uUQmUF2kCPrQhJqMXSxmYWObVgeYXbFYzZR+A==}
+  openapi-fetch@0.15.0:
+    resolution: {integrity: sha512-OjQUdi61WO4HYhr9+byCPMj0+bgste/LtSBEcV6FzDdONTs7x0fWn8/ndoYwzqCsKWIxEZwo4FN/TG1c1rI8IQ==}
 
   openapi-typescript-helpers@0.0.15:
     resolution: {integrity: sha512-opyTPaunsklCBpTK8JGef6mfPhLSnyy5a0IN9vKtx3+4aExf+KxEqYwIy3hqkedXIB97u357uLMJsOnm3GVjsw==}
@@ -3783,7 +3783,7 @@ snapshots:
     dependencies:
       mimic-fn: 2.1.0
 
-  openapi-fetch@0.14.1:
+  openapi-fetch@0.15.0:
     dependencies:
       openapi-typescript-helpers: 0.0.15
 
