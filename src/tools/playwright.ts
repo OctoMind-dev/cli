@@ -6,6 +6,7 @@ export const getPlaywrightConfig = async (options: {
   url: string;
   outputDir: string;
   headless?: boolean;
+  bypassProxy?: boolean;
 }): Promise<string> => {
   const { data, error } = await client.GET(
     "/apiKey/v3/test-targets/{testTargetId}/config",
@@ -19,6 +20,7 @@ export const getPlaywrightConfig = async (options: {
           url: options.url,
           outputDir: options.outputDir,
           headless: options.headless ? "true" : "false",
+          bypassProxy: options.bypassProxy ? "true" : "false",
         },
       },
       parseAs: "text",

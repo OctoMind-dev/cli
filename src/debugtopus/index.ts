@@ -21,6 +21,7 @@ type DebugtopusOptions = {
   headless?: boolean;
   persist?: boolean;
   grep?: string;
+  bypassProxy?: boolean;
 };
 
 const getPackageRootLevel = (appDir: string): string => {
@@ -232,6 +233,7 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     outputDir: dirs.outputDir,
     environmentId: environmentIdForConfig,
     headless: options.headless,
+    bypassProxy: options.bypassProxy,
   });
 
   if (!config) {

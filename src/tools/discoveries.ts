@@ -31,6 +31,7 @@ export const batchGeneration = async (
         prompt: options.prompt,
         prerequisiteId: options.prerequisiteId,
         entryPointUrlPath: options.url,
+        guessDependency: false,
       },
     },
   );
