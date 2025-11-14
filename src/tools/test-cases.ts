@@ -151,6 +151,7 @@ export const getTestCaseCode = async (
         query: {
           executionUrl: options.url,
           environmentId: options.environmentId,
+          simpleCode: true,
         },
       },
     },
