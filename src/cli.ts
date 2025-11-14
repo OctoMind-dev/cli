@@ -137,6 +137,7 @@ export const buildCmd = (): CompletableCommand => {
       "if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again",
     )
     .option("--grep [substring]", "filter test cases by substring")
+    .option("--bypass-proxy", "bypass proxy when accessing the test target")
     .action(addTestTargetWrapper(runDebugtopus));
 
   createCommandWithCommonOptions(program, "execute")
