@@ -138,6 +138,8 @@ export const buildCmd = (): CompletableCommand => {
     )
     .option("--grep [substring]", "filter test cases by substring")
     .option("--bypass-proxy", "bypass proxy when accessing the test target")
+    .option("--browser [CHROMIUM, FIREFOX, SAFARI]", "Browser type", "CHROMIUM")
+    .option("--breakpoint [DESKTOP, MOBILE, TABLET]", "Breakpoint", "DESKTOP")
     .action(addTestTargetWrapper(runDebugtopus));
 
   createCommandWithCommonOptions(program, "execute")

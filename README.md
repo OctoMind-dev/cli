@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 3.0.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 3.1.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -201,6 +201,8 @@ run test cases against local build
 | `--persist` | if we should write playwright config and files to current directory, you can then run 'npx playwright test' to run them again | No |  |
 | `--grep [substring]` | filter test cases by substring | No |  |
 | `--bypass-proxy` | bypass proxy when accessing the test target | No |  |
+| `--browser [CHROMIUM, FIREFOX, SAFARI]` | Browser type | No | CHROMIUM |
+| `--breakpoint [DESKTOP, MOBILE, TABLET]` | Breakpoint | No | DESKTOP |
 
 ## execute
 
