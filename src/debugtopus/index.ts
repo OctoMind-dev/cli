@@ -22,6 +22,8 @@ type DebugtopusOptions = {
   persist?: boolean;
   grep?: string;
   bypassProxy?: boolean;
+  browser?: "CHROMIUM" | "FIREFOX" | "SAFARI";
+  breakpoint?: "DESKTOP" | "MOBILE" | "TABLET";
 };
 
 const getPackageRootLevel = (appDir: string): string => {
@@ -234,6 +236,8 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     environmentId: environmentIdForConfig,
     headless: options.headless,
     bypassProxy: options.bypassProxy,
+    browser: options.browser,
+    breakpoint: options.breakpoint,
   });
 
   if (!config) {
