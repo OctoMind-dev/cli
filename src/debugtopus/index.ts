@@ -24,6 +24,7 @@ type DebugtopusOptions = {
   bypassProxy?: boolean;
   browser?: "CHROMIUM" | "FIREFOX" | "SAFARI";
   breakpoint?: "DESKTOP" | "MOBILE" | "TABLET";
+  onlyActivated?: boolean;
 };
 
 const getPackageRootLevel = (appDir: string): string => {
@@ -188,6 +189,7 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     const testCases = await getTestCases({
       ...baseApiOptions,
       status: "ENABLED",
+      runStatus: options.onlyActivated ? "ON" : undefined,
     });
     if (!testCases) {
       throw new Error("no test cases found");
