@@ -140,7 +140,10 @@ export const buildCmd = (): CompletableCommand => {
     .option("--bypass-proxy", "bypass proxy when accessing the test target")
     .option("--browser [CHROMIUM, FIREFOX, SAFARI]", "Browser type", "CHROMIUM")
     .option("--breakpoint [DESKTOP, MOBILE, TABLET]", "Breakpoint", "DESKTOP")
-    .option("--only-activated", "only run activated test cases")
+    .option(
+      "--run-status [ON, OFF]",
+      "only run test cases that are either ON or OFF",
+    )
     .action(addTestTargetWrapper(runDebugtopus));
 
   createCommandWithCommonOptions(program, "execute")
