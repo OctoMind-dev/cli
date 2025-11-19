@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 3.1.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 3.2.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -203,6 +203,7 @@ run test cases against local build
 | `--bypass-proxy` | bypass proxy when accessing the test target | No |  |
 | `--browser [CHROMIUM, FIREFOX, SAFARI]` | Browser type | No | CHROMIUM |
 | `--breakpoint [DESKTOP, MOBILE, TABLET]` | Breakpoint | No | DESKTOP |
+| `--run-status [ON, OFF]` | only run test cases that are either ON or OFF | No |  |
 
 ## execute
 
