@@ -110,7 +110,10 @@ export const getTestCases = async (
           testTargetId: options.testTargetId,
         },
         query: {
-          filter: JSON.stringify({ status: options.status, runStatus: options.runStatus }),
+          filter: JSON.stringify({
+            status: options.status,
+            runStatus: options.runStatus,
+          }),
         },
       },
     },
