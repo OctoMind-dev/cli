@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 3.2.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 3.3.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -342,6 +342,35 @@ Stop a private location worker, see https://octomind.dev/docs/proxy/private-loca
 **Usage:** `stop-private-location [options]`
 
 ## Test Cases
+
+## export
+
+export a test case as yaml or json
+
+**Usage:** `export [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|:-------|:----------|:---------|:--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-c, --test-case-id <id>` | Test case ID | Yes |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-f, --format [yaml|json]` | Format | No | yaml |
+
+## import
+
+import a test case from yaml or json
+
+**Usage:** `import [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|:-------|:----------|:---------|:--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-i, --input <file>` | Input file (use '-' for stdin) | Yes |  |
 
 ## delete-test-case
 

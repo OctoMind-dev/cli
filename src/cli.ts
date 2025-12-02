@@ -23,12 +23,16 @@ import {
   deleteEnvironment,
   deleteTestCase,
   ExecuteTestsBody,
+  ExportTestCaseOptions,
   executeTests,
+  exportTestCase,
   GetEnvironmentOptions,
   GetTestCaseParams,
   GetTestReportParams,
   getEnvironment,
   getTestCaseCode,
+  ImportTestCaseBody,
+  importTestCase,
   listEnvironments,
   listNotifications,
   listPrivateLocations,
@@ -52,6 +56,8 @@ type TestTargetWrapperOptions = GetEnvironmentOptions &
   GetTestCaseParams &
   GetTestReportParams &
   CreateDiscoveryBody &
+  ExportTestCaseOptions &
+  ImportTestCaseBody &
   ExecuteTestsBody;
 
 const addTestTargetWrapper =
@@ -274,6 +280,25 @@ export const buildCmd = (): CompletableCommand => {
     .requiredOption("-e, --environment-id <id>", "Environment ID")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(deleteEnvironment));
+
+  createCommandWithCommonOptions(program, "export")
+    .completer(testCaseIdCompleter)
+    .completer(testTargetIdCompleter)
+    .description("export a test case as yaml or json")
+    .helpGroup("test-cases")
+    .requiredOption("-c, --test-case-id <id>", "Test case ID")
+    .addOption(testTargetIdOption)
+    .option("-f, --format [yaml|json]", "Format", "yaml")
+    .action(addTestTargetWrapper(exportTestCase));
+
+  createCommandWithCommonOptions(program, "import")
+    .completer(testCaseIdCompleter)
+    .completer(testTargetIdCompleter)
+    .description("import a test case from yaml or json")
+    .helpGroup("test-cases")
+    .addOption(testTargetIdOption)
+    .option("-i, --input <file>", "Input file (use '-' for stdin)")
+    .action(addTestTargetWrapper(importTestCase));
 
   program
     .completer(optionsCompleter)
