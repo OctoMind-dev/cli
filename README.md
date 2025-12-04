@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 3.2.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 3.3.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -392,6 +392,19 @@ Get details of a specific test case
 List all test cases
 
 **Usage:** `list-test-cases [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|:-------|:----------|:---------|:--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+
+## pull
+
+Pull test cases from the test target
+
+**Usage:** `pull [options]`
 
 ### Options
 
