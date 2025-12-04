@@ -40,7 +40,7 @@ import {
   updateEnvironment,
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
-import { listTestTargets } from "./tools/test-targets";
+import { listTestTargets, pullTestTarget } from "./tools/test-targets";
 import { version } from "./version";
 
 export const BINARY_NAME = "octomind";
@@ -362,6 +362,14 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listTestCases));
+
+  createCommandWithCommonOptions(program, "pull")
+    .completer(testTargetIdCompleter)
+    .description("Pull test cases from the test target")
+    .helpGroup("test-cases")
+    .addOption(testTargetIdOption)
+    .option("-d, --destination <path>", "Destination folder")
+    .action(addTestTargetWrapper(pullTestTarget));
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")
