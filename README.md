@@ -412,6 +412,7 @@ Pull test cases from the test target
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-d, --destination <path>` | Destination folder | Yes |  |
 
 ## Test Reports
 

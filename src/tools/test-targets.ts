@@ -168,9 +168,9 @@ export const buildFilename = (testCase: TestCases[number], folderName: string): 
   return candidate;
 };
 
-export const pullTestTarget = async (options: { testTargetId: string } & ListOptions): Promise<void> => {
+export const pullTestTarget = async (options: { testTargetId: string; destination?: string } & ListOptions): Promise<void> => {
 
-  const { data, error } = await client.GET("/apiKey/v3/test-targets/{testTargetId}/pull", {
+  const { data, error } = await client.GET("/apiKey/beta/test-targets/{testTargetId}/pull", {
     params: {
       path: {
         testTargetId: options.testTargetId,
