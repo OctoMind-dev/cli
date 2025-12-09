@@ -1,9 +1,10 @@
 import { exec } from "child_process";
 import { randomUUID } from "crypto";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, writeFileSync, createWriteStream, createReadStream } from "fs";
 import fs from "fs/promises";
 import path, { dirname } from "path";
 import { promisify } from "util";
+import { pipeline } from "node:stream/promises";
 
 import {
   getEnvironments,
@@ -14,9 +15,9 @@ import {
 } from "../tools";
 import { ensureChromiumIsInstalled } from "./installation";
 import { client, handleError } from "../tools/client";
-import { Writable } from "stream";
+import { Readable } from "stream";
 import { ReadableStream } from "stream/web";
-import { Extract } from "unzipper";
+import { Open } from "unzipper";
 
 export type DebugtopusOptions = {
   testCaseId?: string;
@@ -172,14 +173,15 @@ const runTests = async ({
 };
 
 export const executeLocalTestCases = async (options: DebugtopusOptions & { source: string }):Promise<void> => {
-  const testCases = await readTestCasesFromDir(options.source);
+  const testCases = readTestCasesFromDir(options.source);
+  console.log(JSON.stringify(testCases, null, 2));
   const body = {
     testCases,
     testTargetId: options.testTargetId,
-    url: options.url,
+    executionUrl: options.url,
     environmentId: options.environmentId,
   };
-  const { error, response } = await client.POST("/apiKey/beta/test-targets/{testTargetId}/push", 
+  const { error, response } = await client.POST("/apiKey/beta/test-targets/{testTargetId}/code", 
   {
     params: {
       path: {
@@ -191,14 +193,39 @@ export const executeLocalTestCases = async (options: DebugtopusOptions & { sourc
   });
 
   if (error || !response?.body) {
-    throw new Error(`Failed to fetch ZIP: ${error}`);
+    handleError(error);
   }
 
   const dirs = await prepareDirectories();
 
-  const extractor = Extract({ path: dirs.testDirectory });
-  const webWritable = Writable.toWeb(extractor);
-  await (response.body as ReadableStream).pipeTo(webWritable);
+  // Persist the ZIP to disk first to avoid streaming issues with unzipper
+  const zipPath = path.join(dirs.testDirectory, "bundle.zip");
+  const zipWriteStream = createWriteStream(zipPath);
+  // Debug: log response headers to diagnose server payload
+  const contentType = (response.headers.get("content-type") || "").toString();
+  const contentLength = (response.headers.get("content-length") || "").toString();
+  console.log(`Received content-type='${contentType}', content-length='${contentLength}'`);
+  await pipeline(Readable.fromWeb(response.body as ReadableStream), zipWriteStream);
+
+  // Basic validation: check file size and ZIP magic (PK\x03\x04)
+  const stats = await fs.stat(zipPath);
+  if (stats.size < 4) {
+    throw new Error(`Received ZIP is too small (${stats.size} bytes). Saved at ${zipPath}`);
+  }
+  const header = await fs.readFile(zipPath);
+  const isZip = header[0] === 0x50 && header[1] === 0x4b; // 'P''K'
+  if (!isZip) {
+    throw new Error(`File at ${zipPath} does not appear to be a ZIP (magic: ${header.slice(0,4).toString("hex")}).`);
+  }
+
+  // Extract using unzipper's higher-level API
+  try {
+    const zipBuffer = await fs.readFile(zipPath);
+    const directory = await Open.buffer(zipBuffer);
+    await directory.extract({ path: dirs.testDirectory });
+  } catch {
+    throw new Error(`Failed to extract ZIP at ${zipPath}`);
+  }
 
   const config = await getPlaywrightConfig({
     testTargetId: options.testTargetId,
@@ -212,7 +239,7 @@ export const executeLocalTestCases = async (options: DebugtopusOptions & { sourc
   });
 
   if (!config) {
-    throw new Error("no config found");
+    handleError("no config found");
   }
 
   writeFileSync(dirs.configFilePath, config);

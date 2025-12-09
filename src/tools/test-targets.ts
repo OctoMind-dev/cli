@@ -168,7 +168,7 @@ const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
   }
 };
 
-export type GitContext = ExecutionContext & { ref: string; defaultBranch?: string };
+export type GitContext = ExecutionContext & { ref?: string; defaultBranch?: string };
 
 const getGitContext = (cwd: string): GitContext | undefined => {
   try {
