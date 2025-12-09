@@ -131,6 +131,23 @@ export const readTestCasesFromDir = (
       console.error(`Failed to read test case from ${file}`);
     }
   }
+  // check consistency of test cases
+  const ids = new Set<string>();
+  for (const tc of testCases) {
+    if (ids.has(tc.id)) {
+      throw new Error(`Duplicate test case id ${tc.id}`);
+    }
+    ids.add(tc.id);
+  }
+  for (const tc of testCases) {
+    if( tc.dependencyId && !ids.has(tc.dependencyId)) {
+      throw new Error(`Test case ${tc.id} depends on non existing test case ${tc.dependencyId}`);
+    }
+    if( tc.teardownId && !ids.has(tc.teardownId)) {
+      throw new Error(`Test case ${tc.id} depends on non existing teardown ${tc.teardownId}`);
+    }
+  }
+
   return testCases;
 };
 
