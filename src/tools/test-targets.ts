@@ -254,7 +254,8 @@ const defaultPush = async (body: PushTestTargetBody, options: { testTargetId: st
 
 const draftPush = async (body: PushTestTargetBody, options: { testTargetId: string; json?: boolean }): Promise<void> => {
   const { data, error } = await client.POST(
-    "/apiKey/beta/test-targets/{testTargetId}/draft/push",
+    // TODO add the draft path when available
+    "/apiKey/beta/test-targets/{testTargetId}/push",
     {
       params: {
         path: {

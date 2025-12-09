@@ -256,7 +256,13 @@ Execute local YAML test cases
 | Option | Description | Required | Default |
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
-| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-u, --url <url>` | url the tests should run against | Yes |  |
+| `-e, --environment-id [uuid]` | id of the environment you want to run against, if not provided will run all test cases against the default environment | No |  |
+| `-t, --test-target-id [uuid]` | id of the test target of the test case, if not provided will use the test target id from the config | No |  |
+| `--headless` | if we should run headless without the UI of playwright and the browser | No |  |
+| `--bypass-proxy` | bypass proxy when accessing the test target | No |  |
+| `--browser [CHROMIUM, FIREFOX, SAFARI]` | Browser type | No | CHROMIUM |
+| `--breakpoint [DESKTOP, MOBILE, TABLET]` | Breakpoint | No | DESKTOP |
 | `-s, --source <path>` | Source directory (defaults to current directory) | Yes |  |
 
 ## batch-generation
