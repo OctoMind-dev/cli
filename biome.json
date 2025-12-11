@@ -1,8 +1,19 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
-  "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
+  "vcs": {
+    "enabled": false,
+    "clientKind": "git",
+    "useIgnoreFile": false
+  },
   "files": {
-    "includes": ["src/**", "test/**", "*.json", "jest.config.ts", "!src/api.ts"]
+    "includes": [
+      "src/**",
+      "test/**",
+      "*.json",
+      "jest.config.ts",
+      "!src/api.ts",
+      "!src/schemas/**"
+    ]
   },
   "formatter": {
     "enabled": true,
