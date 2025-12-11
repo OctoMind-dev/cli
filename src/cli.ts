@@ -16,16 +16,11 @@ import { resolveTestTargetId } from "./helpers";
 import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
   batchGeneration,
-  CreateDiscoveryBody,
   createDiscovery,
   createEnvironment,
   deleteEnvironment,
   deleteTestCase,
-  ExecuteTestsBody,
   executeTests,
-  GetEnvironmentOptions,
-  GetTestCaseParams,
-  GetTestReportParams,
   getEnvironment,
   getTestCaseCode,
   listEnvironments,
@@ -36,6 +31,7 @@ import {
   listTestReport,
   listTestTargets,
   pullTestTarget,
+  pushTestTarget,
   registerLocation,
   unregisterLocation,
   updateEnvironment,
@@ -48,19 +44,20 @@ export const BINARY_NAME = "octomind";
 const splitter = (value: string): string[] => value.split(/[, |]/);
 const toJSON = (value: string): object => JSON.parse(value);
 
-type TestTargetWrapperOptions = GetEnvironmentOptions &
-  GetTestCaseParams &
-  GetTestReportParams &
-  CreateDiscoveryBody &
-  ExecuteTestsBody;
+type WithTestTargetId = { testTargetId: string };
 
 const addTestTargetWrapper =
-  (fn: (options: TestTargetWrapperOptions) => Promise<void>) =>
-  async (options: TestTargetWrapperOptions) => {
+  <T extends WithTestTargetId>(fn: (options: T) => Promise<void>) =>
+  async (
+    options: Omit<T, "testTargetId"> & Partial<Pick<T, "testTargetId">>,
+  ): Promise<void> => {
     const resolvedTestTargetId = await resolveTestTargetId(
       options.testTargetId,
     );
-    void fn({ ...options, testTargetId: resolvedTestTargetId });
+    await fn({
+      ...options,
+      testTargetId: resolvedTestTargetId,
+    } as T);
   };
 
 const testTargetIdOption = new Option(
@@ -371,6 +368,19 @@ export const buildCmd = (): CompletableCommand => {
     .addOption(testTargetIdOption)
     .option("-d, --destination <path>", "Destination folder", "./.octomind")
     .action(addTestTargetWrapper(pullTestTarget));
+
+  // noinspection RequiredAttributes
+  createCommandWithCommonOptions(program, "push")
+    .completer(testTargetIdCompleter)
+    .description("Push local YAML test cases to the test target")
+    .helpGroup("test-cases")
+    .addOption(testTargetIdOption)
+    .option(
+      "-s, --source <path>",
+      "Source directory (defaults to current directory)",
+      ".octomind",
+    )
+    .action(addTestTargetWrapper(pushTestTarget));
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")

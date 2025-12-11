@@ -8,3 +8,4 @@ octomind.config.json
 octomind-cli-debug/
 vhs/
 .octomind
+src/schemas

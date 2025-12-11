@@ -3,7 +3,7 @@ import { SyncTestCase } from "../src/tools/sync/types";
 export const createMockSyncTestCase = (
     overrides?: Partial<SyncTestCase>,
 ): SyncTestCase => ({
-    id: "someStableId",
+    id: crypto.randomUUID(),
     description: "some description",
     elements: [],
     tagNames: [],

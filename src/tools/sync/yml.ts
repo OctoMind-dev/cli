@@ -3,6 +3,7 @@ import path from "path";
 
 import yaml from "yaml";
 
+import { pushTestTargetBody } from "../../schemas/octomindExternalAPI";
 import { SyncTestCase, TestTargetSyncData } from "./types";
 
 const removeDiacritics = (str: string): string => {
@@ -13,7 +14,7 @@ const removeDiacritics = (str: string): string => {
 const removeInvalidCharacters = (str: string): string => {
   // cf. https://superuser.com/questions/358855/what-characters-are-safe-in-cross-platform-file-names-for-linux-windows-and-os
   // .,",' is technically legal, but . might produce hidden files, and the rest makes it much less readable, so we just remove it
-  return removeDiacritics(str).replace(/[\\/:*?"<>|.]/g, "");
+  return removeDiacritics(str).replace(/[\\/:*?"'<>|.]/g, "");
 };
 
 const toFileSystemCompatibleCamelCase = (description: string): string => {
@@ -124,4 +125,57 @@ export const buildFilename = (
   }
 
   return candidate;
+};
+
+const collectYamlFiles = (startDir: string): string[] => {
+  const files: string[] = [];
+  const stack: string[] = [startDir];
+  let current = stack.pop();
+  while (current) {
+    let entries: fs.Dirent[] = [];
+    try {
+      entries = fs.readdirSync(current, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        // skip hidden dirs
+        if (entry.name.startsWith(".") || entry.name === "node_modules") {
+          continue;
+        }
+        stack.push(full);
+      } else if (entry.isFile() && full.toLowerCase().endsWith(".yaml")) {
+        files.push(full);
+      }
+    }
+
+    current = stack.pop();
+  }
+  return files;
+};
+
+export const readTestCasesFromDir = (startDir: string): SyncTestCase[] => {
+  const yamlFiles = collectYamlFiles(startDir);
+  const testCases: SyncTestCase[] = [];
+  for (const file of yamlFiles) {
+    try {
+      const content = fs.readFileSync(file, "utf8");
+      const parsed = yaml.parse(content);
+      testCases.push(parsed);
+    } catch {
+      console.error(`Failed to read test case from ${file}`);
+    }
+  }
+
+  const result = pushTestTargetBody.safeParse({ testCases });
+
+  if (!result.success) {
+    throw new Error(
+      `Failed to parse test cases from ${startDir}: ${result.error.message}`,
+    );
+  }
+
+  return testCases;
 };

@@ -15,9 +15,31 @@ describe("Config", () => {
 
   afterEach(() => {
     console.error = originalConsoleError;
+    process.env = { ...process.env, OCTOMIND_CONFIG_FILE: "" };
   });
 
   describe("loadConfig", () => {
+    it("should load and parse a valid config file at a different location", async () => {
+      const configFileName = "octomind-test.json";
+      process.env.OCTOMIND_CONFIG_FILE = configFileName;
+
+      const mockConfig: Config = {
+        apiKey: "test-api-key-12345",
+        testTargetId: "test-target-id-67890",
+      };
+
+      mockedFs.readFile.mockResolvedValue(JSON.stringify(mockConfig));
+
+      const result = await loadConfig();
+
+      expect(result).toEqual(mockConfig);
+      expect(mockedFs.readFile).toHaveBeenCalledWith(
+          path.join(homedir(), ".config", configFileName),
+          "utf8",
+      );
+    });
+
+
     it("should load and parse a valid config file", async () => {
       const mockConfig: Config = {
         apiKey: "test-api-key-12345",
