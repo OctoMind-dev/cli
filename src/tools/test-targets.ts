@@ -1,8 +1,11 @@
-import {getUrl} from "../url";
-import {client, handleError, ListOptions, logJson} from "./client";
-import {writeYaml} from "./sync/yml";
-import {execSync} from "node:child_process";
-
+import { getUrl } from "../url";
+import { client, handleError, ListOptions, logJson } from "./client";
+import { writeYaml } from "./sync/yml";
+import { execSync } from "node:child_process";
+import { components, paths } from "../api";
+import yaml from "yaml";
+import fs from "fs";
+import path from "path";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");
@@ -72,17 +75,17 @@ export const pullTestTarget = async (
   console.log("Test Target pulled successfully");
 };
 
-type TestCaseResponse = components["schemas"]["TestCaseResponse"];
-
 type ExecutionContext = components["schemas"]["ExecutionContext"];
 
 const isRecord = (val: unknown): val is Record<string, unknown> =>
   typeof val === "object" && val !== null;
 
-const isTestCase = (val: unknown): val is TestCaseResponse => {
+const isTestCase = (val: unknown): val is PushTestTargetTestCase => {
   if (!isRecord(val)) return false;
   const idOk = typeof val.id === "string";
-  const descOk = typeof val.description === "string" || typeof val.description === "undefined";
+  const descOk =
+    typeof val.description === "string" ||
+    typeof val.description === "undefined";
   const elementsOk = Array.isArray((val as { elements?: unknown }).elements);
   return idOk && elementsOk && descOk;
 };
@@ -112,9 +115,11 @@ const collectYamlFiles = (startDir: string): string[] => {
   return files;
 };
 
-export const readTestCasesFromDir = (startDir: string): TestCaseResponse[] => {
+export const readTestCasesFromDir = (
+  startDir: string,
+): PushTestTargetTestCase[] => {
   const yamlFiles = collectYamlFiles(startDir);
-  const testCases: TestCaseResponse[] = [];
+  const testCases: PushTestTargetTestCase[] = [];
   for (const file of yamlFiles) {
     try {
       const content = fs.readFileSync(file, "utf8");
@@ -131,7 +136,10 @@ export const readTestCasesFromDir = (startDir: string): TestCaseResponse[] => {
 
 const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
   try {
-    const remote = execSync("git remote get-url origin", { cwd, stdio: ["ignore", "pipe", "ignore"] })
+    const remote = execSync("git remote get-url origin", {
+      cwd,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
       .toString()
       .trim();
     // Support formats:
@@ -148,7 +156,10 @@ const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
       return { owner, repo };
     }
     // Fallback to repo name from top-level dir
-    const top = execSync("git rev-parse --show-toplevel", { cwd, stdio: ["ignore", "pipe", "ignore"] })
+    const top = execSync("git rev-parse --show-toplevel", {
+      cwd,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
       .toString()
       .trim();
     return { repo: path.basename(top) };
@@ -159,10 +170,16 @@ const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
 
 const getGitContext = (cwd: string): ExecutionContext | undefined => {
   try {
-    const branch = execSync("git rev-parse --abbrev-ref HEAD", { cwd, stdio: ["ignore", "pipe", "ignore"] })
+    const branch = execSync("git rev-parse --abbrev-ref HEAD", {
+      cwd,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
       .toString()
       .trim();
-    const sha = execSync("git rev-parse HEAD", { cwd, stdio: ["ignore", "pipe", "ignore"] })
+    const sha = execSync("git rev-parse HEAD", {
+      cwd,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
       .toString()
       .trim();
     const { owner, repo } = parseGitRemote(cwd);
@@ -181,15 +198,22 @@ const getGitContext = (cwd: string): ExecutionContext | undefined => {
   }
 };
 
+export type PushTestTargetBody =
+  paths["/apiKey/beta/test-targets/{testTargetId}/push"]["post"]["requestBody"]["content"]["application/json"];
+
+export type PushTestTargetTestCase = PushTestTargetBody["testCases"][number];
+
 export const pushTestTarget = async (
   options: { testTargetId: string; source?: string } & ListOptions,
 ): Promise<void> => {
-  const sourceDir = options.source ? path.resolve(options.source) : process.cwd();
+  const sourceDir = options.source
+    ? path.resolve(options.source)
+    : process.cwd();
   const testCases = readTestCasesFromDir(sourceDir);
 
   //const context = getGitContext(sourceDir);
 
-  const body = {
+  const body: PushTestTargetBody = {
     //...(context ? { context } : {}),
     //testTargetId: options.testTargetId,
     testCases,
