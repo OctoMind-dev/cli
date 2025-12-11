@@ -1,10 +1,11 @@
-import path from "path";
-
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
-import { checkForConsistency } from "./sync/consistency";
-import { TestTargetSyncData } from "./sync/types";
-import { readTestCasesFromDir, writeYaml } from "./sync/yml";
+import { writeYaml } from "./sync/yml";
+import { execSync } from "node:child_process";
+import { components, paths } from "../api";
+import yaml from "yaml";
+import fs from "fs";
+import path from "path";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");
@@ -74,6 +75,190 @@ export const pullTestTarget = async (
   console.log("Test Target pulled successfully");
 };
 
+type ExecutionContext = components["schemas"]["ExecutionContext"];
+
+const isRecord = (val: unknown): val is Record<string, unknown> =>
+  typeof val === "object" && val !== null;
+
+const isTestCase = (val: unknown): val is PushTestTargetTestCase => {
+  if (!isRecord(val)) return false;
+  const idOk = typeof val.id === "string";
+  const descOk =
+    typeof val.description === "string" ||
+    typeof val.description === "undefined";
+  const elementsOk = Array.isArray((val as { elements?: unknown }).elements);
+  return idOk && elementsOk && descOk;
+};
+
+const collectYamlFiles = (startDir: string): string[] => {
+  const files: string[] = [];
+  const stack: string[] = [startDir];
+  while (stack.length > 0) {
+    const current = stack.pop() as string;
+    let entries: fs.Dirent[] = [];
+    try {
+      entries = fs.readdirSync(current, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        // skip hidden dirs like .git
+        if (entry.name === ".git" || entry.name === "node_modules") continue;
+        stack.push(full);
+      } else if (entry.isFile() && full.toLowerCase().endsWith(".yaml")) {
+        files.push(full);
+      }
+    }
+  }
+  return files;
+};
+
+export const checkForConsistency = (
+  testCases: PushTestTargetTestCase[],
+): void => {
+  const ids = new Set<string>();
+  for (const tc of testCases) {
+    if (ids.has(tc.id)) {
+      throw new Error(`Duplicate test case id ${tc.id}`);
+    }
+    ids.add(tc.id);
+  }
+
+  // Build a map for quick lookup
+  const testCaseMap = new Map<string, PushTestTargetTestCase>();
+  for (const tc of testCases) {
+    testCaseMap.set(tc.id, tc);
+  }
+
+  for (const tc of testCases) {
+    if (tc.dependencyId && !ids.has(tc.dependencyId)) {
+      throw new Error(
+        `Test case ${tc.id} depends on non existing test case ${tc.dependencyId}`,
+      );
+    }
+    if (tc.teardownId && !ids.has(tc.teardownId)) {
+      throw new Error(
+        `Test case ${tc.id} depends on non existing teardown ${tc.teardownId}`,
+      );
+    }
+
+    // Check for cyclic dependencies
+    if (tc.dependencyId) {
+      const visited = new Set<string>();
+      let currentId: string | undefined = tc.dependencyId;
+      visited.add(tc.id);
+
+      while (currentId) {
+        if (visited.has(currentId)) {
+          throw new Error(
+            `Cyclic dependency detected: test case ${tc.id} has a dependency chain that loops back to ${currentId}`,
+          );
+        }
+        visited.add(currentId);
+        const current = testCaseMap.get(currentId);
+        currentId = current?.dependencyId;
+      }
+    }
+  }
+};
+
+export const readTestCasesFromDir = (
+  startDir: string,
+): PushTestTargetTestCase[] => {
+  const yamlFiles = collectYamlFiles(startDir);
+  const testCases: PushTestTargetTestCase[] = [];
+  for (const file of yamlFiles) {
+    try {
+      const content = fs.readFileSync(file, "utf8");
+      const parsed = yaml.parse(content);
+      if (isTestCase(parsed)) {
+        testCases.push(parsed);
+      }
+    } catch {
+      console.error(`Failed to read test case from ${file}`);
+    }
+  }
+  // check consistency of test cases
+  checkForConsistency(testCases);
+  return testCases;
+};
+
+const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
+  try {
+    const remote = execSync("git remote get-url origin", {
+      cwd,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .toString()
+      .trim();
+    // Support formats:
+    // 1) git@github.com:owner/repo.git
+    // 2) https://github.com/owner/repo.git
+    // 3) https://github.com/owner/repo
+    let m = remote.match(/^git@[^:]+:([^/]+)\/([^/]+?)(?:\.git)?$/);
+    if (!m) {
+      m = remote.match(/^https?:\/\/[^/]+\/([^/]+)\/([^/]+?)(?:\.git)?$/);
+    }
+    if (m) {
+      const owner = m[1];
+      const repo = m[2];
+      return { owner, repo };
+    }
+    // Fallback to repo name from top-level dir
+    const top = execSync("git rev-parse --show-toplevel", {
+      cwd,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .toString()
+      .trim();
+    return { repo: path.basename(top) };
+  } catch {
+    return {};
+  }
+};
+
+export type GitContext = ExecutionContext & {
+  ref?: string;
+  defaultBranch?: string;
+};
+
+const getGitContext = (cwd: string): GitContext | undefined => {
+  try {
+    const branch = execSync("git rev-parse --abbrev-ref HEAD", {
+      cwd,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .toString()
+      .trim();
+    const sha = execSync("git rev-parse HEAD", {
+      cwd,
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .toString()
+      .trim();
+    const { owner, repo } = parseGitRemote(cwd);
+    const ref = branch ? `refs/heads/${branch}` : undefined;
+
+    const ctx: GitContext = {
+      source: "github",
+      sha,
+      ref,
+      repo,
+      owner,
+    };
+    return ctx;
+  } catch {
+    return undefined;
+  }
+};
+
+export type PushTestTargetBody =
+  paths["/apiKey/beta/test-targets/{testTargetId}/push"]["post"]["requestBody"]["content"]["application/json"];
+
+export type PushTestTargetTestCase = PushTestTargetBody["testCases"][number];
+
 export const pushTestTarget = async (
   options: { testTargetId: string; source?: string } & ListOptions,
 ): Promise<void> => {
@@ -81,21 +266,55 @@ export const pushTestTarget = async (
     ? path.resolve(options.source)
     : process.cwd();
   const testCases = readTestCasesFromDir(sourceDir);
-  checkForConsistency(testCases);
 
-  const body: TestTargetSyncData = {
+  const context = getGitContext(sourceDir);
+
+  const isDefaultBranch = context?.defaultBranch === context?.ref;
+
+  const body: PushTestTargetBody = {
+    //...(context ? { context } : {}),
+    //testTargetId: options.testTargetId,
     testCases,
   };
 
-  // TODO use /draft route if git context demands it.
-  await defaultPush(body, options);
+  if (isDefaultBranch) {
+    await defaultPush(body, options);
+  } else {
+    await draftPush(body, options);
+  }
 };
 
 const defaultPush = async (
-  body: TestTargetSyncData,
+  body: PushTestTargetBody,
   options: { testTargetId: string; json?: boolean },
 ): Promise<void> => {
   const { data, error } = await client.POST(
+    "/apiKey/beta/test-targets/{testTargetId}/push",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+      body,
+    },
+  );
+
+  handleError(error);
+
+  if (options.json) {
+    logJson(data);
+  } else {
+    console.log("Test Target pushed successfully");
+  }
+};
+
+const draftPush = async (
+  body: PushTestTargetBody,
+  options: { testTargetId: string; json?: boolean },
+): Promise<void> => {
+  const { data, error } = await client.POST(
+    // TODO add the draft path when available
     "/apiKey/beta/test-targets/{testTargetId}/push",
     {
       params: {
