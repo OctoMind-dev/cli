@@ -115,6 +115,55 @@ const collectYamlFiles = (startDir: string): string[] => {
   return files;
 };
 
+export const checkForConsistency = (
+  testCases: PushTestTargetTestCase[],
+): void => {
+  const ids = new Set<string>();
+  for (const tc of testCases) {
+    if (ids.has(tc.id)) {
+      throw new Error(`Duplicate test case id ${tc.id}`);
+    }
+    ids.add(tc.id);
+  }
+
+  // Build a map for quick lookup
+  const testCaseMap = new Map<string, PushTestTargetTestCase>();
+  for (const tc of testCases) {
+    testCaseMap.set(tc.id, tc);
+  }
+
+  for (const tc of testCases) {
+    if (tc.dependencyId && !ids.has(tc.dependencyId)) {
+      throw new Error(
+        `Test case ${tc.id} depends on non existing test case ${tc.dependencyId}`,
+      );
+    }
+    if (tc.teardownId && !ids.has(tc.teardownId)) {
+      throw new Error(
+        `Test case ${tc.id} depends on non existing teardown ${tc.teardownId}`,
+      );
+    }
+
+    // Check for cyclic dependencies
+    if (tc.dependencyId) {
+      const visited = new Set<string>();
+      let currentId: string | undefined = tc.dependencyId;
+      visited.add(tc.id);
+
+      while (currentId) {
+        if (visited.has(currentId)) {
+          throw new Error(
+            `Cyclic dependency detected: test case ${tc.id} has a dependency chain that loops back to ${currentId}`,
+          );
+        }
+        visited.add(currentId);
+        const current = testCaseMap.get(currentId);
+        currentId = current?.dependencyId;
+      }
+    }
+  }
+};
+
 export const readTestCasesFromDir = (
   startDir: string,
 ): PushTestTargetTestCase[] => {
@@ -132,22 +181,7 @@ export const readTestCasesFromDir = (
     }
   }
   // check consistency of test cases
-  const ids = new Set<string>();
-  for (const tc of testCases) {
-    if (ids.has(tc.id)) {
-      throw new Error(`Duplicate test case id ${tc.id}`);
-    }
-    ids.add(tc.id);
-  }
-  for (const tc of testCases) {
-    if( tc.dependencyId && !ids.has(tc.dependencyId)) {
-      throw new Error(`Test case ${tc.id} depends on non existing test case ${tc.dependencyId}`);
-    }
-    if( tc.teardownId && !ids.has(tc.teardownId)) {
-      throw new Error(`Test case ${tc.id} depends on non existing teardown ${tc.teardownId}`);
-    }
-  }
-
+  checkForConsistency(testCases);
   return testCases;
 };
 
@@ -185,7 +219,10 @@ const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
   }
 };
 
-export type GitContext = ExecutionContext & { ref?: string; defaultBranch?: string };
+export type GitContext = ExecutionContext & {
+  ref?: string;
+  defaultBranch?: string;
+};
 
 const getGitContext = (cwd: string): GitContext | undefined => {
   try {
@@ -240,14 +277,17 @@ export const pushTestTarget = async (
     testCases,
   };
 
-  if( isDefaultBranch ) {
+  if (isDefaultBranch) {
     await defaultPush(body, options);
   } else {
     await draftPush(body, options);
   }
 };
 
-const defaultPush = async (body: PushTestTargetBody, options: { testTargetId: string; json?: boolean }): Promise<void> => {
+const defaultPush = async (
+  body: PushTestTargetBody,
+  options: { testTargetId: string; json?: boolean },
+): Promise<void> => {
   const { data, error } = await client.POST(
     "/apiKey/beta/test-targets/{testTargetId}/push",
     {
@@ -269,7 +309,10 @@ const defaultPush = async (body: PushTestTargetBody, options: { testTargetId: st
   }
 };
 
-const draftPush = async (body: PushTestTargetBody, options: { testTargetId: string; json?: boolean }): Promise<void> => {
+const draftPush = async (
+  body: PushTestTargetBody,
+  options: { testTargetId: string; json?: boolean },
+): Promise<void> => {
   const { data, error } = await client.POST(
     // TODO add the draft path when available
     "/apiKey/beta/test-targets/{testTargetId}/push",
