@@ -13,7 +13,7 @@ import {
 } from "../tools";
 import { ensureChromiumIsInstalled } from "./installation";
 
-export type DebugtopusOptions = {
+type DebugtopusOptions = {
   testCaseId?: string;
   testTargetId: string;
   url: string;
