@@ -7,4 +7,4 @@ node_modules/
 octomind.config.json
 octomind-cli-debug/
 vhs/
-
+.octomind

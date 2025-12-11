@@ -1,9 +1,9 @@
 {
   "name": "@octomind/octomind",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@10.25.0+sha512.5e82639027af37cf832061bcc6d639c219634488e0f2baebe785028a793de7b525ffcd3f7ff574f5e9860654e098fe852ba8ac5dd5cefe1767d23a020a92f501",
   "files": ["dist", "src", "README.md", "LICENSE", "package.json"],
   "engines": {
     "node": ">=20.0.0"
@@ -15,6 +15,7 @@
     "gendoc": "tsx scripts/generate-docs.ts > README.md",
     "lint": "pnpm apigen && npx genversion -des src/version.ts && biome check",
     "tsc": "tsc --project tsconfig.build.json",
+    "dev": "tsx src/index.ts",
     "apigen": "openapi-typescript https://app.octomind.dev/openapi.yaml --output src/api.ts",
     "build": "pnpm apigen && npx genversion -des src/version.ts && pnpm gendoc && tsc --project tsconfig.build.json",
     "octomind": "pnpm apigen && tsx src/index.ts",
@@ -22,7 +23,7 @@
     "test:watch": "pnpm apigen && npx genversion -e src/version.ts && jest --watch"
   },
   "keywords": [],
-  "author": "Stefan Rinke",
+  "author": "octomind",
   "license": "MIT",
   "dependencies": {
     "@playwright/test": "1.56.1",
@@ -31,7 +32,8 @@
     "openapi-fetch": "0.15.0",
     "otplib": "12.0.1",
     "shell-quote": "1.8.3",
-    "tabtab": "3.0.2"
+    "tabtab": "3.0.2",
+    "yaml": "2.7.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",
@@ -42,7 +44,6 @@
     "jest": "30.2.0",
     "openapi-typescript": "7.10.1",
     "ts-jest": "29.4.6",
-    "ts-node": "10.9.2",
     "tsx": "4.21.0",
     "typescript": "5.9.3"
   }

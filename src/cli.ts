@@ -11,9 +11,8 @@ import {
   testTargetIdCompleter,
   uninstallCompletion,
 } from "./completion";
-import { Config, loadConfig, saveConfig } from "./config";
 import { runDebugtopus } from "./debugtopus";
-import { promptUser, resolveTestTargetId } from "./helpers";
+import { resolveTestTargetId } from "./helpers";
 import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
   batchGeneration,
@@ -35,17 +34,18 @@ import {
   listTestCase,
   listTestCases,
   listTestReport,
+  listTestTargets,
+  pullTestTarget,
   registerLocation,
   unregisterLocation,
   updateEnvironment,
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
-import { listTestTargets } from "./tools/test-targets";
 import { version } from "./version";
 
 export const BINARY_NAME = "octomind";
 
-const splitter = (value: string): string[] => value.split(/,| |\|/);
+const splitter = (value: string): string[] => value.split(/[, |]/);
 const toJSON = (value: string): object => JSON.parse(value);
 
 type TestTargetWrapperOptions = GetEnvironmentOptions &
@@ -362,6 +362,15 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(listTestCases));
+
+  // noinspection RequiredAttributes
+  createCommandWithCommonOptions(program, "pull")
+    .completer(testTargetIdCompleter)
+    .description("Pull test cases from the test target")
+    .helpGroup("test-cases")
+    .addOption(testTargetIdOption)
+    .option("-d, --destination <path>", "Destination folder", "./.octomind")
+    .action(addTestTargetWrapper(pullTestTarget));
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")

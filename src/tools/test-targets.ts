@@ -1,5 +1,6 @@
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
+import { writeYaml } from "./sync/yml";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");
@@ -15,7 +16,6 @@ export const getTestTargets = async () => {
 
 export const listTestTargets = async (options: ListOptions): Promise<void> => {
   const testTargets = await getTestTargets();
-
   if (options.json) {
     logJson(testTargets);
     return;
@@ -38,4 +38,34 @@ export const listTestTargets = async (options: ListOptions): Promise<void> => {
       })}`,
     );
   }
+};
+
+export const pullTestTarget = async (
+  options: { testTargetId: string; destination?: string } & ListOptions,
+): Promise<void> => {
+  const { data, error } = await client.GET(
+    "/apiKey/beta/test-targets/{testTargetId}/pull",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+    },
+  );
+
+  handleError(error);
+
+  if (!data) {
+    throw Error("No test target found");
+  }
+
+  if (options.json) {
+    logJson(data);
+    return;
+  }
+
+  writeYaml(data, options.destination);
+
+  console.log("Test Target pulled successfully");
 };
