@@ -1,6 +1,8 @@
-import { getUrl } from "../url";
-import { client, handleError, ListOptions, logJson } from "./client";
-import { writeYaml } from "./sync/yml";
+import {getUrl} from "../url";
+import {client, handleError, ListOptions, logJson} from "./client";
+import {writeYaml} from "./sync/yml";
+import {execSync} from "node:child_process";
+
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");
@@ -68,4 +70,148 @@ export const pullTestTarget = async (
   writeYaml(data, options.destination);
 
   console.log("Test Target pulled successfully");
+};
+
+type TestCaseResponse = components["schemas"]["TestCaseResponse"];
+type TestTargetResponse = components["schemas"]["TestTargetResponse"];
+type ExecutionContext = components["schemas"]["ExecutionContext"];
+
+const isRecord = (val: unknown): val is Record<string, unknown> =>
+  typeof val === "object" && val !== null;
+
+const isTestCase = (val: unknown): val is TestCaseResponse => {
+  if (!isRecord(val)) return false;
+  const idOk = typeof val.id === "string";
+  const descOk = typeof val.description === "string" || typeof val.description === "undefined";
+  const elementsOk = Array.isArray((val as { elements?: unknown }).elements);
+  return idOk && elementsOk && descOk;
+};
+
+const collectYamlFiles = (startDir: string): string[] => {
+  const files: string[] = [];
+  const stack: string[] = [startDir];
+  while (stack.length > 0) {
+    const current = stack.pop() as string;
+    let entries: fs.Dirent[] = [];
+    try {
+      entries = fs.readdirSync(current, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        // skip hidden dirs like .git
+        if (entry.name === ".git" || entry.name === "node_modules") continue;
+        stack.push(full);
+      } else if (entry.isFile() && full.toLowerCase().endsWith(".yaml")) {
+        files.push(full);
+      }
+    }
+  }
+  return files;
+};
+
+const readTestCasesFromDir = (startDir: string): TestCaseResponse[] => {
+  const yamlFiles = collectYamlFiles(startDir);
+  const testCases: TestCaseResponse[] = [];
+  for (const file of yamlFiles) {
+    try {
+      const content = fs.readFileSync(file, "utf8");
+      const parsed = yaml.parse(content);
+      if (isTestCase(parsed)) {
+        testCases.push(parsed);
+      }
+    } catch {
+      // ignore broken files
+    }
+  }
+  return testCases;
+};
+
+const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
+  try {
+    const remote = execSync("git remote get-url origin", { cwd, stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
+    // Support formats:
+    // 1) git@github.com:owner/repo.git
+    // 2) https://github.com/owner/repo.git
+    // 3) https://github.com/owner/repo
+    let m = remote.match(/^git@[^:]+:([^/]+)\/([^/]+?)(?:\.git)?$/);
+    if (!m) {
+      m = remote.match(/^https?:\/\/[^/]+\/([^/]+)\/([^/]+?)(?:\.git)?$/);
+    }
+    if (m) {
+      const owner = m[1];
+      const repo = m[2];
+      return { owner, repo };
+    }
+    // Fallback to repo name from top-level dir
+    const top = execSync("git rev-parse --show-toplevel", { cwd, stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
+    return { repo: path.basename(top) };
+  } catch {
+    return {};
+  }
+};
+
+const getGitContext = (cwd: string): ExecutionContext | undefined => {
+  try {
+    const branch = execSync("git rev-parse --abbrev-ref HEAD", { cwd, stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
+    const sha = execSync("git rev-parse HEAD", { cwd, stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
+    const { owner, repo } = parseGitRemote(cwd);
+    const ref = branch ? `refs/heads/${branch}` : undefined;
+
+    const ctx: ExecutionContext = {
+      source: "github",
+      sha,
+      ref,
+      repo,
+      owner,
+    } as ExecutionContext;
+    return ctx;
+  } catch {
+    return undefined;
+  }
+};
+
+export const pushTestTarget = async (
+  options: { testTargetId: string; source?: string } & ListOptions,
+): Promise<void> => {
+  const sourceDir = options.source ? path.resolve(options.source) : process.cwd();
+  const testCases = readTestCasesFromDir(sourceDir);
+
+  const context = getGitContext(sourceDir);
+
+  const body = {
+    ...(context ? { context } : {}),
+    testTargetId: options.testTargetId,
+    testCases,
+  };
+
+  const { data, error } = await client.POST(
+    "/apiKey/beta/test-targets/{testTargetId}/push",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+      body,
+    },
+  );
+
+  handleError(error);
+
+  if (options.json) {
+    logJson(data);
+  } else {
+    console.log("Test Target pushed successfully");
+  }
 };

@@ -414,6 +414,20 @@ Pull test cases from the test target
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 | `-d, --destination <path>` | Destination folder | Yes |  |
 
+## push
+
+Push local YAML test cases to the test target
+
+**Usage:** `push [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|:-------|:----------|:---------|:--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-s, --start <path>` | Start directory (defaults to current directory) | Yes |  |
+
 ## Test Reports
 
 ## test-report

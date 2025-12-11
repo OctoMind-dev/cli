@@ -36,11 +36,13 @@ import {
   listTestReport,
   listTestTargets,
   pullTestTarget,
+  pushTestTarget,
   registerLocation,
   unregisterLocation,
   updateEnvironment,
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
+
 import { version } from "./version";
 
 export const BINARY_NAME = "octomind";
@@ -371,6 +373,17 @@ export const buildCmd = (): CompletableCommand => {
     .addOption(testTargetIdOption)
     .option("-d, --destination <path>", "Destination folder", "./.octomind")
     .action(addTestTargetWrapper(pullTestTarget));
+
+  createCommandWithCommonOptions(program, "push")
+    .completer(testTargetIdCompleter)
+    .description("Push local YAML test cases to the test target")
+    .helpGroup("test-cases")
+    .addOption(testTargetIdOption)
+    .option(
+      "-s, --source <path>",
+      "Source directory (defaults to current directory)",
+    )
+    .action(addTestTargetWrapper(pushTestTarget));
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")
