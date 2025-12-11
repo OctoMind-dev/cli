@@ -11,6 +11,12 @@
   "bin": {
     "octomind": "dist/index.js"
   },
+  "exports": {
+    "./client": {
+      "node": "./dist/tools/client.js",
+      "types": "./dist/tools/client.d.ts"
+    }
+  },
   "scripts": {
     "gendoc": "tsx scripts/generate-docs.ts > README.md",
     "lint": "pnpm apigen && npx genversion -des src/version.ts && biome check",
