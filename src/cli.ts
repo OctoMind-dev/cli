@@ -1,44 +1,43 @@
-import {Option} from "commander";
+import { Option } from "commander";
 
 import {
-    CompletableCommand,
-    environmentIdCompleter,
-    installCompletion,
-    optionsCompleter,
-    tabCompletion,
-    testCaseIdCompleter,
-    testReportIdCompleter,
-    testTargetIdCompleter,
-    uninstallCompletion,
+  CompletableCommand,
+  environmentIdCompleter,
+  installCompletion,
+  optionsCompleter,
+  tabCompletion,
+  testCaseIdCompleter,
+  testReportIdCompleter,
+  testTargetIdCompleter,
+  uninstallCompletion,
 } from "./completion";
-import {runDebugtopus} from "./debugtopus";
-import {resolveTestTargetId} from "./helpers";
-import {startPrivateLocationWorker, stopPLW} from "./plw";
+import { executeLocalTestCases, runDebugtopus } from "./debugtopus";
+import { resolveTestTargetId } from "./helpers";
+import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
-    batchGeneration,
-    createDiscovery,
-    createEnvironment,
-    deleteEnvironment,
-    deleteTestCase,
-    executeTests,
-    getEnvironment,
-    getTestCaseCode,
-    listEnvironments,
-    listNotifications,
-    listPrivateLocations,
-    listTestCase,
-    listTestCases,
-    listTestReport,
-    listTestTargets,
-    pullTestTarget,
-    pushTestTarget,
-    registerLocation,
-    unregisterLocation,
-    updateEnvironment,
+  batchGeneration,
+  createDiscovery,
+  createEnvironment,
+  deleteEnvironment,
+  deleteTestCase,
+  executeTests,
+  getEnvironment,
+  getTestCaseCode,
+  listEnvironments,
+  listNotifications,
+  listPrivateLocations,
+  listTestCase,
+  listTestCases,
+  listTestReport,
+  listTestTargets,
+  pullTestTarget,
+  pushTestTarget,
+  registerLocation,
+  unregisterLocation,
+  updateEnvironment,
 } from "./tools";
-import {init, switchTestTarget} from "./tools/init";
-
-import {version} from "./version";
+import { init, switchTestTarget } from "./tools/init";
+import { version } from "./version";
 
 export const BINARY_NAME = "octomind";
 
@@ -52,8 +51,13 @@ const addTestTargetWrapper =
   async (
     options: Omit<T, "testTargetId"> & Partial<Pick<T, "testTargetId">>,
   ): Promise<void> => {
-    const resolvedTestTargetId = await resolveTestTargetId(options.testTargetId);
-    await fn({ ...(options as Omit<T, "testTargetId">), testTargetId: resolvedTestTargetId } as T);
+    const resolvedTestTargetId = await resolveTestTargetId(
+      options.testTargetId,
+    );
+    await fn({
+      ...(options as Omit<T, "testTargetId">),
+      testTargetId: resolvedTestTargetId,
+    } as T);
   };
 
 const testTargetIdOption = new Option(
@@ -383,13 +387,25 @@ export const buildCmd = (): CompletableCommand => {
     .description("Execute local YAML test cases")
     .helpGroup("execute")
     .requiredOption("-u, --url <url>", "url the tests should run against")
-    .option("-e, --environment-id [uuid]", "id of the environment you want to run against, if not provided will run all test cases against the default environment")
-    .option("-t, --test-target-id [uuid]", "id of the test target of the test case, if not provided will use the test target id from the config")
-    .option("--headless", "if we should run headless without the UI of playwright and the browser")
+    .option(
+      "-e, --environment-id [uuid]",
+      "id of the environment you want to run against, if not provided will run all test cases against the default environment",
+    )
+    .option(
+      "-t, --test-target-id [uuid]",
+      "id of the test target of the test case, if not provided will use the test target id from the config",
+    )
+    .option(
+      "--headless",
+      "if we should run headless without the UI of playwright and the browser",
+    )
     .option("--bypass-proxy", "bypass proxy when accessing the test target")
     .option("--browser [CHROMIUM, FIREFOX, SAFARI]", "Browser type", "CHROMIUM")
     .option("--breakpoint [DESKTOP, MOBILE, TABLET]", "Breakpoint", "DESKTOP")
-    .option("-s, --source <path>", "Source directory (defaults to current directory)")
+    .option(
+      "-s, --source <path>",
+      "Source directory (defaults to current directory)",
+    )
     .action(addTestTargetWrapper(executeLocalTestCases));
 
   createCommandWithCommonOptions(program, "list-test-targets")
