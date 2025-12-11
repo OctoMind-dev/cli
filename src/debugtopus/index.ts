@@ -10,10 +10,15 @@ import {
   getPlaywrightCode,
   getPlaywrightConfig,
   getTestCases,
+  readTestCasesFromDir,
 } from "../tools";
 import { ensureChromiumIsInstalled } from "./installation";
+import { client, handleError } from "../tools/client";
+import { Writable } from "stream";
+import { ReadableStream } from "stream/web";
+import { Extract } from "unzipper";
 
-type DebugtopusOptions = {
+export type DebugtopusOptions = {
   testCaseId?: string;
   testTargetId: string;
   url: string;
@@ -165,6 +170,56 @@ const runTests = async ({
     console.log(`success, you can find your artifacts at ${outputDir}`);
   }
 };
+
+export const executeLocalTestCases = async (options: DebugtopusOptions & { source: string }):Promise<void> => {
+  const testCases = await readTestCasesFromDir(options.source);
+  const body = {
+    testCases,
+    testTargetId: options.testTargetId,
+    url: options.url,
+    environmentId: options.environmentId,
+  };
+  const { error, response } = await client.POST("/apiKey/beta/test-targets/{testTargetId}/push", 
+  {
+    params: {
+      path: {
+        testTargetId: options.testTargetId,
+      },
+    },
+    body,
+    parseAs: "stream",
+  });
+
+  if (error || !response?.body) {
+    throw new Error(`Failed to fetch ZIP: ${error}`);
+  }
+
+  const dirs = await prepareDirectories();
+
+  const extractor = Extract({ path: dirs.testDirectory });
+  const webWritable = Writable.toWeb(extractor);
+  await (response.body as ReadableStream).pipeTo(webWritable);
+
+  const config = await getPlaywrightConfig({
+    testTargetId: options.testTargetId,
+    url: options.url,
+    outputDir: dirs.outputDir,
+    environmentId: options.environmentId,
+    headless: options.headless,
+    bypassProxy: options.bypassProxy,
+    browser: options.browser,
+    breakpoint: options.breakpoint,
+  });
+
+  if (!config) {
+    throw new Error("no config found");
+  }
+
+  writeFileSync(dirs.configFilePath, config);
+
+  await runTests({ ...dirs, runMode: options.headless ? "headless" : "ui" });
+
+}
 
 export const runDebugtopus = async (options: DebugtopusOptions) => {
   const baseApiOptions = {

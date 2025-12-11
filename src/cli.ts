@@ -1,68 +1,59 @@
-import { Option } from "commander";
+import {Option} from "commander";
 
 import {
-  CompletableCommand,
-  environmentIdCompleter,
-  installCompletion,
-  optionsCompleter,
-  tabCompletion,
-  testCaseIdCompleter,
-  testReportIdCompleter,
-  testTargetIdCompleter,
-  uninstallCompletion,
+    CompletableCommand,
+    environmentIdCompleter,
+    installCompletion,
+    optionsCompleter,
+    tabCompletion,
+    testCaseIdCompleter,
+    testReportIdCompleter,
+    testTargetIdCompleter,
+    uninstallCompletion,
 } from "./completion";
-import { runDebugtopus } from "./debugtopus";
-import { resolveTestTargetId } from "./helpers";
-import { startPrivateLocationWorker, stopPLW } from "./plw";
+import {runDebugtopus} from "./debugtopus";
+import {resolveTestTargetId} from "./helpers";
+import {startPrivateLocationWorker, stopPLW} from "./plw";
 import {
-  batchGeneration,
-  CreateDiscoveryBody,
-  createDiscovery,
-  createEnvironment,
-  deleteEnvironment,
-  deleteTestCase,
-  ExecuteTestsBody,
-  executeTests,
-  GetEnvironmentOptions,
-  GetTestCaseParams,
-  GetTestReportParams,
-  getEnvironment,
-  getTestCaseCode,
-  listEnvironments,
-  listNotifications,
-  listPrivateLocations,
-  listTestCase,
-  listTestCases,
-  listTestReport,
-  listTestTargets,
-  pullTestTarget,
-  pushTestTarget,
-  registerLocation,
-  unregisterLocation,
-  updateEnvironment,
+    batchGeneration,
+    createDiscovery,
+    createEnvironment,
+    deleteEnvironment,
+    deleteTestCase,
+    executeTests,
+    getEnvironment,
+    getTestCaseCode,
+    listEnvironments,
+    listNotifications,
+    listPrivateLocations,
+    listTestCase,
+    listTestCases,
+    listTestReport,
+    listTestTargets,
+    pullTestTarget,
+    pushTestTarget,
+    registerLocation,
+    unregisterLocation,
+    updateEnvironment,
 } from "./tools";
-import { init, switchTestTarget } from "./tools/init";
+import {init, switchTestTarget} from "./tools/init";
 
-import { version } from "./version";
+import {version} from "./version";
 
 export const BINARY_NAME = "octomind";
 
 const splitter = (value: string): string[] => value.split(/[, |]/);
 const toJSON = (value: string): object => JSON.parse(value);
 
-type TestTargetWrapperOptions = GetEnvironmentOptions &
-  GetTestCaseParams &
-  GetTestReportParams &
-  CreateDiscoveryBody &
-  ExecuteTestsBody;
+type WithTestTargetId = { testTargetId: string };
 
 const addTestTargetWrapper =
-  (fn: (options: TestTargetWrapperOptions) => Promise<void>) =>
-  async (options: TestTargetWrapperOptions) => {
-    const resolvedTestTargetId = await resolveTestTargetId(
-      options.testTargetId,
-    );
-    void fn({ ...options, testTargetId: resolvedTestTargetId });
+  <T extends WithTestTargetId>(fn: (options: T) => Promise<void>) =>
+  async (
+    options: Omit<T, "testTargetId"> & Partial<Pick<T, "testTargetId">>,
+  ): Promise<void> => {
+    const resolvedTestTargetId = await resolveTestTargetId(options.testTargetId);
+    await fn({ ...(options as Omit<T, "testTargetId">), testTargetId: resolvedTestTargetId } as T);
   };
 
 const testTargetIdOption = new Option(
@@ -384,6 +375,14 @@ export const buildCmd = (): CompletableCommand => {
       "Source directory (defaults to current directory)",
     )
     .action(addTestTargetWrapper(pushTestTarget));
+
+  createCommandWithCommonOptions(program, "execute-local")
+    .completer(testTargetIdCompleter)
+    .description("Execute local YAML test cases")
+    .helpGroup("execute")
+    .addOption(testTargetIdOption)
+    .option("-s, --source <path>", "Source directory (defaults to current directory)")
+    .action(addTestTargetWrapper(executeLocalTestCases));
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")

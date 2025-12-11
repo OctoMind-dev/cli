@@ -73,7 +73,7 @@ export const pullTestTarget = async (
 };
 
 type TestCaseResponse = components["schemas"]["TestCaseResponse"];
-type TestTargetResponse = components["schemas"]["TestTargetResponse"];
+
 type ExecutionContext = components["schemas"]["ExecutionContext"];
 
 const isRecord = (val: unknown): val is Record<string, unknown> =>
@@ -112,7 +112,7 @@ const collectYamlFiles = (startDir: string): string[] => {
   return files;
 };
 
-const readTestCasesFromDir = (startDir: string): TestCaseResponse[] => {
+export const readTestCasesFromDir = (startDir: string): TestCaseResponse[] => {
   const yamlFiles = collectYamlFiles(startDir);
   const testCases: TestCaseResponse[] = [];
   for (const file of yamlFiles) {
@@ -123,7 +123,7 @@ const readTestCasesFromDir = (startDir: string): TestCaseResponse[] => {
         testCases.push(parsed);
       }
     } catch {
-      // ignore broken files
+      console.error(`Failed to read test case from ${file}`);
     }
   }
   return testCases;
@@ -187,11 +187,11 @@ export const pushTestTarget = async (
   const sourceDir = options.source ? path.resolve(options.source) : process.cwd();
   const testCases = readTestCasesFromDir(sourceDir);
 
-  const context = getGitContext(sourceDir);
+  //const context = getGitContext(sourceDir);
 
   const body = {
-    ...(context ? { context } : {}),
-    testTargetId: options.testTargetId,
+    //...(context ? { context } : {}),
+    //testTargetId: options.testTargetId,
     testCases,
   };
 
