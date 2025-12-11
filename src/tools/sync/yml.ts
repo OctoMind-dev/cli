@@ -31,7 +31,9 @@ const toFileSystemCompatibleCamelCase = (description: string): string => {
     .join("");
 
   if (camelCased.length === 0) {
-    throw new Error(`Test case with title '${description}' has no valid characters for the file system, please rename it`)
+    throw new Error(
+      `Test case with title '${description}' has no valid characters for the file system, please rename it`,
+    );
   }
 
   return camelCased;

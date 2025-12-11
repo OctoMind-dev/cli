@@ -1,4 +1,4 @@
-import {Option} from "commander";
+import { Option } from "commander";
 
 import {
   CompletableCommand,
@@ -11,36 +11,37 @@ import {
   testTargetIdCompleter,
   uninstallCompletion,
 } from "./completion";
-import {runDebugtopus} from "./debugtopus";
-import {resolveTestTargetId} from "./helpers";
-import {startPrivateLocationWorker, stopPLW} from "./plw";
+import { runDebugtopus } from "./debugtopus";
+import { resolveTestTargetId } from "./helpers";
+import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
   batchGeneration,
-  createDiscovery,
   CreateDiscoveryBody,
+  createDiscovery,
   createEnvironment,
   deleteEnvironment,
   deleteTestCase,
-  executeTests,
   ExecuteTestsBody,
-  getEnvironment,
+  executeTests,
   GetEnvironmentOptions,
-  getTestCaseCode,
   GetTestCaseParams,
   GetTestReportParams,
+  getEnvironment,
+  getTestCaseCode,
   listEnvironments,
   listNotifications,
   listPrivateLocations,
   listTestCase,
   listTestCases,
   listTestReport,
+  listTestTargets,
+  pullTestTarget,
   registerLocation,
   unregisterLocation,
   updateEnvironment,
 } from "./tools";
-import {init, switchTestTarget} from "./tools/init";
-import {listTestTargets, pullTestTarget} from "./tools";
-import {version} from "./version";
+import { init, switchTestTarget } from "./tools/init";
+import { version } from "./version";
 
 export const BINARY_NAME = "octomind";
 
