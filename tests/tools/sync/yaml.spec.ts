@@ -13,11 +13,9 @@ describe("buildFilename", () => {
     });
 
     afterEach(() => {
-        // Clean up temporary directory
         try {
             fs.rmSync(tmpDir, { recursive: true, force: true });
         } catch {
-            // ignore
         }
     });
 
@@ -141,22 +139,8 @@ describe("buildFilename", () => {
                 id: "invalidIdFormat"
             });
             fs.writeFileSync(path.join(tmpDir, "test1", "test.yaml"), yaml.stringify(testCase));
-            // noinspection RegExpDuplicateCharacterInClass
-            const expectedErrorRegex = new RegExp(`Failed to parse test cases from .*: [
-  {
-    "origin": "string",
-    "code": "invalid_format",
-    "format": "uuid",
-    "pattern": ".*",
-    "path": [
-      "testCases",
-      0,
-      "id"
-    ],
- .*"message": "Invalid UUID"
- .*}
-]"`);
 
+            expect(() => readTestCasesFromDir(tmpDir)).toThrow(/Invalid UUID/);
         })
     })
 });

@@ -378,6 +378,7 @@ export const buildCmd = (): CompletableCommand => {
     .option(
       "-s, --source <path>",
       "Source directory (defaults to current directory)",
+        ".octomind"
     )
     .action(addTestTargetWrapper(pushTestTarget));
 
