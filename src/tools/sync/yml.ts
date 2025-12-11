@@ -13,7 +13,7 @@ const removeDiacritics = (str: string): string => {
 const removeInvalidCharacters = (str: string): string => {
   // cf. https://superuser.com/questions/358855/what-characters-are-safe-in-cross-platform-file-names-for-linux-windows-and-os
   // .,",' is technically legal, but . might produce hidden files, and the rest makes it much less readable, so we just remove it
-  return removeDiacritics(str).replace(/[\\/:*?"<>|.]/g, "");
+  return removeDiacritics(str).replace(/[\\/:*?"'<>|.]/g, "");
 };
 
 const toFileSystemCompatibleCamelCase = (description: string): string => {
