@@ -168,7 +168,9 @@ const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
   }
 };
 
-const getGitContext = (cwd: string): (ExecutionContext & { defaultBranch?: string }) | undefined => {
+export type GitContext = ExecutionContext & { ref: string; defaultBranch?: string };
+
+const getGitContext = (cwd: string): GitContext | undefined => {
   try {
     const branch = execSync("git rev-parse --abbrev-ref HEAD", {
       cwd,
@@ -185,7 +187,7 @@ const getGitContext = (cwd: string): (ExecutionContext & { defaultBranch?: strin
     const { owner, repo } = parseGitRemote(cwd);
     const ref = branch ? `refs/heads/${branch}` : undefined;
 
-    const ctx: ExecutionContext & { defaultBranch?: string } = {
+    const ctx: GitContext = {
       source: "github",
       sha,
       ref,
@@ -211,7 +213,9 @@ export const pushTestTarget = async (
     : process.cwd();
   const testCases = readTestCasesFromDir(sourceDir);
 
-  //const context = getGitContext(sourceDir);
+  const context = getGitContext(sourceDir);
+
+  const isDefaultBranch = context?.defaultBranch === context?.ref;
 
   const body: PushTestTargetBody = {
     //...(context ? { context } : {}),
@@ -219,8 +223,38 @@ export const pushTestTarget = async (
     testCases,
   };
 
+  if( isDefaultBranch ) {
+    await defaultPush(body, options);
+  } else {
+    await draftPush(body, options);
+  }
+};
+
+const defaultPush = async (body: PushTestTargetBody, options: { testTargetId: string; json?: boolean }): Promise<void> => {
   const { data, error } = await client.POST(
     "/apiKey/beta/test-targets/{testTargetId}/push",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+      body,
+    },
+  );
+
+  handleError(error);
+
+  if (options.json) {
+    logJson(data);
+  } else {
+    console.log("Test Target pushed successfully");
+  }
+};
+
+const draftPush = async (body: PushTestTargetBody, options: { testTargetId: string; json?: boolean }): Promise<void> => {
+  const { data, error } = await client.POST(
+    "/apiKey/beta/test-targets/{testTargetId}/draft/push",
     {
       params: {
         path: {
