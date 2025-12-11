@@ -55,7 +55,7 @@ const addTestTargetWrapper =
       options.testTargetId,
     );
     await fn({
-      ...(options as Omit<T, "testTargetId">),
+      ...options,
       testTargetId: resolvedTestTargetId,
     } as T);
   };
@@ -369,6 +369,7 @@ export const buildCmd = (): CompletableCommand => {
     .option("-d, --destination <path>", "Destination folder", "./.octomind")
     .action(addTestTargetWrapper(pullTestTarget));
 
+  // noinspection RequiredAttributes
   createCommandWithCommonOptions(program, "push")
     .completer(testTargetIdCompleter)
     .description("Push local YAML test cases to the test target")
