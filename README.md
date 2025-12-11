@@ -245,6 +245,20 @@ Create a new test case discovery
 | `--assigned-tag-ids [ids]` | Comma-separated list of tag IDs | No |  |
 | `--folder-id [id]` | Folder ID | No |  |
 
+## execute-local
+
+Execute local YAML test cases
+
+**Usage:** `execute-local [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|:-------|:----------|:---------|:--------|
+| `-j, --json` | Output raw JSON response | No |  |
+| `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-s, --source <path>` | Source directory (defaults to current directory) | Yes |  |
+
 ## batch-generation
 
 Batch generation of test cases
@@ -426,7 +440,7 @@ Push local YAML test cases to the test target
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-| `-s, --start <path>` | Start directory (defaults to current directory) | Yes |  |
+| `-s, --source <path>` | Source directory (defaults to current directory) | Yes |  |
 
 ## Test Reports
 
