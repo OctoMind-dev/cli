@@ -168,7 +168,7 @@ const parseGitRemote = (cwd: string): { owner?: string; repo?: string } => {
   }
 };
 
-const getGitContext = (cwd: string): ExecutionContext | undefined => {
+const getGitContext = (cwd: string): (ExecutionContext & { defaultBranch?: string }) | undefined => {
   try {
     const branch = execSync("git rev-parse --abbrev-ref HEAD", {
       cwd,
@@ -185,13 +185,13 @@ const getGitContext = (cwd: string): ExecutionContext | undefined => {
     const { owner, repo } = parseGitRemote(cwd);
     const ref = branch ? `refs/heads/${branch}` : undefined;
 
-    const ctx: ExecutionContext = {
+    const ctx: ExecutionContext & { defaultBranch?: string } = {
       source: "github",
       sha,
       ref,
       repo,
       owner,
-    } as ExecutionContext;
+    };
     return ctx;
   } catch {
     return undefined;
