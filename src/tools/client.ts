@@ -15,37 +15,63 @@ type ErrorResponse =
 
 const client = createClient<paths>({ baseUrl: BASE_URL });
 
-const authMiddleware: Middleware = {
-  async onRequest({ request }) {
-    const { apiKey } = await loadConfig();
-    if (!apiKey) {
-      throw new Error(
-        "API key is required. Please configure it first by running 'octomind init'",
-      );
-    }
-    request.headers.set("x-api-key", apiKey);
-    request.headers.set("user-agent", `octomind-cli/${version}`);
-    return request;
-  },
-  async onResponse({ response }) {
-    const { body, ...resOptions } = response;
-    if (!response.ok) {
-      const res = new Response(body, resOptions);
-      const errorBody = await res.text();
-      return new Response(
-        `${response.status}, ${response.statusText}: ${errorBody ? errorBody : ""}`,
-        { ...resOptions, status: response.status },
-      );
-    }
-    return response;
-  },
-  onError({ error }) {
-    console.error(error);
-    process.exit(1);
-  },
+export const createClientFromUrlAndApiKey = ({
+  baseUrl,
+  apiKey,
+}: {
+  baseUrl: string;
+  apiKey: string;
+}) => {
+  const customClient = createClient<paths>({ baseUrl });
+  customClient.use(
+    createAuthMiddleware({
+      getApiKey: () => ({
+        apiKey,
+      }),
+    }),
+  );
+  return customClient;
 };
 
-client.use(authMiddleware);
+const createAuthMiddleware = ({
+  getApiKey,
+}: {
+  getApiKey: () =>
+    | Promise<{ apiKey?: string | undefined }>
+    | { apiKey: string };
+}): Middleware => {
+  return {
+    async onRequest({ request }) {
+      const { apiKey } = await getApiKey();
+      if (!apiKey) {
+        throw new Error(
+          "API key is required. Please configure it first by running 'octomind init'",
+        );
+      }
+      request.headers.set("x-api-key", apiKey);
+      request.headers.set("user-agent", `octomind-cli/${version}`);
+      return request;
+    },
+    async onResponse({ response }) {
+      const { body, ...resOptions } = response;
+      if (!response.ok) {
+        const res = new Response(body, resOptions);
+        const errorBody = await res.text();
+        return new Response(
+          `${response.status}, ${response.statusText}: ${errorBody ? errorBody : ""}`,
+          { ...resOptions, status: response.status },
+        );
+      }
+      return response;
+    },
+    onError({ error }) {
+      console.error(error);
+      process.exit(1);
+    },
+  };
+};
+
+client.use(createAuthMiddleware({ getApiKey: loadConfig }));
 
 export { client };
 
