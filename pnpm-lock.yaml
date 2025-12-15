@@ -4388,7 +4388,7 @@ snapshots:
 
   '@types/unzipper@0.10.11':
     dependencies:
-      '@types/node': 25.0.0
+      '@types/node': 25.0.2
 
   '@types/urijs@1.19.26': {}
 
