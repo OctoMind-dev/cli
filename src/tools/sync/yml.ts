@@ -41,44 +41,18 @@ const toFileSystemCompatibleCamelCase = (description: string): string => {
 };
 
 export const writeYaml = (data: TestTargetSyncData, destination?: string) => {
-  let folderToFileByTestCaseId = new Map<string, Map<string, string>>();
-
+  const folderToFileByTestCaseId = new Map<string, Map<string, string>>();
 
   for (const testCase of data.testCases) {
     const folderName = buildFolderName(testCase, data.testCases, destination);
-
-    if (!folderToFileByTestCaseId.has(folderName) && fs.existsSync(folderName)) {
-      folderToFileByTestCaseId.set(folderName, new Map<string, string>());
-      const yamlFiles = collectYamlFiles(folderName);
-      for (const yamlFile of yamlFiles) {
-        const content = fs.readFileSync(yamlFile, "utf-8");
-        const parsed = yaml.parse(content);
-        folderToFileByTestCaseId.get(folderName)?.set(parsed.id, yamlFile);
-      }
-    }
-
     const testCaseFilename = buildFilename(testCase, folderName);
-
-    const existingFileForTest = folderToFileByTestCaseId.get(folderName)?.get(testCase.id);
-    if (existingFileForTest) {
-      const oldTestName = path.basename(existingFileForTest).replace(/\.yaml$/, "");
-      if (oldTestName !== testCase.description) {
-        fs.unlinkSync(existingFileForTest);
-        const oldFolderName = path.dirname(existingFileForTest) + `/${oldTestName}`;
-        if (fs.existsSync(oldFolderName)) {
-          fs.rmSync(oldFolderName, { recursive: true, force: true });
-        } 
-      }
-
-    }
-
+    cleanupFilesystem({ folderToFileByTestCaseId, folderName, testCase });
     fs.mkdirSync(folderName, { recursive: true });
     fs.writeFileSync(
       path.join(folderName, testCaseFilename),
       yaml.stringify(testCase),
     );
   }
-  console.log(`Wrote ${folderToFileByTestCaseId.size} test cases`);
 };
 
 export const buildFolderName = (
@@ -206,4 +180,44 @@ export const readTestCasesFromDir = (startDir: string): SyncTestCase[] => {
   }
 
   return testCases;
+};
+
+export const cleanupFilesystem = ({
+  folderToFileByTestCaseId,
+  folderName,
+  testCase,
+}: {
+  folderToFileByTestCaseId: Map<string, Map<string, string>>;
+  folderName: string;
+  testCase: SyncTestCase;
+}) => {
+  if (!folderToFileByTestCaseId.has(folderName) && fs.existsSync(folderName)) {
+    folderToFileByTestCaseId.set(folderName, new Map<string, string>());
+    const yamlFiles = collectYamlFiles(folderName);
+    for (const yamlFile of yamlFiles) {
+      const content = fs.readFileSync(yamlFile, "utf-8");
+      const parsed = yaml.parse(content);
+      folderToFileByTestCaseId.get(folderName)?.set(parsed.id, yamlFile);
+    }
+  }
+
+  const existingFileForTest = folderToFileByTestCaseId
+    .get(folderName)
+    ?.get(testCase.id);
+  if (existingFileForTest) {
+    const oldTestNameCamelCase = path
+      .basename(existingFileForTest)
+      .replace(/\.yaml$/, "");
+    const currentTestNameCamelCase = toFileSystemCompatibleCamelCase(
+      testCase.description,
+    );
+
+    if (oldTestNameCamelCase !== currentTestNameCamelCase) {
+      fs.unlinkSync(existingFileForTest);
+      const oldFolderName = `${path.dirname(existingFileForTest)}/${oldTestNameCamelCase}`;
+      if (fs.existsSync(oldFolderName)) {
+        fs.rmSync(oldFolderName, { recursive: true, force: true });
+      }
+    }
+  }
 };
