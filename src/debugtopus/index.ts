@@ -1,9 +1,14 @@
+import { pipeline } from "node:stream/promises";
 import { exec } from "child_process";
 import { randomUUID } from "crypto";
-import { existsSync, writeFileSync } from "fs";
+import { createWriteStream, existsSync, writeFileSync } from "fs";
 import fs from "fs/promises";
 import path, { dirname } from "path";
+import { Readable } from "stream";
+import { ReadableStream } from "stream/web";
 import { promisify } from "util";
+
+import { Open } from "unzipper";
 
 import {
   getEnvironments,
@@ -11,9 +16,11 @@ import {
   getPlaywrightConfig,
   getTestCases,
 } from "../tools";
+import { client, handleError } from "../tools/client";
+import { readTestCasesFromDir } from "../tools/sync/yml";
 import { ensureChromiumIsInstalled } from "./installation";
 
-type DebugtopusOptions = {
+export type DebugtopusOptions = {
   testCaseId?: string;
   testTargetId: string;
   url: string;
