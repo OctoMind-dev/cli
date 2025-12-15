@@ -11,7 +11,7 @@ import {
   testTargetIdCompleter,
   uninstallCompletion,
 } from "./completion";
-import { runDebugtopus } from "./debugtopus";
+import {executeLocalTestCases, runDebugtopus} from "./debugtopus";
 import { resolveTestTargetId } from "./helpers";
 import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
@@ -381,6 +381,35 @@ export const buildCmd = (): CompletableCommand => {
       ".octomind",
     )
     .action(addTestTargetWrapper(pushTestTarget));
+
+  // noinspection RequiredAttributes
+  createCommandWithCommonOptions(program, "execute-local")
+    .completer(environmentIdCompleter)
+    .completer(testTargetIdCompleter)
+    .completer(optionsCompleter)
+    .description("Execute local YAML test cases")
+    .helpGroup("execute")
+    .requiredOption("-u, --url <url>", "url the tests should run against")
+    .option(
+      "-e, --environment-id [uuid]",
+      "id of the environment you want to run against, if not provided will run all test cases against the default environment",
+    )
+    .option(
+      "-t, --test-target-id [uuid]",
+      "id of the test target of the test case, if not provided will use the test target id from the config",
+    )
+    .option(
+      "--headless",
+      "if we should run headless without the UI of playwright and the browser",
+    )
+    .option("--bypass-proxy", "bypass proxy when accessing the test target")
+    .option("--browser [CHROMIUM, FIREFOX, SAFARI]", "Browser type", "CHROMIUM")
+    .option("--breakpoint [DESKTOP, MOBILE, TABLET]", "Breakpoint", "DESKTOP")
+    .option(
+      "-s, --source <path>",
+      "Source directory (defaults to current directory)",
+    )
+    .action(addTestTargetWrapper(executeLocalTestCases));
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")

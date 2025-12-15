@@ -115,3 +115,28 @@ const defaultPush = async (
     console.log("Test Target pushed successfully");
   }
 };
+
+const draftPush = async (
+  body: TestTargetSyncData,
+  options: { testTargetId: string; json?: boolean },
+): Promise<void> => {
+  const { data, error } = await client.POST(
+    "/apiKey/beta/test-targets/{testTargetId}/push",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+      body,
+    },
+  );
+
+  handleError(error);
+
+  if (options.json) {
+    logJson(data);
+  } else {
+    console.log("Test Target pushed successfully");
+  }
+};
