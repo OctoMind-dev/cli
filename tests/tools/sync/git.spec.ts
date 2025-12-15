@@ -10,6 +10,8 @@ describe("git", () => {
     beforeEach(() => {
         mockGit = mock();
         jest.mocked(simpleGit).mockReturnValue(mockGit)
+        mockGit.raw.mockResolvedValue("refs/remotes/origin/main")
+        console.error = jest.fn();
     })
 
     describe("parseGitRemote", () => {
@@ -95,6 +97,7 @@ describe("git", () => {
                 ref: "refs/heads/main",
                 repo: "my-repo",
                 owner: "my-org",
+                defaultBranch: "refs/heads/main"
             });
         });
 
@@ -112,6 +115,7 @@ describe("git", () => {
                 ref: undefined,
                 repo: "my-repo",
                 owner: "my-org",
+                defaultBranch: "refs/heads/main"
             });
         });
 
@@ -130,6 +134,7 @@ describe("git", () => {
                 ref: "refs/heads/feature-branch",
                 repo: "project-name",
                 owner: undefined,
+                defaultBranch: "refs/heads/main"
             });
         });
 

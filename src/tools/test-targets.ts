@@ -3,6 +3,7 @@ import path from "path";
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { checkForConsistency } from "./sync/consistency";
+import { getGitContext } from "./sync/git";
 import { TestTargetSyncData } from "./sync/types";
 import { readTestCasesFromDir, writeYaml } from "./sync/yml";
 
@@ -82,13 +83,18 @@ export const pushTestTarget = async (
     : process.cwd();
   const testCases = readTestCasesFromDir(sourceDir);
   checkForConsistency(testCases);
+  const context = await getGitContext();
+  const isDefaultBranch = context?.defaultBranch === context?.ref;
 
   const body: TestTargetSyncData = {
     testCases,
   };
 
-  // TODO use /draft route if git context demands it.
-  await defaultPush(body, options);
+  if (isDefaultBranch) {
+    await defaultPush(body, options);
+  } else {
+    await draftPush(body, options);
+  }
 };
 
 const defaultPush = async (
@@ -121,7 +127,7 @@ const draftPush = async (
   options: { testTargetId: string; json?: boolean },
 ): Promise<void> => {
   const { data, error } = await client.POST(
-    "/apiKey/beta/test-targets/{testTargetId}/push",
+    "/apiKey/beta/test-targets/{testTargetId}/draft/push",
     {
       params: {
         path: {
@@ -137,6 +143,6 @@ const draftPush = async (
   if (options.json) {
     logJson(data);
   } else {
-    console.log("Test Target pushed successfully");
+    console.log("Test Target draft pushed successfully");
   }
 };
