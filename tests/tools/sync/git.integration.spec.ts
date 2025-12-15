@@ -1,9 +1,10 @@
-import {getDefaultBranch} from "../../../src/tools/sync/git";
+import {parseGitRemote} from "../../../src/tools/sync/git";
 
 describe('git', () => {
-    it("should return the actual main branch", async () => {
-        const defaultBranch = await getDefaultBranch();
+    it("should return the actual owner and repo", async () => {
+        const remote = await parseGitRemote();
 
-        expect(defaultBranch).toEqual("refs/heads/main");
+        expect(remote.owner).toEqual("OctoMind-dev");
+        expect(remote.repo).toEqual("cli");
     })
 })
