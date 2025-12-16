@@ -2,10 +2,8 @@ import path from "path";
 
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
-import { checkForConsistency } from "./sync/consistency";
-import { getGitContext } from "./sync/git";
-import { TestTargetSyncData } from "./sync/types";
-import { readTestCasesFromDir, writeYaml } from "./sync/yml";
+import { push } from "./sync/push";
+import { writeYaml } from "./sync/yml";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");
@@ -81,68 +79,16 @@ export const pushTestTarget = async (
   const sourceDir = options.source
     ? path.resolve(options.source)
     : process.cwd();
-  const testCases = readTestCasesFromDir(sourceDir);
-  checkForConsistency(testCases);
-  const context = await getGitContext();
-  const isDefaultBranch = context?.defaultBranch === context?.ref;
 
-  const body: TestTargetSyncData = {
-    testCases,
-  };
-
-  if (isDefaultBranch) {
-    await defaultPush(body, options);
-  } else {
-    await draftPush(body, options);
-  }
-};
-
-const defaultPush = async (
-  body: TestTargetSyncData,
-  options: { testTargetId: string; json?: boolean },
-): Promise<void> => {
-  const { data, error } = await client.POST(
-    "/apiKey/beta/test-targets/{testTargetId}/push",
-    {
-      params: {
-        path: {
-          testTargetId: options.testTargetId,
-        },
-      },
-      body,
-    },
-  );
-
-  handleError(error);
+  const data = await push({
+    ...options,
+    sourceDir,
+    testTargetId: options.testTargetId,
+    onError: handleError,
+    client,
+  });
 
   if (options.json) {
     logJson(data);
-  } else {
-    console.log("Test Target pushed successfully");
-  }
-};
-
-const draftPush = async (
-  body: TestTargetSyncData,
-  options: { testTargetId: string; json?: boolean },
-): Promise<void> => {
-  const { data, error } = await client.POST(
-    "/apiKey/beta/test-targets/{testTargetId}/draft/push",
-    {
-      params: {
-        path: {
-          testTargetId: options.testTargetId,
-        },
-      },
-      body,
-    },
-  );
-
-  handleError(error);
-
-  if (options.json) {
-    logJson(data);
-  } else {
-    console.log("Test Target draft pushed successfully");
   }
 };
