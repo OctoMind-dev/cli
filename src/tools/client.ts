@@ -73,7 +73,7 @@ const createAuthMiddleware = ({
 
 client.use(createAuthMiddleware({ getApiKey: loadConfig }));
 
-export { client };
+export { client, paths };
 
 export const handleError = (error: ErrorResponse) => {
   if (error) {
