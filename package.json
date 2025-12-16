@@ -1,6 +1,6 @@
 {
   "name": "@octomind/octomind",
-  "version": "3.3.2",
+  "version": "3.4.0",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
   "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402",
@@ -15,6 +15,10 @@
     "./client": {
       "node": "./dist/tools/client.js",
       "types": "./dist/tools/client.d.ts"
+    },
+    "./push": {
+      "node": "./dist/tools/sync/push.js",
+      "types": "./dist/tools/sync/push.d.ts"
     }
   },
   "scripts": {
@@ -23,7 +27,7 @@
     "tsc": "tsc --project tsconfig.build.json",
     "dev:staging": "pnpm apigen && OCTOMIND_CONFIG_FILE=octomind.dev.staging.json OCTOMIND_API_URL=https://preview.octomind.dev/api tsx src/index.ts",
     "dev:prod": "pnpm apigen && OCTOMIND_CONFIG_FILE=octomind.dev.staging.json OCTOMIND_API_URL=https://app.octomind.dev/api tsx src/index.ts",
-    "apigen": "openapi-typescript https://app.octomind.dev/openapi.yaml --output src/api.ts && orval",
+    "apigen": "openapi-typescript https://preview.octomind.dev/openapi.yaml --output src/api.ts && orval",
     "build": "pnpm apigen && npx genversion -des src/version.ts && pnpm gendoc && tsc --project tsconfig.build.json",
     "octomind": "pnpm apigen && tsx src/index.ts",
     "test": "pnpm apigen && npx genversion -des src/version.ts && jest",
