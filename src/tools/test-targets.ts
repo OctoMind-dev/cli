@@ -59,6 +59,10 @@ export const pullTestTarget = async (
     },
   );
 
+  console.log(
+    `Pulling test target ${options.testTargetId} to ${options.destination}`,
+  );
+
   handleError(error);
 
   if (!data) {

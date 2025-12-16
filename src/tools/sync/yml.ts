@@ -131,15 +131,16 @@ export const buildFilename = (
   return candidate;
 };
 
-const collectYamlFiles = (startDir: string): string[] => {
+const collectYamlFiles = (startDir?: string): string[] => {
   const files: string[] = [];
-  const stack: string[] = [startDir];
+  const stack: string[] = [startDir ?? "./"];
   let current = stack.pop();
   while (current) {
     let entries: fs.Dirent[] = [];
     try {
       entries = fs.readdirSync(current, { withFileTypes: true });
     } catch {
+      current = stack.pop();
       continue;
     }
     for (const entry of entries) {
