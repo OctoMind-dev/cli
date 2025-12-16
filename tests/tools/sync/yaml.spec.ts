@@ -147,8 +147,9 @@ describe("yml", () => {
     describe("cleanupFilesystem", () => {
 
         it("should remove the old file if the test case description has changed", () => {
+            const id = crypto.randomUUID();
             const testCase = createMockSyncTestCase({ 
-                id: "test-id-123", 
+                id, 
                 description: "Old test description" 
             });
             const folderName = tmpDir;
@@ -159,16 +160,16 @@ describe("yml", () => {
             expect(fs.existsSync(oldFilePath)).toBe(true);
 
             const updatedTestCase = { ...testCase, description: "New test description" };
-            const folderToFileByTestCaseId = new Map<string, Map<string, string>>();
 
-            cleanupFilesystem({ folderToFileByTestCaseId, folderName, testCase: updatedTestCase });
+            cleanupFilesystem({ newTestCases: [updatedTestCase], destination: tmpDir });
 
             expect(fs.existsSync(oldFilePath)).toBe(false);
         })
 
         it("should remove the old folder if the test case description has changed", () => {
+            const id = crypto.randomUUID();
             const testCase = createMockSyncTestCase({ 
-                id: "test-id-456", 
+                id, 
                 description: "Old test description" 
             });
             const folderName = tmpDir;
@@ -185,9 +186,8 @@ describe("yml", () => {
             expect(fs.existsSync(oldFolderPath)).toBe(true);
 
             const updatedTestCase = { ...testCase, description: "New test description" };
-            const folderToFileByTestCaseId = new Map<string, Map<string, string>>();
 
-            cleanupFilesystem({ folderToFileByTestCaseId, folderName, testCase: updatedTestCase });
+            cleanupFilesystem({ newTestCases: [updatedTestCase], destination: tmpDir });
 
             expect(fs.existsSync(oldFolderPath)).toBe(false);
         })
