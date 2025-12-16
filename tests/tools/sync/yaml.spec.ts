@@ -3,9 +3,9 @@ import path from "path";
 import os from "os";
 import yaml from "yaml";
 import {createMockSyncTestCase} from "../../mocks";
-import {buildFilename, buildFolderName, readTestCasesFromDir} from "../../../src/tools/sync/yml";
+import {buildFilename, buildFolderName, readTestCasesFromDir, cleanupFilesystem} from "../../../src/tools/sync/yml";
 
-describe("buildFilename", () => {
+describe("yml", () => {
     let tmpDir: string;
 
     beforeEach(() => {
@@ -142,5 +142,55 @@ describe("buildFilename", () => {
 
             expect(() => readTestCasesFromDir(tmpDir)).toThrow(/Invalid UUID/);
         })
+    })
+
+    describe("cleanupFilesystem", () => {
+
+        it("should remove the old file if the test case description has changed", () => {
+            const id = crypto.randomUUID();
+            const testCase = createMockSyncTestCase({ 
+                id, 
+                description: "Old test description" 
+            });
+            const folderName = tmpDir;
+            const oldFilename = buildFilename(testCase, folderName);
+            const oldFilePath = path.join(folderName, oldFilename);
+            
+            fs.writeFileSync(oldFilePath, yaml.stringify(testCase));
+            expect(fs.existsSync(oldFilePath)).toBe(true);
+
+            const updatedTestCase = { ...testCase, description: "New test description" };
+
+            cleanupFilesystem({ newTestCases: [updatedTestCase], destination: tmpDir });
+
+            expect(fs.existsSync(oldFilePath)).toBe(false);
+        })
+
+        it("should remove the old folder if the test case description has changed", () => {
+            const id = crypto.randomUUID();
+            const testCase = createMockSyncTestCase({ 
+                id, 
+                description: "Old test description" 
+            });
+            const folderName = tmpDir;
+            const oldFilename = buildFilename(testCase, folderName);
+            const oldFilePath = path.join(folderName, oldFilename);
+            
+            fs.writeFileSync(oldFilePath, yaml.stringify(testCase));
+            
+            const oldTestNameCamelCase = path.basename(oldFilePath).replace(/\.yaml$/, "");
+            const oldFolderPath = path.join(folderName, oldTestNameCamelCase);
+            fs.mkdirSync(oldFolderPath, { recursive: true });
+            fs.writeFileSync(path.join(oldFolderPath, "some-file.yaml"), yaml.stringify(createMockSyncTestCase()));
+            
+            expect(fs.existsSync(oldFolderPath)).toBe(true);
+
+            const updatedTestCase = { ...testCase, description: "New test description" };
+
+            cleanupFilesystem({ newTestCases: [updatedTestCase], destination: tmpDir });
+
+            expect(fs.existsSync(oldFolderPath)).toBe(false);
+        })
+
     })
 });
