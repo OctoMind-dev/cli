@@ -4,6 +4,10 @@ import { simpleGit } from "simple-git";
 
 import { ExecutionContext } from "./types";
 
+
+const FALLBACK_DEFAULT_BRANCH = "refs/heads/main";
+
+
 export const parseGitRemote = async (): Promise<{
   owner?: string;
   repo?: string;
@@ -41,11 +45,29 @@ export type GitContext = ExecutionContext & {
   defaultBranch?: string;
 };
 
-export const getDefaultBranch = async (): Promise<string> => {
+export const getDefaultBranch = async (allowedMethod: "symbolicRef+origin" | "origin"  = "symbolicRef+origin"): Promise<string> => {
   const symbolicRef = (
     await simpleGit().raw("symbolic-ref", "refs/remotes/origin/HEAD")
   ).trim();
-  return symbolicRef.replace("refs/remotes/origin/", "refs/heads/");
+  const symbolicRefBranch = symbolicRef.replace(
+    "refs/remotes/origin/",
+    "refs/heads/",
+  );
+
+  if (allowedMethod === "symbolicRef+origin" && symbolicRefBranch) {
+    return symbolicRefBranch;
+  }
+
+    const origin = await simpleGit().remote(["show", "origin"]);
+    if (!origin) {
+      console.warn("could not identify default branch, falling back to 'main'")
+      return FALLBACK_DEFAULT_BRANCH;
+    }
+
+    const originDefaultBranch = /HEAD branch:(<branchName>(.*))/.exec(origin)
+
+    return originDefaultBranch?.groups?.["branchName"] ? `refs/heads/${originDefaultBranch?.groups?.["branchName"]}` : FALLBACK_DEFAULT_BRANCH;
+
 };
 
 export const getGitContext = async (): Promise<GitContext | undefined> => {
