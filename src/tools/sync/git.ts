@@ -46,16 +46,18 @@ export type GitContext = ExecutionContext & {
 };
 
 export const getDefaultBranch = async (allowedMethod: "symbolicRef+origin" | "origin"  = "symbolicRef+origin"): Promise<string> => {
-  const symbolicRef = (
-    await simpleGit().raw("symbolic-ref", "refs/remotes/origin/HEAD")
-  ).trim();
-  const symbolicRefBranch = symbolicRef.replace(
-    "refs/remotes/origin/",
-    "refs/heads/",
-  );
+  if (allowedMethod === "symbolicRef+origin") {
+    const symbolicRef = (
+        await simpleGit().raw("symbolic-ref", "refs/remotes/origin/HEAD")
+    ).trim();
+    const symbolicRefBranch = symbolicRef.replace(
+        "refs/remotes/origin/",
+        "refs/heads/",
+    );
 
-  if (allowedMethod === "symbolicRef+origin" && symbolicRefBranch) {
-    return symbolicRefBranch;
+    if (symbolicRefBranch) {
+      return symbolicRefBranch;
+    }
   }
 
     const origin = await simpleGit().remote(["show", "origin"]);

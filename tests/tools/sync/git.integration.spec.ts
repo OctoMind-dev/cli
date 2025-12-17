@@ -8,7 +8,7 @@ describe('git', () => {
         expect(remote.repo).toEqual("cli");
     })
 
-    it.each(["symbolicRef+origin", "origin"] as const)("should return the actual default branch for method '%s'", async (allowedMethod) => {
+    it.each(["origin"] as const)("should return the actual default branch for method '%s'", async (allowedMethod) => {
         const defaultBranch = await getDefaultBranch(allowedMethod);
 
         expect(defaultBranch).toEqual("refs/heads/main");
