@@ -30,8 +30,8 @@ export const push = async (
   const testCases = readTestCasesFromDir(options.sourceDir);
   checkForConsistency(testCases);
   const context = await getGitContext();
-  const refName = options.branchName ?? context?.ref
-  const isDefaultBranch = !!context && context.defaultBranch === refName
+  const refName = options.branchName ?? context?.ref;
+  const isDefaultBranch = !!context && context.defaultBranch === refName;
 
   const body: TestTargetSyncData = {
     testCases,

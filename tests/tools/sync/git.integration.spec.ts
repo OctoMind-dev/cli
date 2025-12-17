@@ -1,6 +1,11 @@
 import {getDefaultBranch, getGitContext, parseGitRemote} from "../../../src/tools/sync/git";
 
 describe('git', () => {
+
+    beforeEach(() => {
+        console.warn = jest.fn();
+    })
+
     it("should return the actual owner and repo", async () => {
         const remote = await parseGitRemote();
 

@@ -49,17 +49,20 @@ export const getDefaultBranch = async (
   if (allowedMethod === "symbolicRef+origin") {
     try {
       const symbolicRef = (
-          await simpleGit().raw("symbolic-ref", "refs/remotes/origin/HEAD")
+        await simpleGit().raw("symbolic-ref", "refs/remotes/origin/HEAD")
       ).trim();
       const symbolicRefBranch = symbolicRef.replace(
-          "refs/remotes/origin/",
-          "refs/heads/",
+        "refs/remotes/origin/",
+        "refs/heads/",
       );
       if (symbolicRefBranch) {
         return symbolicRefBranch;
       }
     } catch (e) {
-      console.warn("could not identify symbolic ref, falling back to origin parsing");
+      console.warn(
+        "could not identify symbolic ref, falling back to origin parsing",
+        e,
+      );
     }
   }
 
@@ -96,7 +99,10 @@ export const getGitContext = async (): Promise<GitContext | undefined> => {
     };
     return ctx;
   } catch (e) {
-    console.warn("could not identify git context, falling back to undefined", e);
+    console.warn(
+      "could not identify git context, falling back to undefined",
+      e,
+    );
     return undefined;
   }
 };
