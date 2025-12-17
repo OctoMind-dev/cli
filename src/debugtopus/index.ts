@@ -271,7 +271,7 @@ export const executeLocalTestCases = async (
     executionUrl: options.url,
     environmentId: options.environmentId,
   };
-  const { error, response } = await client.POST(
+  const { error, response } = await client.GET(
     "/apiKey/beta/test-targets/{testTargetId}/code",
     {
       params: {
