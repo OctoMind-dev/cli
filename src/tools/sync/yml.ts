@@ -52,7 +52,7 @@ export const writeYaml = (data: TestTargetSyncData, destination?: string) => {
     fs.mkdirSync(folderName, { recursive: true });
     fs.writeFileSync(
       path.join(folderName, testCaseFilename),
-      yaml.stringify(testCase),
+      `# yaml-language-server: $schema=https://app.octomind.dev/schemas/SyncTestCaseSchema.json\n${yaml.stringify(testCase)}`,
     );
   }
 };
