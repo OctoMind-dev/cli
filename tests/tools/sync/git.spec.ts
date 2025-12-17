@@ -1,5 +1,5 @@
 import {simpleGit} from "simple-git";
-import {parseGitRemote, getGitContext} from "../../../src/tools/sync/git";
+import {parseGitRemote, getGitContext, getDefaultBranch} from "../../../src/tools/sync/git";
 import {mock} from "jest-mock-extended";
 
 jest.mock("simple-git");
@@ -12,6 +12,19 @@ describe("git", () => {
         jest.mocked(simpleGit).mockReturnValue(mockGit)
         mockGit.raw.mockResolvedValue("refs/remotes/origin/main")
         console.error = jest.fn();
+    })
+
+    describe("getDefaultBranch", () => {
+        it("should fallback if both origin and symbolic ref fail", async () => {
+            console.warn = jest.fn();
+            mockGit.raw.mockResolvedValue("")
+            mockGit.remote.mockResolvedValue("")
+
+            const defaultBranch = await getDefaultBranch();
+
+            expect(defaultBranch).toEqual("refs/heads/main")
+            expect(console.warn).toHaveBeenCalled()
+        })
     })
 
     describe("parseGitRemote", () => {
