@@ -23,6 +23,5 @@ describe('git', () => {
         const context = await getGitContext()
 
         expect(context).toBeDefined()
-        console.log(context)
     });
 })
