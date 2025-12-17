@@ -92,7 +92,8 @@ export const getGitContext = async (): Promise<GitContext | undefined> => {
       defaultBranch,
     };
     return ctx;
-  } catch {
+  } catch (e) {
+    console.warn("could not identify git context, falling back to undefined", e);
     return undefined;
   }
 };
