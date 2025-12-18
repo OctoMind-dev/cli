@@ -1,12 +1,14 @@
 import * as child_process from "node:child_process";
 import fs from "fs";
+import { homedir } from "os";
 import path from "path";
-import { homedir } from "os"
 
 import which from "which";
 
 export const update = async (): Promise<void> => {
-  const pathToRoot = path.posix.normalize(path.join(homedir(), "/.local/packages"))
+  const pathToRoot = path.posix.normalize(
+    path.join(homedir(), "/.local/packages"),
+  );
   const pathToPackageJson = path.join(pathToRoot, "package.json");
 
   if (!fs.existsSync(pathToPackageJson)) {
