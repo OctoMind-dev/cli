@@ -312,13 +312,16 @@ export const executeLocalTestCases = async (
   await runTests({ ...dirs, runMode: options.headless ? "headless" : "ui" });
 };
 
-export const readZipFromResponseBody = async (dirs: TestDirectories, response: Response): Promise<void> => {
+export const readZipFromResponseBody = async (
+  dirs: TestDirectories,
+  response: Response,
+): Promise<void> => {
   // Persist the ZIP to disk first to avoid streaming issues with unzipper
   const zipPath = path.join(dirs.testDirectory, "bundle.zip");
   const zipWriteStream = createWriteStream(zipPath);
   await pipeline(
     Readable.fromWeb(response.body as ReadableStream),
-    zipWriteStream
+    zipWriteStream,
   );
 
   // Extract using unzipper's higher-level API
@@ -329,5 +332,4 @@ export const readZipFromResponseBody = async (dirs: TestDirectories, response: R
   } catch {
     throw new Error(`Failed to extract ZIP at ${zipPath}`);
   }
-}
-
+};
