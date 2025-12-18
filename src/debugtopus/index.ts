@@ -271,7 +271,7 @@ export const executeLocalTestCases = async (
     executionUrl: options.url,
     environmentId: options.environmentId,
   };
-  const { error, response } = await client.GET(
+  const { error, response } = await client.POST(
     "/apiKey/beta/test-targets/{testTargetId}/code",
     {
       params: {
@@ -290,37 +290,7 @@ export const executeLocalTestCases = async (
 
   const dirs = await prepareDirectories();
 
-  // Persist the ZIP to disk first to avoid streaming issues with unzipper
-  const zipPath = path.join(dirs.testDirectory, "bundle.zip");
-  const zipWriteStream = createWriteStream(zipPath);
-  await pipeline(
-    Readable.fromWeb(response.body as ReadableStream),
-    zipWriteStream,
-  );
-
-  // Basic validation: check file size and ZIP magic (PK\x03\x04)
-  const stats = await fs.stat(zipPath);
-  if (stats.size < 4) {
-    throw new Error(
-      `Received ZIP is too small (${stats.size} bytes). Saved at ${zipPath}`,
-    );
-  }
-  const header = await fs.readFile(zipPath);
-  const isZip = header[0] === 0x50 && header[1] === 0x4b; // 'P''K'
-  if (!isZip) {
-    throw new Error(
-      `File at ${zipPath} does not appear to be a ZIP (magic: ${header.slice(0, 4).toString("hex")}).`,
-    );
-  }
-
-  // Extract using unzipper's higher-level API
-  try {
-    const zipBuffer = await fs.readFile(zipPath);
-    const directory = await Open.buffer(zipBuffer);
-    await directory.extract({ path: dirs.testDirectory });
-  } catch {
-    throw new Error(`Failed to extract ZIP at ${zipPath}`);
-  }
+  await readZipFromResponseBody(dirs, response);
 
   const config = await getPlaywrightConfig({
     testTargetId: options.testTargetId,
@@ -341,3 +311,23 @@ export const executeLocalTestCases = async (
 
   await runTests({ ...dirs, runMode: options.headless ? "headless" : "ui" });
 };
+
+export const readZipFromResponseBody = async (dirs: TestDirectories, response: Response): Promise<void> => {
+  // Persist the ZIP to disk first to avoid streaming issues with unzipper
+  const zipPath = path.join(dirs.testDirectory, "bundle.zip");
+  const zipWriteStream = createWriteStream(zipPath);
+  await pipeline(
+    Readable.fromWeb(response.body as ReadableStream),
+    zipWriteStream
+  );
+
+  // Extract using unzipper's higher-level API
+  try {
+    const zipBuffer = await fs.readFile(zipPath);
+    const directory = await Open.buffer(zipBuffer);
+    await directory.extract({ path: dirs.testDirectory });
+  } catch {
+    throw new Error(`Failed to extract ZIP at ${zipPath}`);
+  }
+}
+
