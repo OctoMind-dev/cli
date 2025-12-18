@@ -63,6 +63,19 @@ describe("push", () => {
         expect(mockedClient.POST).toHaveBeenCalledWith("/apiKey/beta/test-targets/{testTargetId}/draft/push", expect.anything())
     })
 
+    it("pushes to draft if no git context", async () => {
+        jest.mocked(getGitContext).mockResolvedValue(undefined)
+
+        await push({
+            testTargetId: "someId",
+            sourceDir: ".",
+            client: mockedClient,
+            onError: jest.fn(),
+        })
+
+        expect(mockedClient.POST).toHaveBeenCalledWith("/apiKey/beta/test-targets/{testTargetId}/draft/push", expect.anything())
+    })
+
     it("calls the handleError callback on error", async () => {
         jest.mocked(getGitContext).mockResolvedValue({
             defaultBranch: "refs/heads/main",

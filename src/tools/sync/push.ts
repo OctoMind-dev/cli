@@ -19,6 +19,7 @@ type ErrorResponse =
 type PushOptions = {
   testTargetId: string;
   sourceDir: string;
+  branchName?: string;
   client: Client<paths>;
   onError: (error: ErrorResponse) => void;
 };
@@ -29,7 +30,8 @@ export const push = async (
   const testCases = readTestCasesFromDir(options.sourceDir);
   checkForConsistency(testCases);
   const context = await getGitContext();
-  const isDefaultBranch = context?.defaultBranch === context?.ref;
+  const refName = options.branchName ?? context?.ref;
+  const isDefaultBranch = !!context && context.defaultBranch === refName;
 
   const body: TestTargetSyncData = {
     testCases,
