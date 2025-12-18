@@ -25,6 +25,19 @@ describe("git", () => {
             expect(defaultBranch).toEqual("refs/heads/main")
             expect(console.warn).toHaveBeenCalled()
         })
+
+        it("should fallback if both origin and symbolic ref do not return anything and origin throws", async () => {
+            console.warn = jest.fn();
+            mockGit.raw.mockResolvedValue("")
+            mockGit.remote.mockRejectedValue("")
+
+            const defaultBranch = await getDefaultBranch();
+
+            expect(defaultBranch).toEqual("refs/heads/main")
+            expect(console.warn).toHaveBeenCalled()
+        })
+
+
     })
 
     describe("parseGitRemote", () => {

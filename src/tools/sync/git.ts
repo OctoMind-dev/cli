@@ -66,17 +66,26 @@ export const getDefaultBranch = async (
     }
   }
 
-  const origin = await simpleGit().remote(["show", "origin"]);
-  if (!origin) {
-    console.warn("could not identify default branch, falling back to 'main'");
-    return FALLBACK_DEFAULT_BRANCH;
+  try {
+    const origin = await simpleGit().remote(["show", "origin"]);
+    if (!origin) {
+      console.warn("could not identify default branch, falling back to 'main'");
+      return FALLBACK_DEFAULT_BRANCH;
+    }
+
+    const originDefaultBranch = /HEAD branch:(<branchName>(.*))/.exec(origin);
+
+    return originDefaultBranch?.groups?.["branchName"]
+      ? `refs/heads/${originDefaultBranch?.groups?.["branchName"]}`
+      : FALLBACK_DEFAULT_BRANCH;
+  } catch (e) {
+    console.warn(
+      "could not identify default branch, falling back to 'main'",
+      e,
+    );
   }
 
-  const originDefaultBranch = /HEAD branch:(<branchName>(.*))/.exec(origin);
-
-  return originDefaultBranch?.groups?.["branchName"]
-    ? `refs/heads/${originDefaultBranch?.groups?.["branchName"]}`
-    : FALLBACK_DEFAULT_BRANCH;
+  return FALLBACK_DEFAULT_BRANCH;
 };
 
 export const getGitContext = async (): Promise<GitContext | undefined> => {
