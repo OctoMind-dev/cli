@@ -260,3 +260,76 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
   });
   await runTests({ ...dirs, runMode: options.headless ? "headless" : "ui" });
 };
+
+export const executeLocalTestCases = async (
+  options: DebugtopusOptions & { source: string },
+): Promise<void> => {
+  const testCases = readTestCasesFromDir(options.source);
+  const body = {
+    testCases,
+    testTargetId: options.testTargetId,
+    executionUrl: options.url,
+    environmentId: options.environmentId,
+  };
+  const { error, response } = await client.POST(
+    "/apiKey/beta/test-targets/{testTargetId}/code",
+    {
+      params: {
+        path: {
+          testTargetId: options.testTargetId,
+        },
+      },
+      body,
+      parseAs: "stream",
+    },
+  );
+
+  if (error || !response?.body) {
+    handleError(error);
+  }
+
+  const dirs = await prepareDirectories();
+
+  await readZipFromResponseBody(dirs, response);
+
+  const config = await getPlaywrightConfig({
+    testTargetId: options.testTargetId,
+    url: options.url,
+    outputDir: dirs.outputDir,
+    environmentId: options.environmentId,
+    headless: options.headless,
+    bypassProxy: options.bypassProxy,
+    browser: options.browser,
+    breakpoint: options.breakpoint,
+  });
+
+  if (!config) {
+    handleError("no config found");
+  }
+
+  writeFileSync(dirs.configFilePath, config);
+
+  await runTests({ ...dirs, runMode: options.headless ? "headless" : "ui" });
+};
+
+export const readZipFromResponseBody = async (
+  dirs: TestDirectories,
+  response: Response,
+): Promise<void> => {
+  // Persist the ZIP to disk first to avoid streaming issues with unzipper
+  const zipPath = path.join(dirs.testDirectory, "bundle.zip");
+  const zipWriteStream = createWriteStream(zipPath);
+  await pipeline(
+    Readable.fromWeb(response.body as ReadableStream),
+    zipWriteStream,
+  );
+
+  // Extract using unzipper's higher-level API
+  try {
+    const zipBuffer = await fs.readFile(zipPath);
+    const directory = await Open.buffer(zipBuffer);
+    await directory.extract({ path: dirs.testDirectory });
+  } catch {
+    throw new Error(`Failed to extract ZIP at ${zipPath}`);
+  }
+};

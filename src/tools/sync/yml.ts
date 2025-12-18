@@ -140,6 +140,7 @@ const collectYamlFiles = (startDir: string): string[] => {
     try {
       entries = fs.readdirSync(current, { withFileTypes: true });
     } catch {
+      current = stack.pop();
       continue;
     }
     for (const entry of entries) {
