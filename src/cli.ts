@@ -12,6 +12,7 @@ import {
   uninstallCompletion,
 } from "./completion";
 import { executeLocalTestCases, runDebugtopus } from "./debugtopus";
+import { showOctomindDir } from "./dirManagement";
 import { resolveTestTargetId } from "./helpers";
 import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
@@ -192,11 +193,6 @@ export const buildCmd = (): CompletableCommand => {
     .option("--bypass-proxy", "bypass proxy when accessing the test target")
     .option("--browser [CHROMIUM, FIREFOX, SAFARI]", "Browser type", "CHROMIUM")
     .option("--breakpoint [DESKTOP, MOBILE, TABLET]", "Breakpoint", "DESKTOP")
-    .option(
-      "-s, --source <path>",
-      "Source directory (defaults to current directory)",
-      "./.octomind",
-    )
     .action(addTestTargetWrapper(executeLocalTestCases));
 
   createCommandWithCommonOptions(program, "test-report")
@@ -395,7 +391,6 @@ export const buildCmd = (): CompletableCommand => {
     .description("Pull test cases from the test target")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
-    .option("-d, --destination <path>", "Destination folder", "./.octomind")
     .action(addTestTargetWrapper(pullTestTarget));
 
   // noinspection RequiredAttributes
@@ -404,12 +399,15 @@ export const buildCmd = (): CompletableCommand => {
     .description("Push local YAML test cases to the test target")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
-    .option(
-      "-s, --source <path>",
-      "Source directory (defaults to current directory)",
-      ".octomind",
-    )
     .action(addTestTargetWrapper(pushTestTarget));
+
+  createCommandWithCommonOptions(program, "show-octomind-dir")
+    .completableCommand("show-octomind-dir")
+    .description(
+      "Show where the octomind directory containing your local test cases is located.",
+    )
+    .helpGroup("setup")
+    .action(showOctomindDir);
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")

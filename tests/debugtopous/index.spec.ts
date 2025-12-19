@@ -10,6 +10,10 @@ import { getPlaywrightConfig } from "../../src/tools/playwright";
 import { createMockSyncTestCase } from "../mocks";
 import { DeepMockProxy, mockDeep, mock } from "jest-mock-extended";
 import { ensureChromiumIsInstalled } from "../../src/debugtopus/installation";
+import path from "node:path";
+import os from "node:os";
+import * as fsSync from "node:fs";
+import { getPathToOctomindDir, OCTOMIND_DIR } from "../../src/dirManagement";
 
 jest.mock("fs/promises");
 jest.mock("fs");
@@ -20,6 +24,7 @@ jest.mock("../../src/tools/playwright");
 jest.mock("../../src/debugtopus/installation");
 jest.mock("child_process");
 jest.mock("node:stream/promises");
+jest.mock("../../src/dirManagement");
 
 const mockedFs = fs as jest.Mocked<typeof fs>;
 const mockedCreateWriteStream = createWriteStream as jest.MockedFunction<typeof createWriteStream>;
@@ -35,8 +40,12 @@ const mockedEnsureChromiumIsInstalled = ensureChromiumIsInstalled as jest.Mocked
 
 describe("debugtopus", () => {
 
+    let octomindDir: string = `test-data/${OCTOMIND_DIR}`;
+
     beforeEach(() => {
         jest.clearAllMocks();
+
+        jest.mocked(getPathToOctomindDir).mockResolvedValue(octomindDir);
     });
 
     describe("readZipFromResponseBody", () => {
@@ -156,6 +165,7 @@ describe("debugtopus", () => {
 
     describe("executeLocalTestCases", () => {
 
+
         it("should execute local test cases from zip response body", async () => {
             const mockTestCases = [createMockSyncTestCase()];
             const mockZipBuffer = Buffer.from([0x50, 0x4B, 0x03, 0x04]);
@@ -195,11 +205,10 @@ describe("debugtopus", () => {
             await executeLocalTestCases({
                 testTargetId: "test-target-id",
                 url: "https://example.com",
-                source: "/test/source",
                 headless: true,
             });
 
-            expect(mockedReadTestCasesFromDir).toHaveBeenCalledWith("/test/source");
+            expect(mockedReadTestCasesFromDir).toHaveBeenCalledWith(octomindDir);
             expect(mockedClient.POST).toHaveBeenCalledWith(
                 "/apiKey/beta/test-targets/{testTargetId}/code",
                 expect.objectContaining({
@@ -226,7 +235,6 @@ describe("debugtopus", () => {
                 executeLocalTestCases({
                     testTargetId: "test-target-id",
                     url: "https://example.com",
-                    source: "/test/source",
                     headless: true,
                 })
             ).rejects.toThrow();

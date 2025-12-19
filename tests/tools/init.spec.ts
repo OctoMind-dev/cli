@@ -5,6 +5,7 @@ import { getTestTargets } from "../../src/tools/test-targets";
 jest.mock("../../src/config");
 jest.mock("../../src/helpers");
 jest.mock("../../src/tools/test-targets");
+
 describe("init", () => {
   const originalConsoleLog = console.log;
   beforeAll(() => {
