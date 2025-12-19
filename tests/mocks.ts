@@ -6,7 +6,6 @@ export const createMockSyncTestCase = (
     id: crypto.randomUUID(),
     description: "some description",
     elements: [],
-    tagNames: [],
     version: "1",
     prompt: "prompt",
     runStatus: "ON",
