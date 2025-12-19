@@ -10,7 +10,7 @@ import { promisify } from "util";
 
 import { Open } from "unzipper";
 
-import { getPathToOctomindDir } from "../dirManagement";
+import { getPathToOctomindDirWithActiveTestTarget } from "../dirManagement";
 import {
   getEnvironments,
   getPlaywrightCode,
@@ -267,7 +267,10 @@ export const executeLocalTestCases = async (
     startDir?: string;
   },
 ): Promise<void> => {
-  const source = await getPathToOctomindDir({ startDir: options.startDir });
+  const source = await getPathToOctomindDirWithActiveTestTarget({
+    startDir: options.startDir,
+    providedTestTargetId: options.testTargetId,
+  });
   if (!source) {
     throw new Error("No octomind directory found");
   }
