@@ -10,6 +10,7 @@ import { promisify } from "util";
 
 import { Open } from "unzipper";
 
+import { getPathToOctomindDir } from "../dirManagement";
 import {
   getEnvironments,
   getPlaywrightCode,
@@ -262,9 +263,13 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
 };
 
 export const executeLocalTestCases = async (
-  options: DebugtopusOptions & { source: string },
+  options: DebugtopusOptions,
 ): Promise<void> => {
-  const testCases = readTestCasesFromDir(options.source);
+  const source = await getPathToOctomindDir();
+  if (!source) {
+    throw new Error("No octomind directory found");
+  }
+  const testCases = readTestCasesFromDir(source);
   const body = {
     testCases,
     testTargetId: options.testTargetId,

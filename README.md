@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 3.7.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 3.4.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -67,12 +67,26 @@ Initialize configuration by setting up API key. This will create a config file i
 | `-t, --test-target-id <id>` | Test target ID | Yes |  |
 | `-k, --api-key <key>` | the api key for authentication | Yes |  |
 | `-f, --force` | Force overwrite existing configuration | No |  |
+| `-d, --dir <dir>` | Directory to create the octomind directory in. Defaults to the current directory. | Yes |  |
+| `--recreate-octomind-dir` | Recreate the octomind directory if it already exists. Defaults to false. | No |  |
 
 ## switch-test-target
 
 Switch to a different test target. This will list all available test targets and update the config file in ~/.config/octomind.json
 
 **Usage:** `switch-test-target [options]`
+
+## show-octomind-dir
+
+Show where the octomind directory containing your local test cases is located.
+
+**Usage:** `show-octomind-dir [options]`
+
+### Options
+
+| Option | Description | Required | Default |
+|:-------|:----------|:---------|:--------|
+| `-j, --json` | Output raw JSON response | No |  |
 
 ## Completion
 
@@ -243,7 +257,6 @@ Execute local YAML test cases
 | `--bypass-proxy` | bypass proxy when accessing the test target | No |  |
 | `--browser [CHROMIUM, FIREFOX, SAFARI]` | Browser type | No | CHROMIUM |
 | `--breakpoint [DESKTOP, MOBILE, TABLET]` | Breakpoint | No | DESKTOP |
-| `-s, --source <path>` | Source directory (defaults to current directory) | Yes | ./.octomind |
 
 ## create-discovery
 
@@ -432,7 +445,6 @@ Pull test cases from the test target
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-| `-d, --destination <path>` | Destination folder | Yes | ./.octomind |
 
 ## push
 
@@ -446,7 +458,6 @@ Push local YAML test cases to the test target
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-| `-s, --source <path>` | Source directory (defaults to current directory) | Yes | .octomind |
 
 ## Test Reports
 
