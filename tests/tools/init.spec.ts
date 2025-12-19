@@ -5,6 +5,7 @@ import { getTestTargets } from "../../src/tools/test-targets";
 jest.mock("../../src/config");
 jest.mock("../../src/helpers");
 jest.mock("../../src/tools/test-targets");
+
 describe("init", () => {
   const originalConsoleLog = console.log;
   beforeAll(() => {
@@ -20,7 +21,7 @@ describe("init", () => {
   const loadConfigMock = loadConfig as jest.Mock;
   loadConfigMock.mockResolvedValue({ apiKey: "apiKey" });
   const promptUserMock = promptUser as jest.Mock;
-  promptUserMock.mockResolvedValue("1");
+  promptUserMock.mockResolvedValueOnce("1");
   const getTestTargetsMock = getTestTargets as jest.Mock;
   getTestTargetsMock.mockResolvedValue([{ id: "testTargetId", app: "testTargetApp" }]);
 

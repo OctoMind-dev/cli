@@ -263,9 +263,11 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
 };
 
 export const executeLocalTestCases = async (
-  options: DebugtopusOptions,
+  options: DebugtopusOptions & {
+    startDir?: string;
+  },
 ): Promise<void> => {
-  const source = await getPathToOctomindDir();
+  const source = await getPathToOctomindDir({ startDir: options.startDir });
   if (!source) {
     throw new Error("No octomind directory found");
   }

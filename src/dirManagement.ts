@@ -47,7 +47,11 @@ export const createOctomindDirInteractive = async (
     startDir: options.dir,
   });
 
-  if (existingOctomindDir && existingOctomindDir !== dir && !options.recreateOctomindDir) {
+  if (
+    existingOctomindDir &&
+    existingOctomindDir !== dir &&
+    !options.recreateOctomindDir
+  ) {
     console.log(`Octomind directory already exists: ${existingOctomindDir}.`);
     console.log(`Using existing octomind directory.`);
     return existingOctomindDir;

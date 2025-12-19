@@ -25,7 +25,7 @@ describe("dirManagement", () => {
             fs.rmSync(tmpDir, { recursive: true, force: true });
         } catch {
         }
-      });
+    });
 
     describe("getPathToOctomindDir", () => {
 

@@ -1,12 +1,4 @@
-import { existsSync, mkdir, mkdirSync, rmdirSync } from "node:fs";
-import path from "node:path";
-
 import { Config, loadConfig, saveConfig } from "../config";
-import {
-  createOctomindDirInteractive,
-  getPathToOctomindDir,
-  OCTOMIND_DIR,
-} from "../dirManagement";
 import { promptUser } from "../helpers";
 import { getTestTargets, listTestTargets } from "./test-targets";
 
@@ -109,7 +101,6 @@ export const init = async (options: {
 
     await saveConfig(newConfig);
 
-    await createOctomindDirInteractive(options);
     console.log("\n✨ Initialization complete!");
   } catch (error) {
     console.error("❌ Error during initialization:", (error as Error).message);
