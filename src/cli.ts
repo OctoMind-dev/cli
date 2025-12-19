@@ -37,6 +37,7 @@ import {
   updateEnvironment,
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
+import { update } from "./tools/update";
 import { version } from "./version";
 
 export const BINARY_NAME = "octomind";
@@ -445,6 +446,13 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("completion")
     .allowExcessArguments(true)
     .action(() => tabCompletion(program));
+
+  program
+    .completableCommand("update")
+    .description("update your local cli version")
+    .helpGroup("update")
+    .allowExcessArguments(false)
+    .action(update);
 
   return program;
 };
