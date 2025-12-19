@@ -1,7 +1,9 @@
 import fs from "fs/promises";
-import path from "path";
-import { loadConfig, Config, resetConfig } from "../src/config";
 import { homedir } from "os";
+import path from "path";
+
+import { Config, loadConfig, resetConfig } from "../src/config";
+
 jest.mock("fs/promises");
 const mockedFs = fs as jest.Mocked<typeof fs>;
 
@@ -34,11 +36,10 @@ describe("Config", () => {
 
       expect(result).toEqual(mockConfig);
       expect(mockedFs.readFile).toHaveBeenCalledWith(
-          path.join(homedir(), ".config", configFileName),
-          "utf8",
+        path.join(homedir(), ".config", configFileName),
+        "utf8",
       );
     });
-
 
     it("should load and parse a valid config file", async () => {
       const mockConfig: Config = {

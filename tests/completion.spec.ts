@@ -1,18 +1,18 @@
+import { log, TabtabEnv } from "tabtab";
+
 import {
+  CompletableCommand,
   environmentIdCompleter,
   optionsCompleter,
   testCaseIdCompleter,
   testReportIdCompleter,
   testTargetIdCompleter,
-  CompletableCommand,
 } from "../src/completion";
-
-import { TabtabEnv, log } from "tabtab";
-import { getTestTargets } from "../src/tools/test-targets";
-import { getEnvironments } from "../src/tools/environments";
 import { loadConfig } from "../src/config";
+import { getEnvironments } from "../src/tools/environments";
 import { getTestCases } from "../src/tools/test-cases";
 import { getTestReports } from "../src/tools/test-reports";
+import { getTestTargets } from "../src/tools/test-targets";
 
 jest.mock("../src/tools/test-targets");
 jest.mock("tabtab");

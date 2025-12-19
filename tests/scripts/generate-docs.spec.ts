@@ -1,5 +1,6 @@
-import { generateCommandDocs } from "../../scripts/generate-docs";
 import { Command } from "commander";
+
+import { generateCommandDocs } from "../../scripts/generate-docs";
 
 describe("generateCommandDocs", () => {
   const mockCommand = new Command("test-command");

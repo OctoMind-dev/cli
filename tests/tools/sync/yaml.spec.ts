@@ -1,196 +1,274 @@
 import fs from "fs";
-import path from "path";
 import os from "os";
+import path from "path";
+
 import yaml from "yaml";
-import {createMockSyncTestCase} from "../../mocks";
-import {buildFilename, buildFolderName, readTestCasesFromDir, cleanupFilesystem} from "../../../src/tools/sync/yml";
+
+import {
+  buildFilename,
+  buildFolderName,
+  cleanupFilesystem,
+  readTestCasesFromDir,
+} from "../../../src/tools/sync/yml";
+import { createMockSyncTestCase } from "../../mocks";
 
 describe("yml", () => {
-    let tmpDir: string;
+  let tmpDir: string;
 
-    beforeEach(() => {
-        tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "octomind-cli-test-"));
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "octomind-cli-test-"));
+  });
+
+  afterEach(() => {
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    } catch {
+      // ignore
+    }
+  });
+
+  describe("buildFilename", () => {
+    it("creates a camelCase filename from description with .yaml extension", () => {
+      const tc = createMockSyncTestCase({
+        description: "My test case: Login flow",
+      });
+      const name = buildFilename(tc, tmpDir);
+      expect(name).toBe("myTestCaseLoginFlow.yaml");
     });
 
-    afterEach(() => {
-        try {
-            fs.rmSync(tmpDir, { recursive: true, force: true });
-        } catch {
-        }
+    it("removes diacritics", () => {
+      const tc = createMockSyncTestCase({
+        description: "Mein Testfall: Übermäßig viele Umlaute",
+      });
+      const name = buildFilename(tc, tmpDir);
+      expect(name).toBe("meinTestfallUbermaßigVieleUmlaute.yaml");
     });
 
-    describe("buildFilename", () => {
-        it("creates a camelCase filename from description with .yaml extension", () => {
-            const tc = createMockSyncTestCase({ description: "My test case: Login flow" });
-            const name = buildFilename(tc, tmpDir);
-            expect(name).toBe("myTestCaseLoginFlow.yaml");
-        });
-
-        it("removes diacritics", () => {
-            const tc = createMockSyncTestCase({ description: "Mein Testfall: Übermäßig viele Umlaute" });
-            const name = buildFilename(tc, tmpDir);
-            expect(name).toBe("meinTestfallUbermaßigVieleUmlaute.yaml");
-        });
-
-        it("keeps unicode characters", () => {
-            const tc = createMockSyncTestCase({ description: "统一码" });
-            const name = buildFilename(tc, tmpDir);
-            expect(name).toBe("统一码.yaml");
-        });
-
-        it("removes invalid characters", () => {
-            const tc = createMockSyncTestCase({ description: "some test\/:." });
-            const name = buildFilename(tc, tmpDir);
-            expect(name).toBe("someTest.yaml");
-        });
-
-        it("throws if there is ONLY invalid characters", () => {
-            const tc = createMockSyncTestCase({ description: "\/:." });
-            expect(() => buildFilename(tc, tmpDir)).toThrow("Test case with title '/:.' has no valid characters for the file system, please rename it");
-        });
-
-        it("appends -1 when a file with the same name exists for a different id", () => {
-            const tc1 = createMockSyncTestCase({ id: "AAA", description: "Duplicate name" });
-            const baseline = buildFilename(tc1, tmpDir);
-            // simulate an existing file with different id content
-            fs.writeFileSync(path.join(tmpDir, baseline), yaml.stringify({ id: "DIFFERENT" }));
-
-            const tc2 = createMockSyncTestCase({ id: "BBB", description: "Duplicate name" });
-            const second = buildFilename(tc2, tmpDir);
-            expect(second).toBe(baseline.replace(/\.yaml$/, "-1.yaml"));
-        });
-    })
-
-    describe("buildFolderName", () => {
-        it("returns '.' when there are no prerequisites", () => {
-            const tc = createMockSyncTestCase({ id: "1", description: "Root" });
-            const folder = buildFolderName(tc, [tc]);
-            expect(folder).toBe(".");
-        });
-
-        it("builds a hierarchical path from prerequisite chain", () => {
-            const a = createMockSyncTestCase({ id: "A", description: "Set up data" });
-            const b = createMockSyncTestCase({ id: "B", dependencyId: "A", description: "User logs in" });
-            const c = createMockSyncTestCase({ id: "C", dependencyId: "B", description: "User navigates to dashboard" });
-
-            const folderForC = buildFolderName(c, [a, b, c]);
-            expect(folderForC).toBe("setUpData/userLogsIn");
-        });
-
-        it("prefixes the path with destination when provided", () => {
-            const a = createMockSyncTestCase({ id: "A", description: "Set up data" });
-            const b = createMockSyncTestCase({ id: "B", dependencyId: "A", description: "User logs in" });
-            const c = createMockSyncTestCase({ id: "C", dependencyId: "B", description: "User navigates to dashboard" });
-
-            const folderForC = buildFolderName(c, [a, b, c], "my/dest");
-            expect(folderForC).toBe("my/dest/setUpData/userLogsIn");
-        });
-
-        it("throws when a dependency id is missing in the list", () => {
-            const a = createMockSyncTestCase({ id: "A", description: "First" });
-            const b = createMockSyncTestCase({ id: "B", dependencyId: "Z", description: "Second" });
-            expect(() => buildFolderName(b, [a, b] )).toThrow(/not found/i);
-        });
-
-        it("detects cycles in prerequisites", () => {
-            const a = createMockSyncTestCase({ id: "A", dependencyId: "B", description: "First" });
-            const b = createMockSyncTestCase({ id: "B", dependencyId: "A", description: "Second" });
-            expect(() => buildFolderName(a, [a, b])).toThrow(/cycle/i);
-        });
+    it("keeps unicode characters", () => {
+      const tc = createMockSyncTestCase({ description: "统一码" });
+      const name = buildFilename(tc, tmpDir);
+      expect(name).toBe("统一码.yaml");
     });
 
-    describe("readTestCasesFromDir", () => {
-        it("should parse an empty dir", () => {
-            expect(readTestCasesFromDir(tmpDir)).toEqual([]);
-        })
+    it("removes invalid characters", () => {
+      const tc = createMockSyncTestCase({ description: "some test\/:." });
+      const name = buildFilename(tc, tmpDir);
+      expect(name).toBe("someTest.yaml");
+    });
 
-        it("should ignore non yaml files", () => {
-            fs.writeFileSync(path.join(tmpDir, "test.txt"), "some content");
+    it("throws if there is ONLY invalid characters", () => {
+      const tc = createMockSyncTestCase({ description: "\/:." });
+      expect(() => buildFilename(tc, tmpDir)).toThrow(
+        "Test case with title '/:.' has no valid characters for the file system, please rename it",
+      );
+    });
 
-            expect(readTestCasesFromDir(tmpDir)).toEqual([]);
-        })
+    it("appends -1 when a file with the same name exists for a different id", () => {
+      const tc1 = createMockSyncTestCase({
+        id: "AAA",
+        description: "Duplicate name",
+      });
+      const baseline = buildFilename(tc1, tmpDir);
+      // simulate an existing file with different id content
+      fs.writeFileSync(
+        path.join(tmpDir, baseline),
+        yaml.stringify({ id: "DIFFERENT" }),
+      );
 
-        it("should ignore hidden directories", () => {
-            fs.mkdirSync(path.join(tmpDir, ".test"));
+      const tc2 = createMockSyncTestCase({
+        id: "BBB",
+        description: "Duplicate name",
+      });
+      const second = buildFilename(tc2, tmpDir);
+      expect(second).toBe(baseline.replace(/\.yaml$/, "-1.yaml"));
+    });
+  });
 
-            fs.writeFileSync(path.join(tmpDir, ".test", "test.yaml"), yaml.stringify(createMockSyncTestCase()));
-            expect(readTestCasesFromDir(tmpDir)).toEqual([]);
-        })
+  describe("buildFolderName", () => {
+    it("returns '.' when there are no prerequisites", () => {
+      const tc = createMockSyncTestCase({ id: "1", description: "Root" });
+      const folder = buildFolderName(tc, [tc]);
+      expect(folder).toBe(".");
+    });
 
-        it("should ignore node_modules", () => {
-            fs.mkdirSync(path.join(tmpDir, "node_modules"));
+    it("builds a hierarchical path from prerequisite chain", () => {
+      const a = createMockSyncTestCase({ id: "A", description: "Set up data" });
+      const b = createMockSyncTestCase({
+        id: "B",
+        dependencyId: "A",
+        description: "User logs in",
+      });
+      const c = createMockSyncTestCase({
+        id: "C",
+        dependencyId: "B",
+        description: "User navigates to dashboard",
+      });
 
-            fs.writeFileSync(path.join(tmpDir, "node_modules", "test.yaml"), yaml.stringify(createMockSyncTestCase()));
-            expect(readTestCasesFromDir(tmpDir)).toEqual([]);
-        })
+      const folderForC = buildFolderName(c, [a, b, c]);
+      expect(folderForC).toBe("setUpData/userLogsIn");
+    });
 
-        it("should recursively find test cases in folders", () => {
-            fs.mkdirSync(path.join(tmpDir, "test1"));
+    it("prefixes the path with destination when provided", () => {
+      const a = createMockSyncTestCase({ id: "A", description: "Set up data" });
+      const b = createMockSyncTestCase({
+        id: "B",
+        dependencyId: "A",
+        description: "User logs in",
+      });
+      const c = createMockSyncTestCase({
+        id: "C",
+        dependencyId: "B",
+        description: "User navigates to dashboard",
+      });
 
-            let testCase = createMockSyncTestCase();
-            fs.writeFileSync(path.join(tmpDir, "test1", "test.yaml"), yaml.stringify(testCase));
-            expect(readTestCasesFromDir(tmpDir)).toEqual([testCase]);
-        })
+      const folderForC = buildFolderName(c, [a, b, c], "my/dest");
+      expect(folderForC).toBe("my/dest/setUpData/userLogsIn");
+    });
 
-        it("should throw on an invalid test case", () => {
-            fs.mkdirSync(path.join(tmpDir, "test1"));
+    it("throws when a dependency id is missing in the list", () => {
+      const a = createMockSyncTestCase({ id: "A", description: "First" });
+      const b = createMockSyncTestCase({
+        id: "B",
+        dependencyId: "Z",
+        description: "Second",
+      });
+      expect(() => buildFolderName(b, [a, b])).toThrow(/not found/i);
+    });
 
-            let testCase = createMockSyncTestCase({
-                id: "invalidIdFormat"
-            });
-            fs.writeFileSync(path.join(tmpDir, "test1", "test.yaml"), yaml.stringify(testCase));
+    it("detects cycles in prerequisites", () => {
+      const a = createMockSyncTestCase({
+        id: "A",
+        dependencyId: "B",
+        description: "First",
+      });
+      const b = createMockSyncTestCase({
+        id: "B",
+        dependencyId: "A",
+        description: "Second",
+      });
+      expect(() => buildFolderName(a, [a, b])).toThrow(/cycle/i);
+    });
+  });
 
-            expect(() => readTestCasesFromDir(tmpDir)).toThrow(/Invalid UUID/);
-        })
-    })
+  describe("readTestCasesFromDir", () => {
+    it("should parse an empty dir", () => {
+      expect(readTestCasesFromDir(tmpDir)).toEqual([]);
+    });
 
-    describe("cleanupFilesystem", () => {
+    it("should ignore non yaml files", () => {
+      fs.writeFileSync(path.join(tmpDir, "test.txt"), "some content");
 
-        it("should remove the old file if the test case description has changed", () => {
-            const id = crypto.randomUUID();
-            const testCase = createMockSyncTestCase({ 
-                id, 
-                description: "Old test description" 
-            });
-            const folderName = tmpDir;
-            const oldFilename = buildFilename(testCase, folderName);
-            const oldFilePath = path.join(folderName, oldFilename);
-            
-            fs.writeFileSync(oldFilePath, yaml.stringify(testCase));
-            expect(fs.existsSync(oldFilePath)).toBe(true);
+      expect(readTestCasesFromDir(tmpDir)).toEqual([]);
+    });
 
-            const updatedTestCase = { ...testCase, description: "New test description" };
+    it("should ignore hidden directories", () => {
+      fs.mkdirSync(path.join(tmpDir, ".test"));
 
-            cleanupFilesystem({ newTestCases: [updatedTestCase], destination: tmpDir });
+      fs.writeFileSync(
+        path.join(tmpDir, ".test", "test.yaml"),
+        yaml.stringify(createMockSyncTestCase()),
+      );
+      expect(readTestCasesFromDir(tmpDir)).toEqual([]);
+    });
 
-            expect(fs.existsSync(oldFilePath)).toBe(false);
-        })
+    it("should ignore node_modules", () => {
+      fs.mkdirSync(path.join(tmpDir, "node_modules"));
 
-        it("should remove the old folder if the test case description has changed", () => {
-            const id = crypto.randomUUID();
-            const testCase = createMockSyncTestCase({ 
-                id, 
-                description: "Old test description" 
-            });
-            const folderName = tmpDir;
-            const oldFilename = buildFilename(testCase, folderName);
-            const oldFilePath = path.join(folderName, oldFilename);
-            
-            fs.writeFileSync(oldFilePath, yaml.stringify(testCase));
-            
-            const oldTestNameCamelCase = path.basename(oldFilePath).replace(/\.yaml$/, "");
-            const oldFolderPath = path.join(folderName, oldTestNameCamelCase);
-            fs.mkdirSync(oldFolderPath, { recursive: true });
-            fs.writeFileSync(path.join(oldFolderPath, "some-file.yaml"), yaml.stringify(createMockSyncTestCase()));
-            
-            expect(fs.existsSync(oldFolderPath)).toBe(true);
+      fs.writeFileSync(
+        path.join(tmpDir, "node_modules", "test.yaml"),
+        yaml.stringify(createMockSyncTestCase()),
+      );
+      expect(readTestCasesFromDir(tmpDir)).toEqual([]);
+    });
 
-            const updatedTestCase = { ...testCase, description: "New test description" };
+    it("should recursively find test cases in folders", () => {
+      fs.mkdirSync(path.join(tmpDir, "test1"));
 
-            cleanupFilesystem({ newTestCases: [updatedTestCase], destination: tmpDir });
+      const testCase = createMockSyncTestCase();
+      fs.writeFileSync(
+        path.join(tmpDir, "test1", "test.yaml"),
+        yaml.stringify(testCase),
+      );
+      expect(readTestCasesFromDir(tmpDir)).toEqual([testCase]);
+    });
 
-            expect(fs.existsSync(oldFolderPath)).toBe(false);
-        })
+    it("should throw on an invalid test case", () => {
+      fs.mkdirSync(path.join(tmpDir, "test1"));
 
-    })
+      const testCase = createMockSyncTestCase({
+        id: "invalidIdFormat",
+      });
+      fs.writeFileSync(
+        path.join(tmpDir, "test1", "test.yaml"),
+        yaml.stringify(testCase),
+      );
+
+      expect(() => readTestCasesFromDir(tmpDir)).toThrow(/Invalid UUID/);
+    });
+  });
+
+  describe("cleanupFilesystem", () => {
+    it("should remove the old file if the test case description has changed", () => {
+      const id = crypto.randomUUID();
+      const testCase = createMockSyncTestCase({
+        id,
+        description: "Old test description",
+      });
+      const folderName = tmpDir;
+      const oldFilename = buildFilename(testCase, folderName);
+      const oldFilePath = path.join(folderName, oldFilename);
+
+      fs.writeFileSync(oldFilePath, yaml.stringify(testCase));
+      expect(fs.existsSync(oldFilePath)).toBe(true);
+
+      const updatedTestCase = {
+        ...testCase,
+        description: "New test description",
+      };
+
+      cleanupFilesystem({
+        newTestCases: [updatedTestCase],
+        destination: tmpDir,
+      });
+
+      expect(fs.existsSync(oldFilePath)).toBe(false);
+    });
+
+    it("should remove the old folder if the test case description has changed", () => {
+      const id = crypto.randomUUID();
+      const testCase = createMockSyncTestCase({
+        id,
+        description: "Old test description",
+      });
+      const folderName = tmpDir;
+      const oldFilename = buildFilename(testCase, folderName);
+      const oldFilePath = path.join(folderName, oldFilename);
+
+      fs.writeFileSync(oldFilePath, yaml.stringify(testCase));
+
+      const oldTestNameCamelCase = path
+        .basename(oldFilePath)
+        .replace(/\.yaml$/, "");
+      const oldFolderPath = path.join(folderName, oldTestNameCamelCase);
+      fs.mkdirSync(oldFolderPath, { recursive: true });
+      fs.writeFileSync(
+        path.join(oldFolderPath, "some-file.yaml"),
+        yaml.stringify(createMockSyncTestCase()),
+      );
+
+      expect(fs.existsSync(oldFolderPath)).toBe(true);
+
+      const updatedTestCase = {
+        ...testCase,
+        description: "New test description",
+      };
+
+      cleanupFilesystem({
+        newTestCases: [updatedTestCase],
+        destination: tmpDir,
+      });
+
+      expect(fs.existsSync(oldFolderPath)).toBe(false);
+    });
+  });
 });

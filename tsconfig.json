@@ -14,5 +14,8 @@
     "typeRoots": ["node_modules/@types"]
   },
   "exclude": ["node_modules", "dist"],
-  "include": ["**/*.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": ["**/*.d.ts", "**/*.ts", "**/*.tsx"],
+  "jest": {
+    "globals": true
+  }
 }
