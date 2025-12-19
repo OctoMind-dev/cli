@@ -96,14 +96,6 @@ export const buildCmd = (): CompletableCommand => {
     .option("-t, --test-target-id <id>", "Test target ID")
     .option("-k, --api-key <key>", "the api key for authentication")
     .option("-f, --force", "Force overwrite existing configuration")
-    .option(
-      "-d, --dir <dir>",
-      "Directory to create the octomind directory in. Defaults to the current directory.",
-    )
-    .option(
-      "--recreate-octomind-dir",
-      "Recreate the octomind directory if it already exists. Defaults to false.",
-    )
     .action(init);
 
   program
@@ -410,6 +402,7 @@ export const buildCmd = (): CompletableCommand => {
     .action(addTestTargetWrapper(pushTestTarget));
 
   createCommandWithCommonOptions(program, "show-octomind-dir")
+    .completableCommand("show-octomind-dir")
     .description(
       "Show where the octomind directory containing your local test cases is located.",
     )

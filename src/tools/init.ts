@@ -50,8 +50,6 @@ export const init = async (options: {
   testTargetId?: string;
   apiKey: string;
   force?: boolean;
-  dir?: string;
-  recreateOctomindDir?: boolean;
 }) => {
   try {
     console.log("🚀 Initializing configuration...\n");
