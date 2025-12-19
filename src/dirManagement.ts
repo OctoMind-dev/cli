@@ -13,7 +13,8 @@ export const getPathToOctomindDir = async ({
   startDir?: string;
 } = {}): Promise<string | null> => {
   let currentDir = startDir;
-  while (currentDir !== "/") {
+  // Make loop stop when reaching the root directory, in an OS-independent way
+  while (currentDir !== path.dirname(currentDir)) {
     if (checkForOctomindDir(currentDir)) {
       return path.resolve(path.join(currentDir, OCTOMIND_DIR));
     }
@@ -82,7 +83,7 @@ export const showOctomindDir = async (): Promise<void> => {
   const octomindDir = await getPathToOctomindDir({ allowCreation: false });
   if (!octomindDir) {
     console.log(
-      "You are not in an octomind directory or one of its children. Please run `octomind init` to create one.",
+      "You are not in an octomind directory or one of its children. Please run `octomind pull` to create one.",
     );
     return;
   }
