@@ -21,7 +21,7 @@ describe("init", () => {
   const loadConfigMock = loadConfig as jest.Mock;
   loadConfigMock.mockResolvedValue({ apiKey: "apiKey" });
   const promptUserMock = promptUser as jest.Mock;
-  promptUserMock.mockResolvedValueOnce("1");
+  promptUserMock.mockResolvedValue("1");
   const getTestTargetsMock = getTestTargets as jest.Mock;
   getTestTargetsMock.mockResolvedValue([{ id: "testTargetId", app: "testTargetApp" }]);
 
