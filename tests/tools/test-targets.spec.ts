@@ -3,10 +3,12 @@ import {pushTestTarget} from "../../src/tools";
 import {readTestCasesFromDir} from "../../src/tools/sync/yml";
 import {client} from "../../src/tools/client";
 import {mock} from "jest-mock-extended";
+import { getPathToOctomindDirWithActiveTestTarget } from "../../src/dirManagement";
 
 jest.mock("../../src/tools/sync/git");
 jest.mock("../../src/tools/sync/yml");
 jest.mock("../../src/tools/client");
+jest.mock("../../src/dirManagement");
 
 describe("push", () => {
 
@@ -22,6 +24,7 @@ describe("push", () => {
         jest.mocked(readTestCasesFromDir).mockReturnValue([])
         jest.mocked(client).POST.mockResolvedValue({ data: undefined, error: undefined, response: mock() })
         console.log = jest.fn();
+        jest.mocked(getPathToOctomindDirWithActiveTestTarget).mockResolvedValue("test-data/.octomind/test-target-id");
     })
 
     it("pushes to main if on default branch", async () => {

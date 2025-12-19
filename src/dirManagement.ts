@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readdirSync, rmdirSync } from "node:fs";
 import path from "node:path";
 
 import { promptUser, resolveTestTargetId } from "./helpers";
-import { getTestTargets,} from "./tools";
+import { getTestTargets } from "./tools";
 import { toFileSystemCompatibleCamelCase } from "./tools/sync/yml";
 
 export const OCTOMIND_DIR = ".octomind";
@@ -109,7 +109,9 @@ export const createOctomindDirInteractive = async (
 };
 
 export const showOctomindDir = async (): Promise<void> => {
-  const octomindDir = await getPathToOctomindDirWithActiveTestTarget({ allowCreation: false });
+  const octomindDir = await getPathToOctomindDirWithActiveTestTarget({
+    allowCreation: false,
+  });
   if (!octomindDir) {
     console.log(
       "You are not in an octomind directory or one of its children. Please run `octomind init` to create one.",
