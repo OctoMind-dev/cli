@@ -13,14 +13,14 @@ export const update = async (): Promise<void> => {
 
   if (!fs.existsSync(pathToPackageJson)) {
     console.error(
-      "\x1b[31mcannot find package.json, cannot update, please update manually",
+      "cannot find package.json, cannot update, please update manually",
     );
     process.exit(1);
   }
 
   if (!(await which("npm"))) {
     console.error(
-      `\x1b[31mcannot determine location of npm, cannot update, please update manually, package location: ${pathToPackageJson}`,
+      `cannot determine location of npm, cannot update, please update manually, package location: ${pathToPackageJson}`,
     );
     process.exit(1);
   }
@@ -35,5 +35,5 @@ export const update = async (): Promise<void> => {
   );
 
   console.log(`${result}`);
-  console.log("\x1b[32m\n✔ update complete");
+  console.log("\n✔ update complete");
 };
