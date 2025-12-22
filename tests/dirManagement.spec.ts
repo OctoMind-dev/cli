@@ -1,9 +1,11 @@
 import path from "node:path";
 import fs from "fs";
 import os from "os";
-import { promptUser } from "../src/helpers";
-import { createOctomindDirInteractive, getPathToOctomindDir, OCTOMIND_DIR } from "../src/dirManagement";
+import { promptUser, resolveTestTargetId } from "../src/helpers";
+import { createOctomindDirInteractive, getPathToOctomindDir, getPathToOctomindDirWithActiveTestTarget, OCTOMIND_DIR } from "../src/dirManagement";
+import { getTestTargets } from "../src/tools";
 jest.mock("../src/helpers");
+jest.mock("../src/tools");
 
 describe("dirManagement", () => {
     const originalConsoleLog = console.log;
@@ -26,6 +28,19 @@ describe("dirManagement", () => {
         } catch {
         }
     });
+
+    describe("getPathToOctomindDirWithActiveTestTarget", () => {
+
+        it("should return the path to the octomind directory with the active test target", async () => {
+            jest.mocked(getTestTargets).mockResolvedValue([{ id: "test-target-id", app: "cool test target" }]);
+            jest.mocked(resolveTestTargetId).mockResolvedValue("test-target-id");
+            fs.mkdirSync(path.join(tmpDir, OCTOMIND_DIR), { recursive: true });
+            const octomindDir = await getPathToOctomindDirWithActiveTestTarget({ startDir: tmpDir, providedTestTargetId: "test-target-id"});
+            expect(octomindDir).toBe(path.join(tmpDir, OCTOMIND_DIR, "coolTestTarget"));
+            expect(fs.existsSync(path.join(tmpDir, OCTOMIND_DIR, "coolTestTarget"))).toBe(true);
+            expect(resolveTestTargetId).toHaveBeenCalledWith("test-target-id");
+        })
+    })
 
     describe("getPathToOctomindDir", () => {
 

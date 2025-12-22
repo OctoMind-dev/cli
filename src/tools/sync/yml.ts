@@ -17,7 +17,9 @@ const removeInvalidCharacters = (str: string): string => {
   return removeDiacritics(str).replace(/[\\/:*?"'<>|.]/g, "");
 };
 
-const toFileSystemCompatibleCamelCase = (description: string): string => {
+export const toFileSystemCompatibleCamelCase = (
+  description: string,
+): string => {
   const tokens = removeInvalidCharacters(description)
     .split(/\s/)
     .filter(Boolean);

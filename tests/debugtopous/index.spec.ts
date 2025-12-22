@@ -13,7 +13,7 @@ import { ensureChromiumIsInstalled } from "../../src/debugtopus/installation";
 import path from "node:path";
 import os from "node:os";
 import * as fsSync from "node:fs";
-import { getPathToOctomindDir, OCTOMIND_DIR } from "../../src/dirManagement";
+import { getPathToOctomindDir, getPathToOctomindDirWithActiveTestTarget, OCTOMIND_DIR } from "../../src/dirManagement";
 
 jest.mock("fs/promises");
 jest.mock("fs");
@@ -40,12 +40,12 @@ const mockedEnsureChromiumIsInstalled = ensureChromiumIsInstalled as jest.Mocked
 
 describe("debugtopus", () => {
 
-    let octomindDir: string = `test-data/${OCTOMIND_DIR}`;
+    let octomindDir: string = `test-data/${OCTOMIND_DIR}/test-target-id`;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        jest.mocked(getPathToOctomindDir).mockResolvedValue(octomindDir);
+        jest.mocked(getPathToOctomindDirWithActiveTestTarget).mockResolvedValue(octomindDir);
     });
 
     describe("readZipFromResponseBody", () => {

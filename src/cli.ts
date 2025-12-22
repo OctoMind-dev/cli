@@ -182,10 +182,7 @@ export const buildCmd = (): CompletableCommand => {
       "-e, --environment-id [uuid]",
       "id of the environment you want to run against, if not provided will run all test cases against the default environment",
     )
-    .option(
-      "-t, --test-target-id [uuid]",
-      "id of the test target of the test case, if not provided will use the test target id from the config",
-    )
+    .addOption(testTargetIdOption)
     .option(
       "--headless",
       "if we should run headless without the UI of playwright and the browser",
@@ -402,7 +399,6 @@ export const buildCmd = (): CompletableCommand => {
     .action(addTestTargetWrapper(pushTestTarget));
 
   createCommandWithCommonOptions(program, "show-octomind-dir")
-    .completableCommand("show-octomind-dir")
     .description(
       "Show where the octomind directory containing your local test cases is located.",
     )

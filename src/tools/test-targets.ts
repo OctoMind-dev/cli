@@ -1,6 +1,9 @@
 import path from "path";
 
-import { getPathToOctomindDir } from "../dirManagement";
+import {
+  getPathToOctomindDir,
+  getPathToOctomindDirWithActiveTestTarget,
+} from "../dirManagement";
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { push } from "./sync/push";
@@ -69,7 +72,10 @@ export const pullTestTarget = async (
     return;
   }
 
-  const destination = await getPathToOctomindDir({ allowCreation: true });
+  const destination = await getPathToOctomindDirWithActiveTestTarget({
+    allowCreation: true,
+    providedTestTargetId: options.testTargetId,
+  });
   if (!destination) {
     throw new Error("No octomind directory found");
   }
@@ -81,7 +87,10 @@ export const pullTestTarget = async (
 export const pushTestTarget = async (
   options: { testTargetId: string } & ListOptions,
 ): Promise<void> => {
-  const source = await getPathToOctomindDir({ allowCreation: false });
+  const source = await getPathToOctomindDirWithActiveTestTarget({
+    allowCreation: false,
+    providedTestTargetId: options.testTargetId,
+  });
   if (!source) {
     throw new Error("No octomind directory found");
   }

@@ -1,9 +1,39 @@
 import { existsSync, mkdirSync, readdirSync, rmdirSync } from "node:fs";
 import path from "node:path";
 
-import { promptUser } from "./helpers";
+import { promptUser, resolveTestTargetId } from "./helpers";
+import { getTestTargets } from "./tools";
+import { toFileSystemCompatibleCamelCase } from "./tools/sync/yml";
 
 export const OCTOMIND_DIR = ".octomind";
+
+export const getPathToOctomindDirWithActiveTestTarget = async (options: {
+  startDir?: string;
+  providedTestTargetId?: string;
+  allowCreation?: boolean;
+}): Promise<string | null> => {
+  const testTargetId = await resolveTestTargetId(options.providedTestTargetId);
+  const octomindDir = await getPathToOctomindDir({
+    allowCreation: options.allowCreation,
+    startDir: options.startDir,
+  });
+  if (!octomindDir) {
+    return null;
+  }
+  const testTargets = await getTestTargets();
+  const testTarget = testTargets.find((tt) => tt.id === testTargetId);
+  if (!testTarget) {
+    throw new Error(`Configured test target with id ${testTargetId} not found`);
+  }
+  const testTargetDirName = toFileSystemCompatibleCamelCase(testTarget.app);
+  const testTargetFolderPath = path.resolve(
+    path.join(octomindDir, testTargetDirName),
+  );
+  if (!existsSync(testTargetFolderPath)) {
+    mkdirSync(testTargetFolderPath, { recursive: true });
+  }
+  return testTargetFolderPath;
+};
 
 export const getPathToOctomindDir = async ({
   allowCreation,
@@ -80,7 +110,9 @@ export const createOctomindDirInteractive = async (
 };
 
 export const showOctomindDir = async (): Promise<void> => {
-  const octomindDir = await getPathToOctomindDir({ allowCreation: false });
+  const octomindDir = await getPathToOctomindDirWithActiveTestTarget({
+    allowCreation: false,
+  });
   if (!octomindDir) {
     console.log(
       "You are not in an octomind directory or one of its children. Please run `octomind pull` to create one.",
