@@ -220,8 +220,7 @@ export const cleanupFilesystem = ({
       const oldFilePath = path.join(rootFolderPath, existingTestCasePath);
 
       if (
-        existingTestCase.description !== testCase.description ||
-        existingTestCase.dependencyId !== testCase.dependencyId
+        existingTestCase.description !== testCase.description
       ) {
         if (fs.existsSync(oldFilePath)) {
           fs.unlinkSync(oldFilePath);
