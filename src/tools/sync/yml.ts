@@ -192,7 +192,7 @@ export const cleanupFilesystem = ({
   newTestCases: SyncTestCase[];
   destination: string | undefined;
 }) => {
-  const rootFolderPath = destination ?? "./";
+  const rootFolderPath = destination ?? process.cwd();
 
   const existingtestCases = readTestCasesFromDir(rootFolderPath);
 
@@ -203,6 +203,7 @@ export const cleanupFilesystem = ({
   for (const testCase of newTestCases) {
     const existingTestCase = existingTestCasesById.get(testCase.id);
     if (existingTestCase) {
+      // This does not hold if the test was moved to a different dependency
       const existingTestCasePath = buildFilename(
         existingTestCase,
         rootFolderPath,
@@ -211,9 +212,19 @@ export const cleanupFilesystem = ({
         rootFolderPath,
         existingTestCasePath.replace(/\.yaml$/, ""),
       );
+      const oldFilePath = path.join(rootFolderPath, existingTestCasePath);
 
-      if (existingTestCase.description !== testCase.description) {
-        fs.unlinkSync(path.join(rootFolderPath, existingTestCasePath));
+      if (
+        existingTestCase.description !== testCase.description ||
+        existingTestCase.dependencyId !== testCase.dependencyId
+      ) {
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        } else {
+          console.log(
+            `Looking for old file ${oldFilePath} but it does not exist`,
+          );
+        }
 
         if (fs.existsSync(oldFolderPath)) {
           fs.rmSync(oldFolderPath, { recursive: true, force: true });
