@@ -200,10 +200,15 @@ export const cleanupFilesystem = ({
     existingtestCases.map((tc) => [tc.id, tc]),
   );
 
+  // There is generally a bigger issue here:
+  // We need a better check what changed locally.
+  // Imagine you rename a test case remotely, and then you locally change steps in child test case.
+  // Then you pull, and you local changes will just be deleted.
+  // Same applies for changing the dependency, as it will be in a different folder. We also don't clean up these folders properly.
+
   for (const testCase of newTestCases) {
     const existingTestCase = existingTestCasesById.get(testCase.id);
     if (existingTestCase) {
-      // This does not hold if the test was moved to a different dependency
       const existingTestCasePath = buildFilename(
         existingTestCase,
         rootFolderPath,
@@ -220,10 +225,6 @@ export const cleanupFilesystem = ({
       ) {
         if (fs.existsSync(oldFilePath)) {
           fs.unlinkSync(oldFilePath);
-        } else {
-          console.log(
-            `Looking for old file ${oldFilePath} but it does not exist`,
-          );
         }
 
         if (fs.existsSync(oldFolderPath)) {
