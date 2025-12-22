@@ -8,7 +8,7 @@
   "files": {
     "includes": [
       "src/**",
-      "test/**",
+      "tests/**",
       "*.json",
       "jest.config.ts",
       "!src/api.ts",
@@ -128,7 +128,17 @@
       "attributePosition": "auto",
       "bracketSpacing": true
     },
-    "globals": []
+    "globals": [
+      "afterEach",
+      "afterAll",
+      "beforeEach",
+      "beforeAll",
+      "describe",
+      "expect",
+      "it",
+      "test",
+      "jest"
+    ]
   },
   "assist": {
     "enabled": true,

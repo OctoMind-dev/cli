@@ -1,5 +1,5 @@
+import { client, handleError } from "../../src/tools/client";
 import { deleteTestCase } from "../../src/tools/test-cases";
-import { handleError, client } from "../../src/tools/client";
 
 jest.mock("../../src/tools/client");
 

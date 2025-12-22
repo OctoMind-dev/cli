@@ -1,8 +1,9 @@
 import { Command } from "commander";
+
 import { buildCmd } from "../src/cli";
-import { executeTests } from "../src/tools";
-import { runDebugtopus } from "../src/debugtopus";
 import { loadConfig } from "../src/config";
+import { runDebugtopus } from "../src/debugtopus";
+import { executeTests } from "../src/tools";
 
 jest.mock("../src/tools");
 jest.mock("../src/debugtopus");
@@ -173,5 +174,4 @@ describe("config overwrite behaviour", () => {
       }),
     );
   });
-
 });
