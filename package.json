@@ -37,7 +37,7 @@
   "author": "octomind",
   "license": "MIT",
   "dependencies": {
-    "@playwright/test": "1.56.1",
+    "@playwright/test": "1.57.0",
     "@types/shell-quote": "1.7.5",
     "commander": "14.0.2",
     "openapi-fetch": "0.15.0",
