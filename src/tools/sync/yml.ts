@@ -192,13 +192,19 @@ export const cleanupFilesystem = ({
   newTestCases: SyncTestCase[];
   destination: string | undefined;
 }) => {
-  const rootFolderPath = destination ?? "./";
+  const rootFolderPath = destination ?? process.cwd();
 
   const existingtestCases = readTestCasesFromDir(rootFolderPath);
 
   const existingTestCasesById = new Map(
     existingtestCases.map((tc) => [tc.id, tc]),
   );
+
+  // There is generally a bigger issue here:
+  // We need a better check what changed locally.
+  // Imagine you rename a test case remotely, and then you locally change steps in child test case.
+  // Then you pull, and you local changes will just be deleted.
+  // Same applies for changing the dependency, as it will be in a different folder. We also don't clean up these folders properly.
 
   for (const testCase of newTestCases) {
     const existingTestCase = existingTestCasesById.get(testCase.id);
@@ -211,9 +217,12 @@ export const cleanupFilesystem = ({
         rootFolderPath,
         existingTestCasePath.replace(/\.yaml$/, ""),
       );
+      const oldFilePath = path.join(rootFolderPath, existingTestCasePath);
 
       if (existingTestCase.description !== testCase.description) {
-        fs.unlinkSync(path.join(rootFolderPath, existingTestCasePath));
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
 
         if (fs.existsSync(oldFolderPath)) {
           fs.rmSync(oldFolderPath, { recursive: true, force: true });
