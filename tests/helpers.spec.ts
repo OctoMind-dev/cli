@@ -2,11 +2,11 @@ import fsPromises from "fs/promises";
 import os from "os";
 import path from "path";
 
+import { OCTOMIND_FOLDER_NAME } from "../src/constants";
 import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
 } from "../src/helpers";
-import { OCTOMIND_FOLDER_NAME } from "../src/constants";
 
 describe("helpers", () => {
   describe("findOctomindFolder", () => {
@@ -14,7 +14,9 @@ describe("helpers", () => {
     const originalCwd = process.cwd;
 
     beforeEach(async () => {
-      tmpDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "octomind-test-"));
+      tmpDir = await fsPromises.mkdtemp(
+        path.join(os.tmpdir(), "octomind-test-"),
+      );
     });
 
     afterEach(async () => {
@@ -91,7 +93,9 @@ describe("helpers", () => {
     let octomindRoot: string;
 
     beforeEach(async () => {
-      tmpDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), "octomind-test-"));
+      tmpDir = await fsPromises.mkdtemp(
+        path.join(os.tmpdir(), "octomind-test-"),
+      );
       octomindRoot = path.join(tmpDir, OCTOMIND_FOLDER_NAME);
       await fsPromises.mkdir(octomindRoot);
     });
@@ -173,7 +177,12 @@ describe("helpers", () => {
 
     it("should return null for malformed path with nested octomind structure", async () => {
       // e.g. /some/folder/.octomind/some/folder/.octomind/a.yaml
-      const malformedPath = path.join(octomindRoot, tmpDir, OCTOMIND_FOLDER_NAME, "a.yaml");
+      const malformedPath = path.join(
+        octomindRoot,
+        tmpDir,
+        OCTOMIND_FOLDER_NAME,
+        "a.yaml",
+      );
 
       const result = await getAbsoluteFilePathInOctomindRoot({
         filePath: malformedPath,

@@ -38,9 +38,9 @@ import {
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
 import { update } from "./tools/update";
+import { create } from "./tools/yamlMutations/create";
 import { edit } from "./tools/yamlMutations/edit";
 import { version } from "./version";
-import { create } from "./tools/yamlMutations/create";
 
 export const BINARY_NAME = "octomind";
 
@@ -51,17 +51,17 @@ type WithTestTargetId = { testTargetId: string };
 
 const addTestTargetWrapper =
   <T extends WithTestTargetId>(fn: (options: T) => Promise<void>) =>
-    async (
-      options: Omit<T, "testTargetId"> & Partial<Pick<T, "testTargetId">>,
-    ): Promise<void> => {
-      const resolvedTestTargetId = await resolveTestTargetId(
-        options.testTargetId,
-      );
-      await fn({
-        ...options,
-        testTargetId: resolvedTestTargetId,
-      } as T);
-    };
+  async (
+    options: Omit<T, "testTargetId"> & Partial<Pick<T, "testTargetId">>,
+  ): Promise<void> => {
+    const resolvedTestTargetId = await resolveTestTargetId(
+      options.testTargetId,
+    );
+    await fn({
+      ...options,
+      testTargetId: resolvedTestTargetId,
+    } as T);
+  };
 
 const testTargetIdOption = new Option(
   "-t, --test-target-id [id]",
