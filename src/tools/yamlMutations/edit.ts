@@ -1,5 +1,4 @@
 import fs from "fs";
-import fsPromises from "fs/promises";
 import path from "path";
 
 import yaml from "yaml";
@@ -9,40 +8,13 @@ import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
 import { SyncTestCase } from "../sync/types";
 import { readTestCasesFromDir } from "../sync/yml";
-import { OCTOMIND_FOLDER_NAME } from "../../constants";
+import { findOctomindFolder, getAbsoluteFilePathInOctomindRoot } from "../../helpers";
 
 type EditOptions = {
   testTargetId: string;
   filePath: string;
-  sourceDir: string
 };
 
-const findOctomindFolder = async (
-  startPath: string,
-): Promise<string | null> => {
-  let currentDir = path.dirname(startPath);
-
-  while (currentDir !== path.parse(currentDir).root) {
-    const octomindPath = path.join(currentDir, OCTOMIND_FOLDER_NAME);
-    if (
-      fs.existsSync(octomindPath) &&
-      (await fsPromises.stat(octomindPath)).isDirectory()
-    ) {
-      return octomindPath;
-    }
-    currentDir = path.dirname(currentDir);
-  }
-
-  const rootOctomind = path.join(currentDir, OCTOMIND_FOLDER_NAME);
-  if (
-    fs.existsSync(rootOctomind) &&
-    (await fsPromises.stat(rootOctomind)).isDirectory()
-  ) {
-    return rootOctomind;
-  }
-
-  return null;
-};
 
 const getRelevantTestCases = (
   testCasesById: Record<string, SyncTestCase>,
@@ -77,17 +49,18 @@ const loadTestCase = (testCasePath: string): SyncTestCase => {
 };
 
 export const edit = async (options: EditOptions): Promise<void> => {
-  const resolvedPath = path.resolve(options.filePath);
-
-  const testCaseToEdit = loadTestCase(resolvedPath);
-
-  const octomindRoot = await findOctomindFolder(options.filePath);
-
+  const octomindRoot = await findOctomindFolder();
   if (!octomindRoot) {
     throw new Error(
       "Could not find .octomind folder, make sure to pull before trying to edit",
     );
   }
+  const testCaseFilePath = getAbsoluteFilePathInOctomindRoot({ octomindRoot, filePath: options.filePath })
+  if (!testCaseFilePath) {
+    throw new Error(`Could not find ${options.filePath} in folder ${octomindRoot}`)
+  }
+
+  const testCaseToEdit = loadTestCase(testCaseFilePath);
 
   const testCases = readTestCasesFromDir(octomindRoot);
   const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));

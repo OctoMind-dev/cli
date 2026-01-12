@@ -2,6 +2,10 @@ import { stdin as input, stdout as output } from "node:process";
 import { createInterface } from "node:readline";
 
 import { loadConfig } from "./config";
+import path from "node:path";
+import fsPromises from "fs/promises";
+import { OCTOMIND_FOLDER_NAME } from "./constants";
+
 
 export function promptUser(question: string): Promise<string> {
   const rl = createInterface({ input, output });
@@ -29,3 +33,42 @@ export const resolveTestTargetId = async (
   }
   return config.testTargetId;
 };
+
+
+const isDirectory = async (dirPath: string): Promise<boolean> => {
+  try {
+    const stat = await fsPromises.stat(dirPath);
+    return stat.isDirectory();
+  } catch {
+    return false;
+  }
+};
+
+export const findOctomindFolder = async (): Promise<string | null> => {
+  let currentDir = process.cwd();
+
+  while (currentDir !== path.parse(currentDir).root) {
+    const octomindPath = path.join(currentDir, OCTOMIND_FOLDER_NAME);
+    if (await isDirectory(octomindPath)) {
+      return octomindPath;
+    }
+    currentDir = path.dirname(currentDir);
+  }
+
+  const rootOctomind = path.join(currentDir, OCTOMIND_FOLDER_NAME);
+  if (await isDirectory(rootOctomind)) {
+    return rootOctomind;
+  }
+
+  return null
+};
+
+export const getAbsoluteFilePathInOctomindRoot = ({ filePath, octomindRoot }: { filePath: string, octomindRoot: string }): string | null => {
+  let resolvedPath: string
+  if (path.isAbsolute(filePath)) {
+    resolvedPath = filePath
+  }
+  resolvedPath = path.resolve(filePath, path.join(octomindRoot, filePath));
+
+  return resolvedPath.startsWith(octomindRoot) ? resolvedPath : null
+}
