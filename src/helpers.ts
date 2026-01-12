@@ -63,12 +63,13 @@ export const findOctomindFolder = async (): Promise<string | null> => {
   return null
 };
 
-export const getAbsoluteFilePathInOctomindRoot = ({ filePath, octomindRoot }: { filePath: string, octomindRoot: string }): string | null => {
-  let resolvedPath: string
-  if (path.isAbsolute(filePath)) {
-    resolvedPath = filePath
+export const getAbsoluteFilePathInOctomindRoot = async ({ filePath, octomindRoot }: { filePath: string, octomindRoot: string }): Promise<string | null> => {
+  try {
+    const resolvedPath = await fsPromises.realpath(
+      path.isAbsolute(filePath) ? filePath : path.join(octomindRoot, filePath)
+    );
+    return resolvedPath.startsWith(octomindRoot) ? resolvedPath : null;
+  } catch {
+    return null;
   }
-  resolvedPath = path.resolve(filePath, path.join(octomindRoot, filePath));
-
-  return resolvedPath.startsWith(octomindRoot) ? resolvedPath : null
 }

@@ -5,7 +5,7 @@ import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { getEnvironments } from "./environments";
 import { buildFilename, readTestCasesFromDir } from "./sync/yml";
-import { unlink } from "fs/promises";
+import fsPromises from "fs/promises";
 
 export type TestCaseResponse = components["schemas"]["TestCaseResponse"];
 export type TestCasesResponse = components["schemas"]["TestCasesResponse"];
@@ -37,24 +37,24 @@ export const deleteTestCase = async (
       logJson(data);
     }
     console.log("Test Case deleted successfully");
-  } else {
-    const testCases = readTestCasesFromDir(octomindRoot);
-    const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));
-    const existingTestCase = testCasesById[options.testCaseId]
-
-    if (existingTestCase) {
-      const existingTestCasePath = buildFilename(
-        existingTestCase,
-        octomindRoot,
-      );
-      await unlink(path.join(octomindRoot, existingTestCasePath))
-      console.log("Test Case deleted successfully");
-    }
-    else {
-      console.log(`No test case with id ${options.testCaseId} found in folder ${octomindRoot}`)
-    }
+    return
   }
 
+  const testCases = readTestCasesFromDir(octomindRoot);
+  const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));
+  const existingTestCase = testCasesById[options.testCaseId]
+
+  if (!existingTestCase) {
+    console.log(`No test case with id ${options.testCaseId} found in folder ${octomindRoot}`)
+    return
+  }
+
+  const existingTestCasePath = buildFilename(
+    existingTestCase,
+    octomindRoot,
+  );
+  await fsPromises.unlink(path.join(octomindRoot, existingTestCasePath))
+  console.log("Test Case deleted successfully");
 };
 
 export const listTestCase = async (

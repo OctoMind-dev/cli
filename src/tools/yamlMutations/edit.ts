@@ -56,7 +56,7 @@ export const edit = async (options: EditOptions): Promise<void> => {
       `Could not find ${OCTOMIND_FOLDER_NAME} folder, make sure to pull before trying to edit`,
     );
   }
-  const testCaseFilePath = getAbsoluteFilePathInOctomindRoot({ octomindRoot, filePath: options.filePath })
+  const testCaseFilePath = await getAbsoluteFilePathInOctomindRoot({ octomindRoot, filePath: options.filePath })
   if (!testCaseFilePath) {
     throw new Error(`Could not find ${options.filePath} in folder ${octomindRoot}`)
   }
