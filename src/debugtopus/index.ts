@@ -19,6 +19,8 @@ import {
 import { client, handleError } from "../tools/client";
 import { readTestCasesFromDir } from "../tools/sync/yml";
 import { ensureChromiumIsInstalled } from "./installation";
+import { findOctomindFolder } from "../helpers";
+import { OCTOMIND_FOLDER_NAME } from "../constants";
 
 export type DebugtopusOptions = {
   testCaseId?: string;
@@ -207,8 +209,8 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
         .filter((testCase) =>
           options.grep
             ? testCase.description
-                ?.toLowerCase()
-                .includes(options.grep.toLowerCase())
+              ?.toLowerCase()
+              .includes(options.grep.toLowerCase())
             : true,
         )
         .map(async (testCase) => ({
@@ -262,9 +264,16 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
 };
 
 export const executeLocalTestCases = async (
-  options: DebugtopusOptions & { source: string },
+  options: DebugtopusOptions,
 ): Promise<void> => {
-  const testCases = readTestCasesFromDir(options.source);
+  const octomindRoot = await findOctomindFolder()
+  if (!octomindRoot) {
+    throw new Error(
+      `Could not find ${OCTOMIND_FOLDER_NAME} folder, make sure to pull before trying to execute locally`,
+    );
+  }
+
+  const testCases = readTestCasesFromDir(octomindRoot);
   const body = {
     testCases,
     testTargetId: options.testTargetId,

@@ -40,7 +40,6 @@ import { init, switchTestTarget } from "./tools/init";
 import { update } from "./tools/update";
 import { edit } from "./tools/yamlMutations/edit";
 import { version } from "./version";
-import { OCTOMIND_FOLDER_NAME } from "./constants";
 
 export const BINARY_NAME = "octomind";
 
@@ -195,11 +194,6 @@ export const buildCmd = (): CompletableCommand => {
     .option("--bypass-proxy", "bypass proxy when accessing the test target")
     .option("--browser [CHROMIUM, FIREFOX, SAFARI]", "Browser type", "CHROMIUM")
     .option("--breakpoint [DESKTOP, MOBILE, TABLET]", "Breakpoint", "DESKTOP")
-    .option(
-      "-s, --source <path>",
-      "Source directory (defaults to current directory)",
-      OCTOMIND_FOLDER_NAME,
-    )
     .action(addTestTargetWrapper(executeLocalTestCases));
 
   createCommandWithCommonOptions(program, "test-report")
@@ -398,7 +392,6 @@ export const buildCmd = (): CompletableCommand => {
     .description("Pull test cases from the test target")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
-    .option("-d, --destination <path>", "Destination folder", OCTOMIND_FOLDER_NAME)
     .action(addTestTargetWrapper(pullTestTarget));
 
   // noinspection RequiredAttributes
@@ -407,11 +400,6 @@ export const buildCmd = (): CompletableCommand => {
     .description("Push local YAML test cases to the test target")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
-    .option(
-      "-s, --source <path>",
-      "Source directory (defaults to current directory)",
-      OCTOMIND_FOLDER_NAME,
-    )
     .action(addTestTargetWrapper(pushTestTarget));
 
   // noinspection RequiredAttributes

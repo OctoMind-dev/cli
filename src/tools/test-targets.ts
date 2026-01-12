@@ -4,6 +4,8 @@ import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { push } from "./sync/push";
 import { writeYaml } from "./sync/yml";
+import { findOctomindFolder } from "../helpers";
+import { OCTOMIND_FOLDER_NAME } from "../constants";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");
@@ -44,7 +46,7 @@ export const listTestTargets = async (options: ListOptions): Promise<void> => {
 };
 
 export const pullTestTarget = async (
-  options: { testTargetId: string; destination?: string } & ListOptions,
+  options: { testTargetId: string } & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/beta/test-targets/{testTargetId}/pull",
@@ -68,17 +70,19 @@ export const pullTestTarget = async (
     return;
   }
 
-  writeYaml(data, options.destination);
+  const destination = await findOctomindFolder() ?? path.join(process.cwd(), OCTOMIND_FOLDER_NAME)
+  writeYaml(data, destination);
 
   console.log("Test Target pulled successfully");
 };
 
 export const pushTestTarget = async (
-  options: { testTargetId: string; source?: string } & ListOptions,
+  options: { testTargetId: string } & ListOptions,
 ): Promise<void> => {
-  const sourceDir = options.source
-    ? path.resolve(options.source)
-    : process.cwd();
+  const sourceDir = await findOctomindFolder()
+  if (!sourceDir) {
+    throw new Error(`No ${OCTOMIND_FOLDER_NAME} folder found, please pull first.`)
+  }
 
   const data = await push({
     ...options,
