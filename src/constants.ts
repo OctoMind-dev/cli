@@ -1,1 +1,1 @@
-export const OCTOMIND_FOLDER_NAME = ".octomind"
+export const OCTOMIND_FOLDER_NAME = ".octomind";
