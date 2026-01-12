@@ -11,6 +11,7 @@ import {
   readZipFromResponseBody,
 } from "../../src/debugtopus/index";
 import { ensureChromiumIsInstalled } from "../../src/debugtopus/installation";
+import { findOctomindFolder } from "../../src/helpers";
 import { client, handleError } from "../../src/tools/client";
 import { getPlaywrightConfig } from "../../src/tools/playwright";
 import { readTestCasesFromDir } from "../../src/tools/sync/yml";
@@ -23,6 +24,7 @@ jest.mock("../../src/tools/client");
 jest.mock("../../src/tools/sync/yml");
 jest.mock("../../src/tools/playwright");
 jest.mock("../../src/debugtopus/installation");
+jest.mock("../../src/helpers");
 jest.mock("child_process");
 jest.mock("node:stream/promises");
 
@@ -198,6 +200,8 @@ describe("debugtopus", () => {
   });
 
   describe("executeLocalTestCases", () => {
+    const OCTOMIND_ROOT = "/project/.octomind";
+
     it("should execute local test cases from zip response body", async () => {
       const mockTestCases = [createMockSyncTestCase()];
       const mockZipBuffer = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
@@ -216,6 +220,7 @@ describe("debugtopus", () => {
       });
       const mockDirectory = { extract: jest.fn().mockResolvedValue(undefined) };
 
+      jest.mocked(findOctomindFolder).mockResolvedValue(OCTOMIND_ROOT);
       mockedReadTestCasesFromDir.mockReturnValue(mockTestCases);
       mockedClient.POST.mockResolvedValue({
         error: undefined,
@@ -257,11 +262,10 @@ describe("debugtopus", () => {
       await executeLocalTestCases({
         testTargetId: "test-target-id",
         url: "https://example.com",
-        source: "/test/source",
         headless: true,
       });
 
-      expect(mockedReadTestCasesFromDir).toHaveBeenCalledWith("/test/source");
+      expect(mockedReadTestCasesFromDir).toHaveBeenCalledWith(OCTOMIND_ROOT);
       expect(mockedClient.POST).toHaveBeenCalledWith(
         "/apiKey/beta/test-targets/{testTargetId}/code",
         expect.objectContaining({
