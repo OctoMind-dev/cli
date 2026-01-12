@@ -2,20 +2,19 @@ import fs from "fs";
 import fsPromises from "fs/promises";
 import path from "path";
 
-import { Client } from "openapi-fetch";
-import { ErrorResponse } from "openapi-typescript-helpers";
 import yaml from "yaml";
 
-import { paths } from "../../api";
 import { client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
 import { SyncTestCase } from "../sync/types";
 import { readTestCasesFromDir } from "../sync/yml";
+import { OCTOMIND_FOLDER_NAME } from "../../constants";
 
 type EditOptions = {
   testTargetId: string;
   filePath: string;
+  sourceDir: string
 };
 
 const findOctomindFolder = async (
@@ -24,7 +23,7 @@ const findOctomindFolder = async (
   let currentDir = path.dirname(startPath);
 
   while (currentDir !== path.parse(currentDir).root) {
-    const octomindPath = path.join(currentDir, ".octomind");
+    const octomindPath = path.join(currentDir, OCTOMIND_FOLDER_NAME);
     if (
       fs.existsSync(octomindPath) &&
       (await fsPromises.stat(octomindPath)).isDirectory()
@@ -34,7 +33,7 @@ const findOctomindFolder = async (
     currentDir = path.dirname(currentDir);
   }
 
-  const rootOctomind = path.join(currentDir, ".octomind");
+  const rootOctomind = path.join(currentDir, OCTOMIND_FOLDER_NAME);
   if (
     fs.existsSync(rootOctomind) &&
     (await fsPromises.stat(rootOctomind)).isDirectory()
@@ -78,7 +77,6 @@ const loadTestCase = (path: string): SyncTestCase => {
 };
 
 export const edit = async (options: EditOptions): Promise<void> => {
-  console.log(options)
   const resolvedPath = path.resolve(options.filePath);
 
   const testCaseToEdit = loadTestCase(resolvedPath);

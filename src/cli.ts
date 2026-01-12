@@ -40,6 +40,7 @@ import { init, switchTestTarget } from "./tools/init";
 import { update } from "./tools/update";
 import { edit } from "./tools/yamlMutations/edit";
 import { version } from "./version";
+import { OCTOMIND_FOLDER_NAME } from "./constants";
 
 export const BINARY_NAME = "octomind";
 
@@ -197,7 +198,7 @@ export const buildCmd = (): CompletableCommand => {
     .option(
       "-s, --source <path>",
       "Source directory (defaults to current directory)",
-      "./.octomind",
+      OCTOMIND_FOLDER_NAME,
     )
     .action(addTestTargetWrapper(executeLocalTestCases));
 
@@ -397,7 +398,7 @@ export const buildCmd = (): CompletableCommand => {
     .description("Pull test cases from the test target")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
-    .option("-d, --destination <path>", "Destination folder", "./.octomind")
+    .option("-d, --destination <path>", "Destination folder", OCTOMIND_FOLDER_NAME)
     .action(addTestTargetWrapper(pullTestTarget));
 
   // noinspection RequiredAttributes
@@ -409,7 +410,7 @@ export const buildCmd = (): CompletableCommand => {
     .option(
       "-s, --source <path>",
       "Source directory (defaults to current directory)",
-      ".octomind",
+      OCTOMIND_FOLDER_NAME,
     )
     .action(addTestTargetWrapper(pushTestTarget));
 
