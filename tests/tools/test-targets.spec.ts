@@ -1,16 +1,19 @@
 import { mock } from "jest-mock-extended";
 
+import { findOctomindFolder } from "../../src/helpers";
 import { pushTestTarget } from "../../src/tools";
 import { client } from "../../src/tools/client";
 import { getGitContext } from "../../src/tools/sync/git";
 import { readTestCasesFromDir } from "../../src/tools/sync/yml";
 
+jest.mock("../../src/helpers");
 jest.mock("../../src/tools/sync/git");
 jest.mock("../../src/tools/sync/yml");
 jest.mock("../../src/tools/client");
 
 describe("push", () => {
   beforeEach(() => {
+    jest.mocked(findOctomindFolder).mockResolvedValue("/project/.octomind");
     jest.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/main",
