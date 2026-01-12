@@ -2,11 +2,8 @@ import fs from "fs";
 import fsPromises from "fs/promises";
 import path from "path";
 
-import { Client } from "openapi-fetch";
-import { ErrorResponse } from "openapi-typescript-helpers";
 import yaml from "yaml";
 
-import { paths } from "../../api";
 import { client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
@@ -68,17 +65,16 @@ const getRelevantTestCases = (
   return result;
 };
 
-const loadTestCase = (path: string): SyncTestCase => {
+const loadTestCase = (testCasePath: string): SyncTestCase => {
   try {
-    const content = fs.readFileSync(path, "utf8");
+    const content = fs.readFileSync(testCasePath, "utf8");
     return yaml.parse(content);
   } catch (error) {
-    throw new Error(`Could not parse ${path}: ${error}`);
+    throw new Error(`Could not parse ${testCasePath}: ${error}`);
   }
 };
 
 export const edit = async (options: EditOptions): Promise<void> => {
-  console.log(options)
   const resolvedPath = path.resolve(options.filePath);
 
   const testCaseToEdit = loadTestCase(resolvedPath);
@@ -95,7 +91,6 @@ export const edit = async (options: EditOptions): Promise<void> => {
   const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));
   const relevantTestCases = getRelevantTestCases(testCasesById, testCaseToEdit);
 
-  console.log(relevantTestCases);
   checkForConsistency(relevantTestCases);
 
   const response = await draftPush(
