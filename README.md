@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 3.8.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 3.8.1. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -243,7 +243,6 @@ Execute local YAML test cases
 | `--bypass-proxy` | bypass proxy when accessing the test target | No |  |
 | `--browser [CHROMIUM, FIREFOX, SAFARI]` | Browser type | No | CHROMIUM |
 | `--breakpoint [DESKTOP, MOBILE, TABLET]` | Breakpoint | No | DESKTOP |
-| `-s, --source <path>` | Source directory (defaults to current directory) | Yes | ./.octomind |
 
 ## create-discovery
 
@@ -432,7 +431,6 @@ Pull test cases from the test target
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-| `-d, --destination <path>` | Destination folder | Yes | ./.octomind |
 
 ## push
 
@@ -446,7 +444,6 @@ Push local YAML test cases to the test target
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
-| `-s, --source <path>` | Source directory (defaults to current directory) | Yes | .octomind |
 
 ## Test Reports
 
