@@ -39,6 +39,7 @@ import {
 import { init, switchTestTarget } from "./tools/init";
 import { update } from "./tools/update";
 import { version } from "./version";
+import { edit } from "./tools/yamlMutations/edit";
 
 export const BINARY_NAME = "octomind";
 
@@ -49,17 +50,17 @@ type WithTestTargetId = { testTargetId: string };
 
 const addTestTargetWrapper =
   <T extends WithTestTargetId>(fn: (options: T) => Promise<void>) =>
-  async (
-    options: Omit<T, "testTargetId"> & Partial<Pick<T, "testTargetId">>,
-  ): Promise<void> => {
-    const resolvedTestTargetId = await resolveTestTargetId(
-      options.testTargetId,
-    );
-    await fn({
-      ...options,
-      testTargetId: resolvedTestTargetId,
-    } as T);
-  };
+    async (
+      options: Omit<T, "testTargetId"> & Partial<Pick<T, "testTargetId">>,
+    ): Promise<void> => {
+      const resolvedTestTargetId = await resolveTestTargetId(
+        options.testTargetId,
+      );
+      await fn({
+        ...options,
+        testTargetId: resolvedTestTargetId,
+      } as T);
+    };
 
 const testTargetIdOption = new Option(
   "-t, --test-target-id [id]",
@@ -400,6 +401,18 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(pushTestTarget));
+
+  // noinspection RequiredAttributes
+  createCommandWithCommonOptions(program, "edit-test-case")
+    .completer(testTargetIdCompleter)
+    .description("Edit yaml test case")
+    .helpGroup("test-cases")
+    .addOption(testTargetIdOption)
+    .requiredOption(
+      "-f, --file-path <path>",
+      "The path to the local yaml file you want to edit",
+    )
+    .action(addTestTargetWrapper(edit));
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")
