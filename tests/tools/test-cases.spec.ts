@@ -2,9 +2,9 @@ import fsPromises from "fs/promises";
 import os from "os";
 import path from "path";
 
-import { client, handleError } from "../../src/tools/client";
 import { findOctomindFolder } from "../../src/helpers";
-import { readTestCasesFromDir, buildFilename } from "../../src/tools/sync/yml";
+import { client, handleError } from "../../src/tools/client";
+import { buildFilename, readTestCasesFromDir } from "../../src/tools/sync/yml";
 import { deleteTestCase } from "../../src/tools/test-cases";
 
 jest.mock("../../src/tools/client");
@@ -40,7 +40,9 @@ describe("test-cases", () => {
         testCaseId: "test-case-id",
       });
       expect(handleError).toHaveBeenCalledWith(undefined);
-      expect(console.log).toHaveBeenCalledWith("Test Case deleted successfully");
+      expect(console.log).toHaveBeenCalledWith(
+        "Test Case deleted successfully",
+      );
     });
 
     it("should handle error", async () => {
@@ -76,9 +78,11 @@ describe("test-cases", () => {
       const filePath = path.join(tmpDir, fileName);
       await fsPromises.writeFile(filePath, "");
 
-      jest.mocked(readTestCasesFromDir).mockReturnValue([
-        { id: testCaseId, description: "My Test Case" },
-      ] as ReturnType<typeof readTestCasesFromDir>);
+      jest
+        .mocked(readTestCasesFromDir)
+        .mockReturnValue([
+          { id: testCaseId, description: "My Test Case" },
+        ] as ReturnType<typeof readTestCasesFromDir>);
       jest.mocked(buildFilename).mockReturnValue(fileName);
 
       await deleteTestCase({
@@ -86,7 +90,9 @@ describe("test-cases", () => {
         testCaseId,
       });
 
-      expect(console.log).toHaveBeenCalledWith("Test Case deleted successfully");
+      expect(console.log).toHaveBeenCalledWith(
+        "Test Case deleted successfully",
+      );
       await expect(fsPromises.access(filePath)).rejects.toThrow();
     });
 
