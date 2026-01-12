@@ -10,6 +10,8 @@ import { promisify } from "util";
 
 import { Open } from "unzipper";
 
+import { OCTOMIND_FOLDER_NAME } from "../constants";
+import { findOctomindFolder } from "../helpers";
 import {
   getEnvironments,
   getPlaywrightCode,
@@ -262,9 +264,16 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
 };
 
 export const executeLocalTestCases = async (
-  options: DebugtopusOptions & { source: string },
+  options: DebugtopusOptions,
 ): Promise<void> => {
-  const testCases = readTestCasesFromDir(options.source);
+  const octomindRoot = await findOctomindFolder();
+  if (!octomindRoot) {
+    throw new Error(
+      `Could not find ${OCTOMIND_FOLDER_NAME} folder, make sure to pull before trying to execute locally`,
+    );
+  }
+
+  const testCases = readTestCasesFromDir(octomindRoot);
   const body = {
     testCases,
     testTargetId: options.testTargetId,
