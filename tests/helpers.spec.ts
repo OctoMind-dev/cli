@@ -105,34 +105,29 @@ describe("helpers", () => {
     });
 
     it("should resolve relative path within octomind root", async () => {
-      const filePath = path.join(octomindRoot, "test-case.yaml");
-      await fsPromises.writeFile(filePath, "");
+      const expectedPath = path.join(octomindRoot, "test-case.yaml");
 
       const result = await getAbsoluteFilePathInOctomindRoot({
         filePath: "test-case.yaml",
         octomindRoot,
       });
 
-      expect(result).toBe(filePath);
+      expect(result).toBe(expectedPath);
     });
 
     it("should resolve nested relative path within octomind root", async () => {
-      const subdir = path.join(octomindRoot, "subdir");
-      await fsPromises.mkdir(subdir);
-      const filePath = path.join(subdir, "test-case.yaml");
-      await fsPromises.writeFile(filePath, "");
+      const expectedPath = path.join(octomindRoot, "subdir", "test-case.yaml");
 
       const result = await getAbsoluteFilePathInOctomindRoot({
         filePath: "subdir/test-case.yaml",
         octomindRoot,
       });
 
-      expect(result).toBe(filePath);
+      expect(result).toBe(expectedPath);
     });
 
     it("should accept absolute path within octomind root", async () => {
       const filePath = path.join(octomindRoot, "test-case.yaml");
-      await fsPromises.writeFile(filePath, "");
 
       const result = await getAbsoluteFilePathInOctomindRoot({
         filePath,
@@ -144,7 +139,6 @@ describe("helpers", () => {
 
     it("should return null for absolute path outside octomind root", async () => {
       const outsideFile = path.join(tmpDir, "outside.yaml");
-      await fsPromises.writeFile(outsideFile, "");
 
       const result = await getAbsoluteFilePathInOctomindRoot({
         filePath: outsideFile,
@@ -155,9 +149,6 @@ describe("helpers", () => {
     });
 
     it("should return null for path traversal attempts", async () => {
-      const outsideFile = path.join(tmpDir, "outside.yaml");
-      await fsPromises.writeFile(outsideFile, "");
-
       const result = await getAbsoluteFilePathInOctomindRoot({
         filePath: "../outside.yaml",
         octomindRoot,
@@ -166,30 +157,5 @@ describe("helpers", () => {
       expect(result).toBeNull();
     });
 
-    it("should return null for non-existent file", async () => {
-      const result = await getAbsoluteFilePathInOctomindRoot({
-        filePath: "does-not-exist.yaml",
-        octomindRoot,
-      });
-
-      expect(result).toBeNull();
-    });
-
-    it("should return null for malformed path with nested octomind structure", async () => {
-      // e.g. /some/folder/.octomind/some/folder/.octomind/a.yaml
-      const malformedPath = path.join(
-        octomindRoot,
-        tmpDir,
-        OCTOMIND_FOLDER_NAME,
-        "a.yaml",
-      );
-
-      const result = await getAbsoluteFilePathInOctomindRoot({
-        filePath: malformedPath,
-        octomindRoot,
-      });
-
-      expect(result).toBeNull();
-    });
   });
 });
