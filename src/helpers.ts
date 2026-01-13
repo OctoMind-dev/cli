@@ -76,3 +76,6 @@ export const getAbsoluteFilePathInOctomindRoot = async ({
   }
   return resolvedPath.startsWith(octomindRoot) ? resolvedPath : null;
 };
+
+export const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));

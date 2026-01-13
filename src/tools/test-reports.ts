@@ -46,7 +46,7 @@ export const executeTests = async (
     if (numberOfTestResults > 0) {
       console.log("\nTest Results:");
       data.testReport?.testResults?.forEach((result) => {
-        console.log(`- Test ${result.testCaseId}: ${result.status}`);
+        console.log(`- Test ${result.testCaseVersionId}: ${result.status}`);
         if (result.errorMessage) {
           console.log(`  Error: ${result.errorMessage}`);
         }
@@ -107,7 +107,7 @@ export const listTestReport = async (
   if (numberOfTestResults > 0) {
     console.log("\nTest Results:");
     for (const result of response.testResults ?? []) {
-      console.log(`- Test ${result.testCaseId}: ${result.status}`);
+      console.log(`- Test ${result.testCaseVersionId}: ${result.status}`);
       console.log(
         `  ${await getUrl({
           testReportId: options.testReportId,
