@@ -105,25 +105,38 @@ describe("helpers", () => {
     });
 
     it("should resolve relative path within octomind root", async () => {
-      const expectedPath = path.join(octomindRoot, "test-case.yaml");
+      const filePath = path.join(octomindRoot, "test-case.yaml");
+      await fsPromises.writeFile(filePath, "");
 
       const result = await getAbsoluteFilePathInOctomindRoot({
         filePath: "test-case.yaml",
         octomindRoot,
       });
 
-      expect(result).toBe(expectedPath);
+      expect(result).toBe(filePath);
     });
 
     it("should resolve nested relative path within octomind root", async () => {
-      const expectedPath = path.join(octomindRoot, "subdir", "test-case.yaml");
+      const subdir = path.join(octomindRoot, "subdir");
+      await fsPromises.mkdir(subdir);
+      const filePath = path.join(subdir, "test-case.yaml");
+      await fsPromises.writeFile(filePath, "");
 
       const result = await getAbsoluteFilePathInOctomindRoot({
         filePath: "subdir/test-case.yaml",
         octomindRoot,
       });
 
-      expect(result).toBe(expectedPath);
+      expect(result).toBe(filePath);
+    });
+
+    it("should return null for non-existent relative path", async () => {
+      const result = await getAbsoluteFilePathInOctomindRoot({
+        filePath: "does-not-exist.yaml",
+        octomindRoot,
+      });
+
+      expect(result).toBeNull();
     });
 
     it("should accept absolute path within octomind root", async () => {
@@ -156,6 +169,5 @@ describe("helpers", () => {
 
       expect(result).toBeNull();
     });
-
   });
 });
