@@ -54,7 +54,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
     "@types/jest": "30.0.0",
-    "@types/node": "25.0.6",
+    "@types/node": "25.0.7",
     "@types/tabtab": "3.0.4",
     "@types/unzipper": "0.10.11",
     "@types/which": "3.0.4",
