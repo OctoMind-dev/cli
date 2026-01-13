@@ -42,7 +42,7 @@
     "@types/shell-quote": "1.7.5",
     "commander": "14.0.2",
     "openapi-fetch": "0.15.0",
-    "otplib": "13.0.2",
+    "otplib": "13.1.0",
     "shell-quote": "1.8.3",
     "simple-git": "3.30.0",
     "tabtab": "3.0.2",
