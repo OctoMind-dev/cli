@@ -41,6 +41,7 @@
     "@playwright/test": "1.57.0",
     "@types/shell-quote": "1.7.5",
     "commander": "14.0.2",
+    "open": "11.0.0",
     "openapi-fetch": "0.15.0",
     "otplib": "13.0.2",
     "shell-quote": "1.8.3",

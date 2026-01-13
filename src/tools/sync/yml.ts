@@ -1,4 +1,5 @@
 import fs from "fs";
+import fsPromises from "fs/promises";
 import path from "path";
 
 import yaml from "yaml";
@@ -40,7 +41,20 @@ const toFileSystemCompatibleCamelCase = (description: string): string => {
   return camelCased;
 };
 
-export const writeYaml = (data: TestTargetSyncData, destination?: string) => {
+export const writeSingleTestCaseYaml = async (
+  filePath: string,
+  testCase: SyncTestCase,
+): Promise<void> => {
+  return fsPromises.writeFile(
+    filePath,
+    `# yaml-language-server: $schema=https://app.octomind.dev/schemas/SyncTestCaseSchema.json\n${yaml.stringify(testCase)}`,
+  );
+};
+
+export const writeYaml = async (
+  data: TestTargetSyncData,
+  destination?: string,
+): Promise<void> => {
   cleanupFilesystem({
     newTestCases: data.testCases,
     destination,
@@ -50,9 +64,9 @@ export const writeYaml = (data: TestTargetSyncData, destination?: string) => {
     const folderName = buildFolderName(testCase, data.testCases, destination);
     const testCaseFilename = buildFilename(testCase, folderName);
     fs.mkdirSync(folderName, { recursive: true });
-    fs.writeFileSync(
+    await writeSingleTestCaseYaml(
       path.join(folderName, testCaseFilename),
-      `# yaml-language-server: $schema=https://app.octomind.dev/schemas/SyncTestCaseSchema.json\n${yaml.stringify(testCase)}`,
+      testCase,
     );
   }
 };
