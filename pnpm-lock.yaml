@@ -17,6 +17,9 @@ importers:
       commander:
         specifier: 14.0.2
         version: 14.0.2
+      diff:
+        specifier: 8.0.3
+        version: 8.0.3
       open:
         specifier: 11.0.0
         version: 11.0.0
@@ -1570,6 +1573,10 @@ packages:
 
   diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
+    engines: {node: '>=0.3.1'}
+
+  diff@8.0.3:
+    resolution: {integrity: sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ==}
     engines: {node: '>=0.3.1'}
 
   dir-glob@3.0.1:
@@ -4906,6 +4913,8 @@ snapshots:
 
   diff@4.0.2:
     optional: true
+
+  diff@8.0.3: {}
 
   dir-glob@3.0.1:
     dependencies:
