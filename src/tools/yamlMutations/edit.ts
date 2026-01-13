@@ -78,7 +78,7 @@ const waitForLocalEditingToBeFinished = async (
   versionId: string,
   testCaseToEdit: SyncTestCase,
   options: EditOptions,
-): Promise<SyncTestCase> => {
+): Promise<SyncTestCase | "cancelled"> => {
   let localTestCase = await getTestCaseVersion(
     versionId,
     testCaseToEdit,
@@ -91,7 +91,7 @@ const waitForLocalEditingToBeFinished = async (
     );
   }
 
-  const throbber = ora("Waiting for local editing to finish..").start();
+  const throbber = ora("Waiting for editing to finish in UI").start();
   while (localTestCase.data.localEditingStatus === "IN_PROGRESS") {
     await sleep(POLLING_INTERVAL);
 
@@ -105,9 +105,14 @@ const waitForLocalEditingToBeFinished = async (
         `Could not get local editing status for test case ${testCaseToEdit.id}`,
       );
     }
+
+    if (localTestCase.data.localEditingStatus === "CANCELLED") {
+      throbber.fail("cancelled by user");
+      return "cancelled";
+    }
   }
 
-  throbber.succeed();
+  throbber.succeed("Finished editing in UI");
 
   const syncTestCaseWithoutExtraProperties: SyncTestCase & {
     versionId: undefined;
@@ -183,6 +188,11 @@ export const edit = async (options: EditOptions): Promise<void> => {
     testCaseToEdit,
     options,
   );
+
+  if (editResult === "cancelled") {
+    console.log("Cancelled editing test case, exiting");
+    return;
+  }
 
   await writeSingleTestCaseYaml(testCaseFilePath, editResult);
 
