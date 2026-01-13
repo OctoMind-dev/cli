@@ -68,11 +68,32 @@ export const getAbsoluteFilePathInOctomindRoot = async ({
   filePath: string;
   octomindRoot: string;
 }): Promise<string | null> => {
-  let resolvedPath: string
+  const isWithinOctomindRoot = (p: string) => p.startsWith(octomindRoot);
+
+  const isFile = async (p: string): Promise<boolean> => {
+    try {
+      const stats = await fsPromises.stat(p);
+      return stats.isFile();
+    } catch {
+      return false;
+    }
+  };
+
   if (path.isAbsolute(filePath)) {
-    resolvedPath = filePath
-  } else {
-    resolvedPath = path.resolve(filePath, path.join(octomindRoot, filePath))
+    return isWithinOctomindRoot(filePath) ? filePath : null;
   }
-  return resolvedPath.startsWith(octomindRoot) ? resolvedPath : null;
+
+  // For relative paths, try resolving from cwd first, then from octomindRoot
+  const candidates = [
+    path.resolve(filePath),
+    path.resolve(octomindRoot, filePath),
+  ];
+
+  for (const candidate of candidates) {
+    if (isWithinOctomindRoot(candidate) && (await isFile(candidate))) {
+      return candidate;
+    }
+  }
+
+  return null;
 };
