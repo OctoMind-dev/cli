@@ -1,7 +1,8 @@
 import fs from "fs";
 
-import { createTwoFilesPatch } from "diff";
+import { createTwoFilesPatch, parsePatch } from "diff";
 import open from "open";
+import ora from "ora";
 import yaml from "yaml";
 
 import { OCTOMIND_FOLDER_NAME } from "../../constants";
@@ -54,9 +55,9 @@ const loadTestCase = (testCasePath: string): SyncTestCase => {
 };
 
 const POLLING_INTERVAL = 1000;
-const getTestCaseToEdit = async (
+const getTestCaseVersion = async (
   versionId: string,
-  testCaseToEdit: SyncTestCase,
+  testCase: SyncTestCase,
   options: EditOptions,
 ) => {
   return await client.GET(
@@ -65,12 +66,59 @@ const getTestCaseToEdit = async (
       params: {
         path: {
           versionId,
-          testCaseId: testCaseToEdit.id,
+          testCaseId: testCase.id,
           testTargetId: options.testTargetId,
         },
       },
     },
   );
+};
+
+const waitForLocalEditingToBeFinished = async (
+  versionId: string,
+  testCaseToEdit: SyncTestCase,
+  options: EditOptions,
+): Promise<SyncTestCase> => {
+  let localTestCase = await getTestCaseVersion(
+    versionId,
+    testCaseToEdit,
+    options,
+  );
+
+  if (!localTestCase.data) {
+    throw new Error(
+      `Could not get local editing status for test case ${testCaseToEdit.id}`,
+    );
+  }
+
+  const throbber = ora("Waiting for local editing to finish..").start();
+  while (localTestCase.data.localEditingStatus === "IN_PROGRESS") {
+    await sleep(POLLING_INTERVAL);
+
+    localTestCase = await getTestCaseVersion(
+      versionId,
+      testCaseToEdit,
+      options,
+    );
+    if (!localTestCase.data) {
+      throw new Error(
+        `Could not get local editing status for test case ${testCaseToEdit.id}`,
+      );
+    }
+  }
+
+  throbber.succeed();
+
+  const syncTestCaseWithoutExtraProperties: SyncTestCase & {
+    versionId: undefined;
+  } = {
+    ...localTestCase.data,
+    id: testCaseToEdit.id,
+    localEditingStatus: undefined,
+    versionId: undefined,
+  };
+
+  return syncTestCaseWithoutExtraProperties;
 };
 
 export const edit = async (options: EditOptions): Promise<void> => {
@@ -101,7 +149,6 @@ export const edit = async (options: EditOptions): Promise<void> => {
   const testCases = readTestCasesFromDir(octomindRoot);
   const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));
   const relevantTestCases = getRelevantTestCases(testCasesById, testCaseToEdit);
-
   checkForConsistency(relevantTestCases);
 
   const response = await draftPush(
@@ -131,50 +178,21 @@ export const edit = async (options: EditOptions): Promise<void> => {
     `Navigating to local editing url, open it manually if a browser didn't open already: ${localEditingUrl}`,
   );
 
-  let localTestCase = await getTestCaseToEdit(
+  const editResult = await waitForLocalEditingToBeFinished(
     versionId,
     testCaseToEdit,
     options,
   );
 
-  if (!localTestCase.data) {
-    throw new Error(
-      `Could not get local editing status for test case ${testCaseToEdit.id}`,
-    );
-  }
-
-  while (localTestCase.data.localEditingStatus === "IN_PROGRESS") {
-    await sleep(POLLING_INTERVAL);
-    console.log("Waiting for local editing to finish...");
-
-    localTestCase = await getTestCaseToEdit(versionId, testCaseToEdit, options);
-    if (!localTestCase.data) {
-      throw new Error(
-        `Could not get local editing status for test case ${testCaseToEdit.id}`,
-      );
-    }
-  }
-
-  const syncTestCaseWithoutExtraProperties: SyncTestCase & {
-    versionId: undefined;
-  } = {
-    ...localTestCase.data,
-    id: testCaseToEdit.id,
-    localEditingStatus: undefined,
-    versionId: undefined,
-  };
-
-  await writeSingleTestCaseYaml(
-    testCaseFilePath,
-    syncTestCaseWithoutExtraProperties,
-  );
+  await writeSingleTestCaseYaml(testCaseFilePath, editResult);
 
   const diff = createTwoFilesPatch(
     "old.yaml",
     "new.yaml",
     yaml.stringify(originalTestCase),
-    yaml.stringify(syncTestCaseWithoutExtraProperties),
+    yaml.stringify(editResult),
   );
+
   console.log(`Edited test case successfully`);
   console.log(diff);
 };
