@@ -3,19 +3,21 @@ import path from "path";
 
 import yaml from "yaml";
 
+import { OCTOMIND_FOLDER_NAME } from "../../constants";
+import {
+  findOctomindFolder,
+  getAbsoluteFilePathInOctomindRoot,
+} from "../../helpers";
 import { client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
 import { SyncTestCase } from "../sync/types";
 import { readTestCasesFromDir } from "../sync/yml";
-import { findOctomindFolder, getAbsoluteFilePathInOctomindRoot } from "../../helpers";
-import { OCTOMIND_FOLDER_NAME } from "../../constants";
 
 type EditOptions = {
   testTargetId: string;
   filePath: string;
 };
-
 
 const getRelevantTestCases = (
   testCasesById: Record<string, SyncTestCase>,
@@ -56,9 +58,14 @@ export const edit = async (options: EditOptions): Promise<void> => {
       `Could not find ${OCTOMIND_FOLDER_NAME} folder, make sure to pull before trying to edit`,
     );
   }
-  const testCaseFilePath = await getAbsoluteFilePathInOctomindRoot({ octomindRoot, filePath: options.filePath })
+  const testCaseFilePath = await getAbsoluteFilePathInOctomindRoot({
+    octomindRoot,
+    filePath: options.filePath,
+  });
   if (!testCaseFilePath) {
-    throw new Error(`Could not find ${options.filePath} in folder ${octomindRoot}`)
+    throw new Error(
+      `Could not find ${options.filePath} in folder ${octomindRoot}`,
+    );
   }
 
   const testCaseToEdit = loadTestCase(testCaseFilePath);
