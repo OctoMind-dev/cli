@@ -1,6 +1,6 @@
-import fs, { writeFileSync } from "fs";
-import path from "path";
+import fs from "fs";
 
+import { createTwoFilesPatch } from "diff";
 import open from "open";
 import yaml from "yaml";
 
@@ -72,6 +72,7 @@ const getTestCaseToEdit = async (
     },
   );
 };
+
 export const edit = async (options: EditOptions): Promise<void> => {
   const octomindRoot = await findOctomindFolder();
   if (!octomindRoot) {
@@ -80,12 +81,10 @@ export const edit = async (options: EditOptions): Promise<void> => {
     );
   }
 
-  console.log({ octomindRoot });
   const testCaseFilePath = await getAbsoluteFilePathInOctomindRoot({
     octomindRoot,
     filePath: options.filePath,
   });
-  console.log({ testCaseFilePath });
 
   if (!testCaseFilePath) {
     throw new Error(
@@ -93,9 +92,10 @@ export const edit = async (options: EditOptions): Promise<void> => {
     );
   }
 
+  const originalTestCase = loadTestCase(testCaseFilePath);
   const testCaseToEdit = {
-    ...loadTestCase(testCaseFilePath),
-    localEditingStatus: "IN_PROGRESS",
+    ...originalTestCase,
+    localEditingStatus: "IN_PROGRESS" as const,
   };
 
   const testCases = readTestCasesFromDir(octomindRoot);
@@ -119,12 +119,10 @@ export const edit = async (options: EditOptions): Promise<void> => {
     throw new Error(`Could not edit test case with id '${testCaseToEdit.id}'`);
   }
 
-  const versionId = response?.versionIdByStableId[testCaseToEdit.id];
-
+  const versionId = response.versionIdByStableId[testCaseToEdit.id];
   if (!versionId) {
     throw new Error(`Could not edit test case with id '${testCaseToEdit.id}'`);
   }
-
   const parsedBaseUrl = URL.parse(BASE_URL);
   const localEditingUrl = `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${options.testTargetId}/testcases/${versionId}/localEdit?detailsPanelRail=steps&testTargetId=${options.testTargetId}&testCaseId=${versionId}`;
   await open(localEditingUrl);
@@ -139,19 +137,44 @@ export const edit = async (options: EditOptions): Promise<void> => {
     options,
   );
 
-  while (localTestCase.data?.localEditingStatus === "IN_PROGRESS") {
+  if (!localTestCase.data) {
+    throw new Error(
+      `Could not get local editing status for test case ${testCaseToEdit.id}`,
+    );
+  }
+
+  while (localTestCase.data.localEditingStatus === "IN_PROGRESS") {
     await sleep(POLLING_INTERVAL);
     console.log("Waiting for local editing to finish...");
 
     localTestCase = await getTestCaseToEdit(versionId, testCaseToEdit, options);
+    if (!localTestCase.data) {
+      throw new Error(
+        `Could not get local editing status for test case ${testCaseToEdit.id}`,
+      );
+    }
   }
 
-  await writeSingleTestCaseYaml(testCaseFilePath, {
+  const syncTestCaseWithoutExtraProperties: SyncTestCase & {
+    versionId: undefined;
+  } = {
     ...localTestCase.data,
     id: testCaseToEdit.id,
     localEditingStatus: undefined,
     versionId: undefined,
-  });
+  };
 
-  console.log("Edited test case successfully!");
+  await writeSingleTestCaseYaml(
+    testCaseFilePath,
+    syncTestCaseWithoutExtraProperties,
+  );
+
+  const diff = createTwoFilesPatch(
+    "old.yaml",
+    "new.yaml",
+    yaml.stringify(originalTestCase),
+    yaml.stringify(syncTestCaseWithoutExtraProperties),
+  );
+  console.log(`Edited test case successfully`);
+  console.log(diff);
 };
