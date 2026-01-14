@@ -1,6 +1,6 @@
 {
   "name": "@octomind/octomind",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
   "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402",
@@ -41,7 +41,10 @@
     "@playwright/test": "1.57.0",
     "@types/shell-quote": "1.7.5",
     "commander": "14.0.2",
+    "diff": "8.0.3",
+    "open": "11.0.0",
     "openapi-fetch": "0.15.0",
+    "ora": "9.0.0",
     "otplib": "13.1.0",
     "shell-quote": "1.8.3",
     "simple-git": "3.30.0",

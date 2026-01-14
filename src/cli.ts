@@ -38,6 +38,7 @@ import {
 } from "./tools";
 import { init, switchTestTarget } from "./tools/init";
 import { update } from "./tools/update";
+import { edit } from "./tools/yamlMutations/edit";
 import { version } from "./version";
 
 export const BINARY_NAME = "octomind";
@@ -400,6 +401,18 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
     .action(addTestTargetWrapper(pushTestTarget));
+
+  // noinspection RequiredAttributes
+  createCommandWithCommonOptions(program, "edit-test-case")
+    .completer(testTargetIdCompleter)
+    .description("Edit yaml test case")
+    .helpGroup("test-cases")
+    .addOption(testTargetIdOption)
+    .requiredOption(
+      "-f, --file-path <path>",
+      "The path to the local yaml file you want to edit",
+    )
+    .action(addTestTargetWrapper(edit));
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")
