@@ -2,21 +2,20 @@ import fs from "fs/promises";
 import { homedir } from "os";
 import path from "path";
 
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { Config, loadConfig, resetConfig } from "../src/config";
 
-jest.mock("fs/promises");
-const mockedFs = fs as jest.Mocked<typeof fs>;
-
-const originalConsoleError = console.error;
+vi.mock("fs/promises");
+const mockedFs = vi.mocked(fs);
 
 describe("Config", () => {
   beforeEach(() => {
-    console.error = jest.fn();
+    console.error = vi.fn();
     resetConfig();
   });
 
   afterEach(() => {
-    console.error = originalConsoleError;
     process.env = { ...process.env, OCTOMIND_CONFIG_FILE: "" };
   });
 
@@ -80,7 +79,7 @@ describe("Config", () => {
 
       mockedFs.readFile.mockRejectedValue(fileNotFoundError);
 
-      const mockExit = jest
+      const mockExit = vi
         .spyOn(process, "exit")
         .mockImplementation((code?: string | number | null | undefined) => {
           throw new Error(`Process exit with code: ${code}`);

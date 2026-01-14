@@ -2,6 +2,8 @@ import fsPromises from "fs/promises";
 import os from "os";
 import path from "path";
 
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { OCTOMIND_FOLDER_NAME } from "../src/constants";
 import {
   findOctomindFolder,
@@ -97,7 +99,9 @@ describe("helpers", () => {
         path.join(os.tmpdir(), "octomind-test-"),
       );
       octomindRoot = path.join(tmpDir, OCTOMIND_FOLDER_NAME);
+
       await fsPromises.mkdir(octomindRoot);
+      octomindRoot = await fsPromises.realpath(octomindRoot);
     });
 
     afterEach(async () => {

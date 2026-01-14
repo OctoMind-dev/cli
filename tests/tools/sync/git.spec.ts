@@ -1,5 +1,6 @@
-import { mock } from "jest-mock-extended";
-import { simpleGit } from "simple-git";
+import { SimpleGit, SimpleGitFactory, simpleGit } from "simple-git";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
+import { MockProxy, mock } from "vitest-mock-extended";
 
 import {
   getDefaultBranch,
@@ -7,21 +8,21 @@ import {
   parseGitRemote,
 } from "../../../src/tools/sync/git";
 
-jest.mock("simple-git");
+vi.mock("simple-git");
 
 describe("git", () => {
-  let mockGit: jest.Mocked<ReturnType<typeof simpleGit>>;
+  let mockGit: MockProxy<SimpleGit>;
 
   beforeEach(() => {
-    mockGit = mock();
-    jest.mocked(simpleGit).mockReturnValue(mockGit);
+    mockGit = mock<SimpleGit>();
+    vi.mocked(simpleGit).mockReturnValue(mockGit);
     mockGit.raw.mockResolvedValue("refs/remotes/origin/main");
-    console.error = jest.fn();
+    console.error = vi.fn();
   });
 
   describe("getDefaultBranch", () => {
     it("should fallback if both origin and symbolic ref fail", async () => {
-      console.warn = jest.fn();
+      console.warn = vi.fn();
       mockGit.raw.mockResolvedValue("");
       mockGit.remote.mockResolvedValue("");
 
@@ -32,7 +33,7 @@ describe("git", () => {
     });
 
     it("should fallback if both origin and symbolic ref do not return anything and origin throws", async () => {
-      console.warn = jest.fn();
+      console.warn = vi.fn();
       mockGit.raw.mockResolvedValue("");
       mockGit.remote.mockRejectedValue("");
 

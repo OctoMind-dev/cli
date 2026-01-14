@@ -1,31 +1,33 @@
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
+
 import { loadConfig, saveConfig } from "../../src/config";
 import { promptUser } from "../../src/helpers";
 import { init } from "../../src/tools/init";
 import { getTestTargets } from "../../src/tools/test-targets";
 
-jest.mock("../../src/config");
-jest.mock("../../src/helpers");
-jest.mock("../../src/tools/test-targets");
+vi.mock("../../src/config");
+vi.mock("../../src/helpers");
+vi.mock("../../src/tools/test-targets");
+
 describe("init", () => {
-  const originalConsoleLog = console.log;
-  beforeAll(() => {
-    jest.clearAllMocks();
-    console.log = jest.fn();
-  });
-  afterAll(() => {
-    console.log = originalConsoleLog;
-  });
+  let loadConfigMock: Mock<typeof loadConfig>;
+  let promptUserMock: Mock<typeof promptUser>;
+  let getTestTargetsMock: Mock<typeof getTestTargets>;
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    console.log = vi.fn();
+
+    loadConfigMock = vi.mocked(loadConfig);
+    loadConfigMock.mockResolvedValue({ apiKey: "apiKey" });
+
+    promptUserMock = vi.mocked(promptUser);
+    promptUserMock.mockResolvedValue("1");
+
+    getTestTargetsMock = vi.mocked(getTestTargets);
+    getTestTargetsMock.mockResolvedValue([
+      { id: "testTargetId", app: "testTargetApp" },
+    ]);
   });
-  const loadConfigMock = loadConfig as jest.Mock;
-  loadConfigMock.mockResolvedValue({ apiKey: "apiKey" });
-  const promptUserMock = promptUser as jest.Mock;
-  promptUserMock.mockResolvedValue("1");
-  const getTestTargetsMock = getTestTargets as jest.Mock;
-  getTestTargetsMock.mockResolvedValue([
-    { id: "testTargetId", app: "testTargetApp" },
-  ]);
 
   it("should initialize the configuration with one test target", async () => {
     await init({ apiKey: "newApiKey", force: true });

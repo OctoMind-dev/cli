@@ -2,32 +2,28 @@ import fsPromises from "fs/promises";
 import os from "os";
 import path from "path";
 
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
+
 import { findOctomindFolder } from "../../src/helpers";
 import { client, handleError } from "../../src/tools/client";
 import { buildFilename, readTestCasesFromDir } from "../../src/tools/sync/yml";
 import { deleteTestCase } from "../../src/tools/test-cases";
 
-jest.mock("../../src/tools/client");
-jest.mock("../../src/helpers");
-jest.mock("../../src/tools/sync/yml");
+vi.mock("../../src/tools/client");
+vi.mock("../../src/helpers");
+vi.mock("../../src/tools/sync/yml");
 
 describe("test-cases", () => {
-  const originalConsoleLog = console.log;
-  let clientDELETE: jest.Mock;
+  let clientDELETE: Mock;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    clientDELETE = client.DELETE as jest.Mock;
-    console.log = jest.fn();
-  });
-
-  afterEach(() => {
-    console.log = originalConsoleLog;
+    clientDELETE = vi.mocked(client.DELETE);
+    console.log = vi.fn();
   });
 
   describe("deleteTestCase via API", () => {
     beforeEach(() => {
-      jest.mocked(findOctomindFolder).mockResolvedValue(null);
+      vi.mocked(findOctomindFolder).mockResolvedValue(null);
     });
 
     it("should delete a test case", async () => {
@@ -65,7 +61,7 @@ describe("test-cases", () => {
       tmpDir = await fsPromises.mkdtemp(
         path.join(os.tmpdir(), "octomind-test-"),
       );
-      jest.mocked(findOctomindFolder).mockResolvedValue(tmpDir);
+      vi.mocked(findOctomindFolder).mockResolvedValue(tmpDir);
     });
 
     afterEach(async () => {
@@ -78,12 +74,10 @@ describe("test-cases", () => {
       const filePath = path.join(tmpDir, fileName);
       await fsPromises.writeFile(filePath, "");
 
-      jest
-        .mocked(readTestCasesFromDir)
-        .mockReturnValue([
-          { id: testCaseId, description: "My Test Case" },
-        ] as ReturnType<typeof readTestCasesFromDir>);
-      jest.mocked(buildFilename).mockReturnValue(fileName);
+      vi.mocked(readTestCasesFromDir).mockReturnValue([
+        { id: testCaseId, description: "My Test Case" },
+      ] as ReturnType<typeof readTestCasesFromDir>);
+      vi.mocked(buildFilename).mockReturnValue(fileName);
 
       await deleteTestCase({
         testTargetId: "test-target-id",
@@ -97,7 +91,7 @@ describe("test-cases", () => {
     });
 
     it("should log message when test case ID is not found locally", async () => {
-      jest.mocked(readTestCasesFromDir).mockReturnValue([]);
+      vi.mocked(readTestCasesFromDir).mockReturnValue([]);
 
       await deleteTestCase({
         testTargetId: "test-target-id",

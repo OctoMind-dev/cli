@@ -1,4 +1,5 @@
-import { mock } from "jest-mock-extended";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mock } from "vitest-mock-extended";
 
 import { findOctomindFolder } from "../../src/helpers";
 import { pushTestTarget } from "../../src/tools";
@@ -6,15 +7,15 @@ import { client } from "../../src/tools/client";
 import { getGitContext } from "../../src/tools/sync/git";
 import { readTestCasesFromDir } from "../../src/tools/sync/yml";
 
-jest.mock("../../src/helpers");
-jest.mock("../../src/tools/sync/git");
-jest.mock("../../src/tools/sync/yml");
-jest.mock("../../src/tools/client");
+vi.mock("../../src/helpers");
+vi.mock("../../src/tools/sync/git");
+vi.mock("../../src/tools/sync/yml");
+vi.mock("../../src/tools/client");
 
 describe("push", () => {
   beforeEach(() => {
-    jest.mocked(findOctomindFolder).mockResolvedValue("/project/.octomind");
-    jest.mocked(getGitContext).mockResolvedValue({
+    vi.mocked(findOctomindFolder).mockResolvedValue("/project/.octomind");
+    vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/main",
       repo: "my-repo",
@@ -22,17 +23,17 @@ describe("push", () => {
       sha: "sha256-12123as",
     });
 
-    jest.mocked(readTestCasesFromDir).mockReturnValue([]);
-    jest.mocked(client).POST.mockResolvedValue({
+    vi.mocked(readTestCasesFromDir).mockReturnValue([]);
+    vi.mocked(client).POST.mockResolvedValue({
       data: undefined,
       error: undefined,
       response: mock(),
     });
-    console.log = jest.fn();
+    console.log = vi.fn();
   });
 
   it("pushes to main if on default branch", async () => {
-    jest.mocked(getGitContext).mockResolvedValue({
+    vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/main",
       repo: "my-repo",
@@ -51,7 +52,7 @@ describe("push", () => {
   });
 
   it("pushes to draft if on other branch", async () => {
-    jest.mocked(getGitContext).mockResolvedValue({
+    vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/different",
       repo: "my-repo",
