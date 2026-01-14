@@ -1,10 +1,13 @@
+import { ExecException } from "node:child_process";
 import { pipeline } from "node:stream/promises";
+import { exec } from "child_process";
 import { createWriteStream, existsSync, writeFileSync } from "fs";
 import fs from "fs/promises";
 import { ReadableStream } from "stream/web";
 
-import { DeepMockProxy, mock, mockDeep } from "jest-mock-extended";
 import { Open } from "unzipper";
+import { describe, expect, it, vi } from "vitest";
+import { mock, mockDeep } from "vitest-mock-extended";
 
 import {
   executeLocalTestCases,
@@ -12,49 +15,39 @@ import {
 } from "../../src/debugtopus/index";
 import { ensureChromiumIsInstalled } from "../../src/debugtopus/installation";
 import { findOctomindFolder } from "../../src/helpers";
-import { client, handleError } from "../../src/tools/client";
+import { client } from "../../src/tools/client";
 import { getPlaywrightConfig } from "../../src/tools/playwright";
 import { readTestCasesFromDir } from "../../src/tools/sync/yml";
 import { createMockSyncTestCase } from "../mocks";
 
-jest.mock("fs/promises");
-jest.mock("fs");
-jest.mock("unzipper");
-jest.mock("../../src/tools/client");
-jest.mock("../../src/tools/sync/yml");
-jest.mock("../../src/tools/playwright");
-jest.mock("../../src/debugtopus/installation");
-jest.mock("../../src/helpers");
-jest.mock("child_process");
-jest.mock("node:stream/promises");
+vi.mock("fs/promises");
+vi.mock("fs");
+vi.mock("unzipper");
+vi.mock("../../src/tools/client");
+vi.mock("../../src/tools/sync/yml");
+vi.mock("../../src/tools/playwright");
+vi.mock("../../src/debugtopus/installation");
+vi.mock("../../src/helpers");
+vi.mock("child_process");
+vi.mock("node:stream/promises");
+vi.mock("util", () => ({
+  promisify: vi.fn(() => vi.fn().mockResolvedValue({})),
+}));
 
-const mockedFs = fs as jest.Mocked<typeof fs>;
-const mockedCreateWriteStream = createWriteStream as jest.MockedFunction<
-  typeof createWriteStream
->;
-const mockedExistsSync = existsSync as jest.MockedFunction<typeof existsSync>;
-const mockedWriteFileSync = writeFileSync as jest.MockedFunction<
-  typeof writeFileSync
->;
-const mockedOpen = Open as jest.Mocked<typeof Open>;
-const mockedPipeline = pipeline as jest.MockedFunction<typeof pipeline>;
-const mockedClient = client as DeepMockProxy<typeof client>;
-const mockedReadTestCasesFromDir = readTestCasesFromDir as jest.MockedFunction<
-  typeof readTestCasesFromDir
->;
-const mockedGetPlaywrightConfig = getPlaywrightConfig as jest.MockedFunction<
-  typeof getPlaywrightConfig
->;
-const mockedEnsureChromiumIsInstalled =
-  ensureChromiumIsInstalled as jest.MockedFunction<
-    typeof ensureChromiumIsInstalled
-  >;
+const mockedFs = vi.mocked(fs);
+const mockedCreateWriteStream = vi.mocked(createWriteStream);
+const mockedExistsSync = vi.mocked(existsSync);
+const mockedWriteFileSync = vi.mocked(writeFileSync);
+
+const mockedOpen = vi.mocked(Open);
+const mockedPipeline = vi.mocked(pipeline);
+const mockedClient = vi.mocked(client);
+const mockedReadTestCasesFromDir = vi.mocked(readTestCasesFromDir);
+
+const mockedGetPlaywrightConfig = vi.mocked(getPlaywrightConfig);
+const mockedEnsureChromiumIsInstalled = vi.mocked(ensureChromiumIsInstalled);
 
 describe("debugtopus", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe("readZipFromResponseBody", () => {
     it("should read a zip from a response body", async () => {
       // Create a mock zip buffer (minimal valid zip file)
@@ -120,9 +113,9 @@ describe("debugtopus", () => {
       };
 
       const mockWriteStream = {
-        write: jest.fn(),
-        end: jest.fn(),
-        on: jest.fn((event, callback) => {
+        write: vi.fn(),
+        end: vi.fn(),
+        on: vi.fn((event, callback) => {
           if (event === "finish") {
             setTimeout(() => callback(), 0);
           }
@@ -131,14 +124,14 @@ describe("debugtopus", () => {
       } as unknown as NodeJS.WritableStream;
 
       const mockDirectory = {
-        extract: jest.fn().mockResolvedValue(undefined),
+        extract: vi.fn().mockResolvedValue(undefined),
       };
 
       // @ts-expect-error - mockWriteStream is a WritableStream
       mockedCreateWriteStream.mockReturnValue(mockWriteStream);
       mockedPipeline.mockResolvedValue(undefined);
       mockedFs.readFile.mockResolvedValue(mockZipBuffer);
-      mockedOpen.buffer = jest.fn().mockResolvedValue(mockDirectory);
+      mockedOpen.buffer = vi.fn().mockResolvedValue(mockDirectory);
 
       await readZipFromResponseBody(mockDirs, mockResponse);
 
@@ -177,9 +170,9 @@ describe("debugtopus", () => {
       };
 
       const mockWriteStream = {
-        write: jest.fn(),
-        end: jest.fn(),
-        on: jest.fn((event, callback) => {
+        write: vi.fn(),
+        end: vi.fn(),
+        on: vi.fn((event, callback) => {
           if (event === "finish") {
             setTimeout(() => callback(), 0);
           }
@@ -191,7 +184,7 @@ describe("debugtopus", () => {
       mockedCreateWriteStream.mockReturnValue(mockWriteStream);
       mockedPipeline.mockResolvedValue(undefined);
       mockedFs.readFile.mockResolvedValue(mockZipBuffer);
-      mockedOpen.buffer = jest.fn().mockRejectedValue(new Error("Invalid zip"));
+      mockedOpen.buffer = vi.fn().mockRejectedValue(new Error("Invalid zip"));
 
       await expect(
         readZipFromResponseBody(mockDirs, mockResponse),
@@ -218,9 +211,9 @@ describe("debugtopus", () => {
         writable: true,
         configurable: true,
       });
-      const mockDirectory = { extract: jest.fn().mockResolvedValue(undefined) };
+      const mockDirectory = { extract: vi.fn().mockResolvedValue(undefined) };
 
-      jest.mocked(findOctomindFolder).mockResolvedValue(OCTOMIND_ROOT);
+      vi.mocked(findOctomindFolder).mockResolvedValue(OCTOMIND_ROOT);
       mockedReadTestCasesFromDir.mockReturnValue(mockTestCases);
       mockedClient.POST.mockResolvedValue({
         error: undefined,
@@ -228,8 +221,11 @@ describe("debugtopus", () => {
         data: undefined,
       });
       mockedExistsSync.mockImplementation(
-        (path: Parameters<typeof existsSync>[0]) => {
-          const pathStr = typeof path === "string" ? path : path.toString();
+        (pathThatShouldExist: Parameters<typeof existsSync>[0]) => {
+          const pathStr =
+            typeof pathThatShouldExist === "string"
+              ? pathThatShouldExist
+              : pathThatShouldExist.toString();
           return pathStr.includes("node_modules");
         },
       );
@@ -238,23 +234,21 @@ describe("debugtopus", () => {
       mockedCreateWriteStream.mockReturnValue(mockDeep());
       mockedPipeline.mockResolvedValue(undefined);
       mockedFs.readFile.mockResolvedValue(mockZipBuffer);
-      mockedOpen.buffer = jest.fn().mockResolvedValue(mockDirectory);
+      mockedOpen.buffer = vi.fn().mockResolvedValue(mockDirectory);
       mockedGetPlaywrightConfig.mockResolvedValue(mockConfig);
       mockedEnsureChromiumIsInstalled.mockResolvedValue(undefined);
 
-      // biome-ignore lint/style/noCommonJs: jest
-      const { exec } = require("child_process");
-      (exec as jest.MockedFunction<typeof exec>).mockImplementation(
+      vi.mocked(exec).mockImplementation(
         (
           _command: string,
           _options: unknown,
           callback?: (
-            error: Error | null,
-            outputs: { stdout: string; stderr: string } | null,
+            error: ExecException | null,
+            stdout: string,
+            stderr: string,
           ) => void,
         ) => {
-          if (callback)
-            setImmediate(() => callback(null, { stdout: "", stderr: "" }));
+          if (callback) setImmediate(() => callback(null, "", ""));
           return mock();
         },
       );

@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   getDefaultBranch,
   getGitContext,
@@ -6,7 +8,7 @@ import {
 
 describe("git", () => {
   beforeEach(() => {
-    console.warn = jest.fn();
+    console.warn = vi.fn();
   });
 
   it("should return the actual owner and repo", async () => {

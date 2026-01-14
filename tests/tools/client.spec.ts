@@ -1,14 +1,14 @@
-import { mock } from "jest-mock-extended";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import { createClientFromUrlAndApiKey } from "../../src/tools/client";
 import { version } from "../../src/version";
 import { createMockSyncTestCase } from "../mocks";
 
 describe("client", () => {
-  let mockedFetch: jest.MockedFunction<typeof fetch>;
+  let mockedFetch: Mock<typeof fetch>;
 
   beforeEach(() => {
-    mockedFetch = jest.fn();
+    mockedFetch = vi.fn();
     global.fetch = mockedFetch;
 
     mockedFetch.mockResolvedValue(
