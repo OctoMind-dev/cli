@@ -97,7 +97,7 @@ describe("edit", () => {
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
-      versionIdByStableId: {},
+      syncDataByStableId: {},
     });
 
     await expect(
@@ -117,7 +117,7 @@ describe("edit", () => {
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
-      versionIdByStableId: { "test-id": "version-123" },
+      syncDataByStableId: { "test-id": { versionId: "version-123" } },
     });
     vi.mocked(mockedClient.GET)
       .mockResolvedValueOnce({
@@ -158,7 +158,7 @@ describe("edit", () => {
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
-      versionIdByStableId: { "child-id": "version-123" },
+      syncDataByStableId: { "child-id": { versionId: "version-123" } },
     });
     vi.mocked(mockedClient.GET).mockResolvedValue({
       data: { localEditingStatus: "CANCELLED" },
@@ -209,7 +209,7 @@ describe("edit", () => {
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
-      versionIdByStableId: { "test-id": "version-123" },
+      syncDataByStableId: { "test-id": { versionId: "version-123" } },
     });
     vi.mocked(mockedClient.GET)
       .mockResolvedValueOnce({
