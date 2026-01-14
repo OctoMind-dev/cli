@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { describe, expect, it } from "vitest";
 
 import { generateCommandDocs } from "../../scripts/generate-docs";
 

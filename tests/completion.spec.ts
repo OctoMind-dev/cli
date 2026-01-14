@@ -1,4 +1,5 @@
 import { log, TabtabEnv } from "tabtab";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   CompletableCommand,
@@ -13,13 +14,18 @@ import { getEnvironments } from "../src/tools/environments";
 import { getTestCases } from "../src/tools/test-cases";
 import { getTestReports } from "../src/tools/test-reports";
 import { getTestTargets } from "../src/tools/test-targets";
+import {
+  createMockEnvironment,
+  createMockTestCase,
+  createMockTestReport,
+} from "./mocks";
 
-jest.mock("../src/tools/test-targets");
-jest.mock("tabtab");
-jest.mock("../src/config");
-jest.mock("../src/tools/environments");
-jest.mock("../src/tools/test-cases");
-jest.mock("../src/tools/test-reports");
+vi.mock("../src/tools/test-targets");
+vi.mock("tabtab");
+vi.mock("../src/config");
+vi.mock("../src/tools/environments");
+vi.mock("../src/tools/test-cases");
+vi.mock("../src/tools/test-reports");
 
 describe("completion", () => {
   const env: TabtabEnv = {
@@ -34,8 +40,8 @@ describe("completion", () => {
   };
 
   const mockCommand: CompletableCommand = {
-    name: jest.fn(),
-    getCompleter: jest.fn(),
+    name: vi.fn(),
+    getCompleter: vi.fn(),
     options: [
       {
         flags: "--test-target-id, -t",
@@ -68,12 +74,8 @@ describe("completion", () => {
     ],
   } as unknown as CompletableCommand;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("should complete test target id", async () => {
-    (getTestTargets as jest.Mock).mockResolvedValue([
+    vi.mocked(getTestTargets).mockResolvedValue([
       {
         id: "test-target-1",
         app: "test-app-1",
@@ -96,18 +98,16 @@ describe("completion", () => {
   });
 
   it("should complete environment id", async () => {
-    (loadConfig as jest.Mock).mockResolvedValue({
+    vi.mocked(loadConfig).mockResolvedValue({
       testTargetId: "test-target-1",
     });
-    (getEnvironments as jest.Mock).mockResolvedValue([
-      {
+    vi.mocked(getEnvironments).mockResolvedValue([
+      createMockEnvironment({
         id: "environment-1",
-        name: "environment-1",
-      },
-      {
+      }),
+      createMockEnvironment({
         id: "environment-2",
-        name: "environment-2",
-      },
+      }),
     ]);
     env.prev = "-e";
     const result = await environmentIdCompleter(mockCommand, env);
@@ -123,18 +123,16 @@ describe("completion", () => {
   });
 
   it("should complete test case id", async () => {
-    (loadConfig as jest.Mock).mockResolvedValue({
+    vi.mocked(loadConfig).mockResolvedValue({
       testTargetId: "test-target-1",
     });
-    (getTestCases as jest.Mock).mockResolvedValue([
-      {
+    vi.mocked(getTestCases).mockResolvedValue([
+      createMockTestCase({
         id: "test-case-1",
-        name: "test-case-1",
-      },
-      {
+      }),
+      createMockTestCase({
         id: "test-case-2",
-        name: "test-case-2",
-      },
+      }),
     ]);
     env.prev = "-c";
     const result = await testCaseIdCompleter(mockCommand, env);
@@ -150,18 +148,16 @@ describe("completion", () => {
   });
 
   it("should complete test report id", async () => {
-    (loadConfig as jest.Mock).mockResolvedValue({
+    vi.mocked(loadConfig).mockResolvedValue({
       testTargetId: "test-target-1",
     });
-    (getTestReports as jest.Mock).mockResolvedValue([
-      {
+    vi.mocked(getTestReports).mockResolvedValue([
+      createMockTestReport({
         id: "test-report-1",
-        name: "test-report-1",
-      },
-      {
+      }),
+      createMockTestReport({
         id: "test-report-2",
-        name: "test-report-2",
-      },
+      }),
     ]);
     env.prev = "-r";
     const result = await testReportIdCompleter(mockCommand, env);

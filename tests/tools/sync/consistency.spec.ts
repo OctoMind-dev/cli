@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { checkForConsistency } from "../../../src/tools/sync/consistency";
 import { createMockSyncTestCase } from "../../mocks";
 
