@@ -4,13 +4,7 @@
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
   "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402",
-  "files": [
-    "dist",
-    "src",
-    "README.md",
-    "LICENSE",
-    "package.json"
-  ],
+  "files": ["dist", "src", "README.md", "LICENSE", "package.json"],
   "engines": {
     "node": ">=22.0.0"
   },
@@ -34,7 +28,7 @@
     "dev:local": "pnpm apigen && OCTOMIND_CONFIG_FILE=octomind.dev.local.json OCTOMIND_API_URL=http://localhost:3000/api tsx src/index.ts",
     "dev:staging": "pnpm apigen && OCTOMIND_CONFIG_FILE=octomind.dev.staging.json OCTOMIND_API_URL=https://preview.octomind.dev/api tsx src/index.ts",
     "dev:prod": "pnpm apigen && OCTOMIND_CONFIG_FILE=octomind.dev.prod.json OCTOMIND_API_URL=https://app.octomind.dev/api tsx src/index.ts",
-    "apigen": "openapi-typescript openapi.yaml --output src/api.ts && orval",
+    "apigen": "openapi-typescript https://preview.octomind.dev/openapi.yaml --output src/api.ts && orval",
     "build": "pnpm apigen && npx genversion -des src/version.ts && pnpm gendoc && tsc --project tsconfig.build.json",
     "octomind": "pnpm apigen && tsx src/index.ts",
     "test": "pnpm apigen && npx genversion -des src/version.ts && vitest",
