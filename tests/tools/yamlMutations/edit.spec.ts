@@ -13,16 +13,17 @@ import { client } from "../../../src/tools/client";
 import { draftPush } from "../../../src/tools/sync/push";
 import { readTestCasesFromDir } from "../../../src/tools/sync/yml";
 import { edit } from "../../../src/tools/yamlMutations/edit";
+import { waitForLocalChangesToBeFinished } from "../../../src/tools/yamlMutations/waitForLocalChanges";
 import { createMockSyncTestCase } from "../../mocks";
 
 vi.mock("fs");
 vi.mock("open");
-vi.mock("ora");
 vi.mock("../../../src/helpers");
 vi.mock("../../../src/tools/client");
 vi.mock("../../../src/tools/sync/push");
 vi.mock("../../../src/tools/sync/yml");
 vi.mock("../../../src/tools/sync/consistency");
+vi.mock("../../../src/tools/yamlMutations/waitForLocalChanges");
 
 describe("edit", () => {
   let mockedClient: MockedObject<typeof client>;
@@ -32,12 +33,8 @@ describe("edit", () => {
 
     mockedClient = vi.mocked(client);
 
-    vi.mocked(ora).mockReturnValue(
-      mock<ReturnType<typeof ora>>({
-        start: vi.fn().mockReturnThis(),
-        succeed: vi.fn(),
-        fail: vi.fn(),
-      }),
+    vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue(
+      createMockSyncTestCase({ id: "test-id" }),
     );
 
     vi.mocked(readTestCasesFromDir).mockReturnValue([]);
@@ -133,6 +130,7 @@ describe("edit", () => {
         error: undefined,
         response: mock(),
       });
+    vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue("cancelled");
 
     await edit({ testTargetId: "someId", filePath: "test.yaml" });
 

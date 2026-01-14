@@ -16,6 +16,7 @@ import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
 import { SyncTestCase } from "../sync/types";
 import { readTestCasesFromDir, writeSingleTestCaseYaml } from "../sync/yml";
+import { waitForLocalChangesToBeFinished } from "./waitForLocalChanges";
 
 type EditOptions = {
   testTargetId: string;
@@ -46,90 +47,15 @@ const getRelevantTestCases = (
 };
 
 const loadTestCase = (testCasePath: string): SyncTestCase => {
-  console.log("loadTestCase");
   try {
     const content = fs.readFileSync(testCasePath, "utf8");
-    console.log({ content });
     return yaml.parse(content);
   } catch (error) {
     throw new Error(`Could not parse ${testCasePath}: ${error}`);
   }
 };
 
-const POLLING_INTERVAL = 1000;
-const getTestCaseVersion = async (
-  versionId: string,
-  testCase: SyncTestCase,
-  options: EditOptions,
-) => {
-  return await client.GET(
-    "/apiKey/beta/test-targets/{testTargetId}/test-cases/{testCaseId}/versions/{versionId}",
-    {
-      params: {
-        path: {
-          versionId,
-          testCaseId: testCase.id,
-          testTargetId: options.testTargetId,
-        },
-      },
-    },
-  );
-};
-
-const waitForLocalEditingToBeFinished = async (
-  versionId: string,
-  testCaseToEdit: SyncTestCase,
-  options: EditOptions,
-): Promise<SyncTestCase | "cancelled"> => {
-  let localTestCase = await getTestCaseVersion(
-    versionId,
-    testCaseToEdit,
-    options,
-  );
-
-  if (!localTestCase.data) {
-    throw new Error(
-      `Could not get local editing status for test case ${testCaseToEdit.id}`,
-    );
-  }
-
-  const throbber = ora("Waiting for editing to finish in UI").start();
-  while (localTestCase.data.localEditingStatus === "IN_PROGRESS") {
-    await sleep(POLLING_INTERVAL);
-
-    localTestCase = await getTestCaseVersion(
-      versionId,
-      testCaseToEdit,
-      options,
-    );
-    if (!localTestCase.data) {
-      throw new Error(
-        `Could not get local editing status for test case ${testCaseToEdit.id}`,
-      );
-    }
-
-    if (localTestCase.data.localEditingStatus === "CANCELLED") {
-      throbber.fail("cancelled by user");
-      return "cancelled";
-    }
-  }
-
-  throbber.succeed("Finished editing in UI");
-
-  const syncTestCaseWithoutExtraProperties: SyncTestCase & {
-    versionId: undefined;
-  } = {
-    ...localTestCase.data,
-    id: testCaseToEdit.id,
-    localEditingStatus: undefined,
-    versionId: undefined,
-  };
-
-  return syncTestCaseWithoutExtraProperties;
-};
-
 export const edit = async (options: EditOptions): Promise<void> => {
-  console.log("hello");
   const octomindRoot = await findOctomindFolder();
   if (!octomindRoot) {
     throw new Error(
@@ -186,7 +112,7 @@ export const edit = async (options: EditOptions): Promise<void> => {
     `Navigating to local editing url, open it manually if a browser didn't open already: ${localEditingUrl}`,
   );
 
-  const editResult = await waitForLocalEditingToBeFinished(
+  const editResult = await waitForLocalChangesToBeFinished(
     versionId,
     testCaseToEdit,
     options,
