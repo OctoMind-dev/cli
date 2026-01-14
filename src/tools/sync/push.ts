@@ -4,7 +4,7 @@ import { components, paths } from "../../api";
 import { ListOptions } from "../client";
 import { checkForConsistency } from "./consistency";
 import { getGitContext } from "./git";
-import { TestTargetSyncData } from "./types";
+import { SyncDataByStableId, TestTargetSyncData } from "./types";
 import { readTestCasesFromDir } from "./yml";
 
 type ErrorResponse =
@@ -72,7 +72,7 @@ export const draftPush = async (
   | {
       success: boolean;
       versionIds: string[];
-      versionIdByStableId: Record<string, string>;
+      syncDataByStableId: SyncDataByStableId;
     }
   | undefined
 > => {

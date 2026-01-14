@@ -171,12 +171,17 @@ export const edit = async (options: EditOptions): Promise<void> => {
     throw new Error(`Could not edit test case with id '${testCaseToEdit.id}'`);
   }
 
-  const versionId = response.versionIdByStableId[testCaseToEdit.id];
+  const { versionId, testResultId } =
+    response.syncDataByStableId[testCaseToEdit.id];
   if (!versionId) {
     throw new Error(`Could not edit test case with id '${testCaseToEdit.id}'`);
   }
   const parsedBaseUrl = URL.parse(BASE_URL);
-  const localEditingUrl = `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${options.testTargetId}/testcases/${versionId}/localEdit?detailsPanelRail=steps&testTargetId=${options.testTargetId}&testCaseId=${versionId}`;
+  let localEditingUrl = `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${options.testTargetId}/testcases/${versionId}/localEdit?detailsPanelRail=steps&testTargetId=${options.testTargetId}&testCaseId=${versionId}`;
+  if (testResultId) {
+    localEditingUrl += `&testResultId=${testResultId}`;
+  }
+
   await open(localEditingUrl);
 
   console.log(
