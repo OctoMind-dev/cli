@@ -15,7 +15,7 @@ import { BASE_URL, client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
 import { SyncTestCase } from "../sync/types";
-import { readTestCasesFromDir, writeSingleTestCaseYaml } from "../sync/yml";
+import { readTestCasesFromDir, writeSingleTestCaseYaml } from "../sync/yaml";
 import { waitForLocalChangesToBeFinished } from "./waitForLocalChanges";
 
 type EditOptions = {

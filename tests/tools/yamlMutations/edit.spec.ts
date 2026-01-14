@@ -11,7 +11,7 @@ import {
 } from "../../../src/helpers";
 import { client } from "../../../src/tools/client";
 import { draftPush } from "../../../src/tools/sync/push";
-import { readTestCasesFromDir } from "../../../src/tools/sync/yml";
+import { readTestCasesFromDir } from "../../../src/tools/sync/yaml";
 import { edit } from "../../../src/tools/yamlMutations/edit";
 import { waitForLocalChangesToBeFinished } from "../../../src/tools/yamlMutations/waitForLocalChanges";
 import { createMockSyncTestCase } from "../../mocks";
@@ -21,7 +21,7 @@ vi.mock("open");
 vi.mock("../../../src/helpers");
 vi.mock("../../../src/tools/client");
 vi.mock("../../../src/tools/sync/push");
-vi.mock("../../../src/tools/sync/yml");
+vi.mock("../../../src/tools/sync/yaml");
 vi.mock("../../../src/tools/sync/consistency");
 vi.mock("../../../src/tools/yamlMutations/waitForLocalChanges");
 

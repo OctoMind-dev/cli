@@ -10,10 +10,10 @@ import {
   buildFolderName,
   cleanupFilesystem,
   readTestCasesFromDir,
-} from "../../../src/tools/sync/yml";
+} from "../../../src/tools/sync/yaml";
 import { createMockSyncTestCase } from "../../mocks";
 
-describe("yml", () => {
+describe("yaml", () => {
   let tmpDir: string;
 
   beforeEach(() => {
@@ -193,7 +193,7 @@ describe("yml", () => {
       expect(readTestCasesFromDir(tmpDir)).toEqual([testCase]);
     });
 
-    it("should throw on an invalid test case", () => {
+    it("should skip invalid test cases and log an error", () => {
       fs.mkdirSync(path.join(tmpDir, "test1"));
 
       const testCase = createMockSyncTestCase({
@@ -204,7 +204,8 @@ describe("yml", () => {
         yaml.stringify(testCase),
       );
 
-      expect(() => readTestCasesFromDir(tmpDir)).toThrow(/Invalid UUID/);
+      const result = readTestCasesFromDir(tmpDir);
+      expect(result).toEqual([]);
     });
   });
 

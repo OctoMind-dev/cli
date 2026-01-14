@@ -4,10 +4,10 @@ import { DeepMockProxy, mock, mockDeep } from "vitest-mock-extended";
 import { client } from "../../../src/tools/client";
 import { getGitContext } from "../../../src/tools/sync/git";
 import { push } from "../../../src/tools/sync/push";
-import { readTestCasesFromDir } from "../../../src/tools/sync/yml";
+import { readTestCasesFromDir } from "../../../src/tools/sync/yaml";
 
 vi.mock("../../../src/tools/sync/git");
-vi.mock("../../../src/tools/sync/yml");
+vi.mock("../../../src/tools/sync/yaml");
 
 describe("push", () => {
   let mockedClient: DeepMockProxy<typeof client>;
