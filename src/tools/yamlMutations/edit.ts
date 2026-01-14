@@ -46,8 +46,10 @@ const getRelevantTestCases = (
 };
 
 const loadTestCase = (testCasePath: string): SyncTestCase => {
+  console.log("loadTestCase");
   try {
     const content = fs.readFileSync(testCasePath, "utf8");
+    console.log({ content });
     return yaml.parse(content);
   } catch (error) {
     throw new Error(`Could not parse ${testCasePath}: ${error}`);
@@ -127,6 +129,7 @@ const waitForLocalEditingToBeFinished = async (
 };
 
 export const edit = async (options: EditOptions): Promise<void> => {
+  console.log("hello");
   const octomindRoot = await findOctomindFolder();
   if (!octomindRoot) {
     throw new Error(
