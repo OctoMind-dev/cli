@@ -100,8 +100,7 @@ export const edit = async (options: EditOptions): Promise<void> => {
     throw new Error(`Could not edit test case with id '${testCaseToEdit.id}'`);
   }
 
-  const syncData =
-    response.syncDataByStableId[testCaseToEdit.id];
+  const syncData = response.syncDataByStableId[testCaseToEdit.id];
   if (!syncData) {
     throw new Error(`Could not edit test case with id '${testCaseToEdit.id}'`);
   }
