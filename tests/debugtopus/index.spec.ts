@@ -17,14 +17,14 @@ import { ensureChromiumIsInstalled } from "../../src/debugtopus/installation";
 import { findOctomindFolder } from "../../src/helpers";
 import { client } from "../../src/tools/client";
 import { getPlaywrightConfig } from "../../src/tools/playwright";
-import { readTestCasesFromDir } from "../../src/tools/sync/yml";
+import { readTestCasesFromDir } from "../../src/tools/sync/yaml";
 import { createMockSyncTestCase } from "../mocks";
 
 vi.mock("fs/promises");
 vi.mock("fs");
 vi.mock("unzipper");
 vi.mock("../../src/tools/client");
-vi.mock("../../src/tools/sync/yml");
+vi.mock("../../src/tools/sync/yaml");
 vi.mock("../../src/tools/playwright");
 vi.mock("../../src/debugtopus/installation");
 vi.mock("../../src/helpers");

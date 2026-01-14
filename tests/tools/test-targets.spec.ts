@@ -5,11 +5,11 @@ import { findOctomindFolder } from "../../src/helpers";
 import { pushTestTarget } from "../../src/tools";
 import { client } from "../../src/tools/client";
 import { getGitContext } from "../../src/tools/sync/git";
-import { readTestCasesFromDir } from "../../src/tools/sync/yml";
+import { readTestCasesFromDir } from "../../src/tools/sync/yaml";
 
 vi.mock("../../src/helpers");
 vi.mock("../../src/tools/sync/git");
-vi.mock("../../src/tools/sync/yml");
+vi.mock("../../src/tools/sync/yaml");
 vi.mock("../../src/tools/client");
 
 describe("push", () => {

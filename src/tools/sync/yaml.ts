@@ -7,6 +7,8 @@ import yaml from "yaml";
 import { pushTestTargetBody } from "../../schemas/octomindExternalAPI";
 import { SyncTestCase, TestTargetSyncData } from "./types";
 
+const syncTestCaseSchema = pushTestTargetBody.shape.testCases.element;
+
 const removeDiacritics = (str: string): string => {
   // diacritics lead to issues in the file system afterward, cf. https://www.reddit.com/r/MacOS/comments/jhjv41/psa_beware_of_umlauts_and_other_accented/
   return str.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
@@ -181,19 +183,19 @@ export const readTestCasesFromDir = (startDir: string): SyncTestCase[] => {
   for (const file of yamlFiles) {
     try {
       const content = fs.readFileSync(file, "utf8");
-      const parsed = yaml.parse(content);
-      testCases.push(parsed);
+      const raw = yaml.parse(content);
+      const result = syncTestCaseSchema.safeParse(raw);
+
+      if (result.success) {
+        testCases.push(result.data);
+      } else {
+        console.warn(
+          `Failed to read test case from ${file}: ${result.error.message}`,
+        );
+      }
     } catch {
       console.error(`Failed to read test case from ${file}`);
     }
-  }
-
-  const result = pushTestTargetBody.safeParse({ testCases });
-
-  if (!result.success) {
-    throw new Error(
-      `Failed to parse test cases from ${startDir}: ${result.error.message}`,
-    );
   }
 
   return testCases;

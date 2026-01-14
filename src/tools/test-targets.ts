@@ -5,7 +5,7 @@ import { findOctomindFolder } from "../helpers";
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { push } from "./sync/push";
-import { writeYaml } from "./sync/yml";
+import { writeYaml } from "./sync/yaml";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");

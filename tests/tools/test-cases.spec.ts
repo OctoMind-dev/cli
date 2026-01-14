@@ -6,12 +6,12 @@ import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
 import { findOctomindFolder } from "../../src/helpers";
 import { client, handleError } from "../../src/tools/client";
-import { buildFilename, readTestCasesFromDir } from "../../src/tools/sync/yml";
+import { buildFilename, readTestCasesFromDir } from "../../src/tools/sync/yaml";
 import { deleteTestCase } from "../../src/tools/test-cases";
 
 vi.mock("../../src/tools/client");
 vi.mock("../../src/helpers");
-vi.mock("../../src/tools/sync/yml");
+vi.mock("../../src/tools/sync/yaml");
 
 describe("test-cases", () => {
   let clientDELETE: Mock;

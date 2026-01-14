@@ -19,7 +19,7 @@ import {
   getTestCases,
 } from "../tools";
 import { client, handleError } from "../tools/client";
-import { readTestCasesFromDir } from "../tools/sync/yml";
+import { readTestCasesFromDir } from "../tools/sync/yaml";
 import { ensureChromiumIsInstalled } from "./installation";
 
 export type DebugtopusOptions = {

@@ -5,7 +5,7 @@ import { ListOptions } from "../client";
 import { checkForConsistency } from "./consistency";
 import { getGitContext } from "./git";
 import { SyncDataByStableId, TestTargetSyncData } from "./types";
-import { readTestCasesFromDir } from "./yml";
+import { readTestCasesFromDir } from "./yaml";
 
 type ErrorResponse =
   | components["schemas"]["ZodResponse"]
