@@ -1,6 +1,6 @@
 import fs from "fs";
 
-import { createTwoFilesPatch, parsePatch } from "diff";
+import { createTwoFilesPatch } from "diff";
 import open from "open";
 import ora from "ora";
 import yaml from "yaml";
