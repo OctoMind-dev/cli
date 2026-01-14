@@ -68,7 +68,14 @@ const defaultPush = async (
 export const draftPush = async (
   body: TestTargetSyncData,
   options: Omit<PushOptions, "sourceDir"> & ListOptions,
-): Promise<{ success: boolean; versionIds: string[] } | undefined> => {
+): Promise<
+  | {
+      success: boolean;
+      versionIds: string[];
+      versionIdByStableId: Record<string, string>;
+    }
+  | undefined
+> => {
   const { data, error } = await options.client.POST(
     "/apiKey/beta/test-targets/{testTargetId}/draft/push",
     {
