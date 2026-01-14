@@ -100,13 +100,21 @@ export const edit = async (options: EditOptions): Promise<void> => {
     throw new Error(`Could not edit test case with id '${testCaseToEdit.id}'`);
   }
 
-  const versionId = response.versionIdByStableId[testCaseToEdit.id];
-  if (!versionId) {
+  const syncData = response.syncDataByStableId[testCaseToEdit.id];
+  if (!syncData) {
     throw new Error(`Could not edit test case with id '${testCaseToEdit.id}'`);
   }
+  const { versionId, testResultId } = syncData;
+
   const parsedBaseUrl = URL.parse(BASE_URL);
-  const localEditingUrl = `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${options.testTargetId}/testcases/${versionId}/localEdit?detailsPanelRail=steps&testTargetId=${options.testTargetId}&testCaseId=${versionId}`;
-  await open(localEditingUrl);
+  const localEditingUrl = new URL(
+    `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${options.testTargetId}/testcases/${versionId}/localEdit`,
+  );
+  if (testResultId) {
+    localEditingUrl.searchParams.set("testResultId", testResultId);
+  }
+
+  await open(localEditingUrl.href);
 
   console.log(
     `Navigating to local editing url, open it manually if a browser didn't open already: ${localEditingUrl}`,

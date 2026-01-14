@@ -6,6 +6,7 @@ export default defineConfig({
   test: {
     mockReset: true,
     globals: true,
-    environment: 'node'
-  }
+    environment: 'node',
+    include: ["tests/**/*.spec.ts"],
+  },
 })

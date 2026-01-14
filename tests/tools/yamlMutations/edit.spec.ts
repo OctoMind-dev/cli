@@ -1,5 +1,6 @@
 import fs from "fs";
 
+import open from "open";
 import ora from "ora";
 import { beforeEach, describe, expect, it, MockedObject, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
@@ -97,7 +98,7 @@ describe("edit", () => {
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
-      versionIdByStableId: {},
+      syncDataByStableId: {},
     });
 
     await expect(
@@ -117,7 +118,7 @@ describe("edit", () => {
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
-      versionIdByStableId: { "test-id": "version-123" },
+      syncDataByStableId: { "test-id": { versionId: "version-123" } },
     });
     vi.mocked(mockedClient.GET)
       .mockResolvedValueOnce({
@@ -158,7 +159,7 @@ describe("edit", () => {
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
-      versionIdByStableId: { "child-id": "version-123" },
+      syncDataByStableId: { "child-id": { versionId: "version-123" } },
     });
     vi.mocked(mockedClient.GET).mockResolvedValue({
       data: { localEditingStatus: "CANCELLED" },
@@ -209,7 +210,7 @@ describe("edit", () => {
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
-      versionIdByStableId: { "test-id": "version-123" },
+      syncDataByStableId: { "test-id": { versionId: "version-123" } },
     });
     vi.mocked(mockedClient.GET)
       .mockResolvedValueOnce({
@@ -226,5 +227,40 @@ describe("edit", () => {
     await edit({ testTargetId: "someId", filePath: "test.yaml" });
 
     expect(console.log).toHaveBeenCalledWith("Edited test case successfully");
+  });
+
+  it.each([
+    {
+      testResultId: "result-456",
+      expectedUrl: expect.stringContaining("testResultId=result-456"),
+    },
+    {
+      testResultId: undefined,
+      expectedUrl: expect.not.stringContaining("testResultId"),
+    },
+  ])("handles testResultId=$testResultId in URL correctly", async ({
+    testResultId,
+    expectedUrl,
+  }) => {
+    const testCase = createMockSyncTestCase({ id: "test-id" });
+
+    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
+    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
+      "/mock/.octomind/test.yaml",
+    );
+    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(testCase));
+    vi.mocked(readTestCasesFromDir).mockReturnValue([testCase]);
+    vi.mocked(draftPush).mockResolvedValue({
+      success: true,
+      versionIds: [],
+      syncDataByStableId: {
+        "test-id": { versionId: "version-123", testResultId },
+      },
+    });
+    vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue("cancelled");
+
+    await edit({ testTargetId: "someId", filePath: "test.yaml" });
+
+    expect(open).toHaveBeenCalledWith(expectedUrl);
   });
 });
