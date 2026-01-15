@@ -270,6 +270,7 @@ describe("debugtopus", () => {
             testTargetId: "test-target-id",
             executionUrl: "https://example.com",
             environmentId: undefined,
+            filterTestCaseIds: undefined,
           },
           parseAs: "stream",
         }),
@@ -300,6 +301,7 @@ describe("debugtopus", () => {
         expect.objectContaining({
           body: expect.objectContaining({
             testCases: [expect.objectContaining({ id: "target-id" })],
+            filterTestCaseIds: ["target-id"],
           }),
         }),
       );
