@@ -1,12 +1,12 @@
 {
   "name": "@octomind/octomind",
-  "version": "3.8.1",
+  "version": "4.1.0",
   "description": "a command line client for octomind apis",
   "main": "./dist/index.js",
   "packageManager": "pnpm@10.26.0+sha512.3b3f6c725ebe712506c0ab1ad4133cf86b1f4b687effce62a9b38b4d72e3954242e643190fc51fa1642949c735f403debd44f5cb0edd657abe63a8b6a7e1e402",
   "files": ["dist", "src", "README.md", "LICENSE", "package.json"],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "bin": {
     "octomind": "dist/index.js"
@@ -31,8 +31,8 @@
     "apigen": "openapi-typescript https://preview.octomind.dev/openapi.yaml --output src/api.ts && orval",
     "build": "pnpm apigen && npx genversion -des src/version.ts && pnpm gendoc && tsc --project tsconfig.build.json",
     "octomind": "pnpm apigen && tsx src/index.ts",
-    "test": "pnpm apigen && npx genversion -des src/version.ts && jest",
-    "test:watch": "pnpm apigen && npx genversion -e src/version.ts && jest --watch"
+    "test": "pnpm apigen && npx genversion -des src/version.ts && vitest",
+    "test:watch": "pnpm apigen && npx genversion -e src/version.ts && vitest --watch"
   },
   "keywords": [],
   "author": "octomind",
@@ -41,30 +41,32 @@
     "@playwright/test": "1.57.0",
     "@types/shell-quote": "1.7.5",
     "commander": "14.0.2",
+    "diff": "8.0.3",
+    "open": "11.0.0",
     "openapi-fetch": "0.15.0",
-    "otplib": "13.0.2",
+    "ora": "9.0.0",
+    "otplib": "13.1.1",
     "shell-quote": "1.8.3",
     "simple-git": "3.30.0",
     "tabtab": "3.0.2",
     "unzipper": "0.12.3",
+    "vitest-mock-extended": "3.1.0",
     "which": "6.0.0",
     "yaml": "2.8.2",
     "zod": "4.3.5"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
-    "@types/jest": "30.0.0",
-    "@types/node": "25.0.6",
+    "@types/node": "25.0.8",
     "@types/tabtab": "3.0.4",
     "@types/unzipper": "0.10.11",
     "@types/which": "3.0.4",
     "genversion": "3.2.0",
-    "jest": "30.2.0",
-    "jest-mock-extended": "4.0.0",
     "openapi-typescript": "7.10.1",
     "orval": "7.18.0",
-    "ts-jest": "29.4.6",
     "tsx": "4.21.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vite-tsconfig-paths": "6.0.4",
+    "vitest": "4.0.17"
   }
 }

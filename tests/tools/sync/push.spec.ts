@@ -1,18 +1,19 @@
-import { DeepMockProxy, mock, mockDeep } from "jest-mock-extended";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DeepMockProxy, mock, mockDeep } from "vitest-mock-extended";
 
 import { client } from "../../../src/tools/client";
 import { getGitContext } from "../../../src/tools/sync/git";
 import { push } from "../../../src/tools/sync/push";
-import { readTestCasesFromDir } from "../../../src/tools/sync/yml";
+import { readTestCasesFromDir } from "../../../src/tools/sync/yaml";
 
-jest.mock("../../../src/tools/sync/git");
-jest.mock("../../../src/tools/sync/yml");
+vi.mock("../../../src/tools/sync/git");
+vi.mock("../../../src/tools/sync/yaml");
 
 describe("push", () => {
   let mockedClient: DeepMockProxy<typeof client>;
 
   beforeEach(() => {
-    jest.mocked(getGitContext).mockResolvedValue({
+    vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/main",
       repo: "my-repo",
@@ -20,10 +21,10 @@ describe("push", () => {
       sha: "sha256-12123as",
     });
 
-    jest.mocked(readTestCasesFromDir).mockReturnValue([]);
-    console.log = jest.fn();
+    vi.mocked(readTestCasesFromDir).mockReturnValue([]);
+    console.log = vi.fn();
     mockedClient = mockDeep();
-    mockedClient.POST.mockResolvedValue({
+    vi.mocked(mockedClient.POST).mockResolvedValue({
       data: undefined,
       error: undefined,
       response: mock(),
@@ -31,7 +32,7 @@ describe("push", () => {
   });
 
   it("pushes to main if on default branch", async () => {
-    jest.mocked(getGitContext).mockResolvedValue({
+    vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/main",
       repo: "my-repo",
@@ -43,7 +44,7 @@ describe("push", () => {
       testTargetId: "someId",
       sourceDir: ".",
       client: mockedClient,
-      onError: jest.fn(),
+      onError: vi.fn(),
     });
 
     expect(mockedClient.POST).toHaveBeenCalledWith(
@@ -53,7 +54,7 @@ describe("push", () => {
   });
 
   it("pushes to draft if on other branch", async () => {
-    jest.mocked(getGitContext).mockResolvedValue({
+    vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/different",
       repo: "my-repo",
@@ -65,7 +66,7 @@ describe("push", () => {
       testTargetId: "someId",
       sourceDir: ".",
       client: mockedClient,
-      onError: jest.fn(),
+      onError: vi.fn(),
     });
 
     expect(mockedClient.POST).toHaveBeenCalledWith(
@@ -75,13 +76,13 @@ describe("push", () => {
   });
 
   it("pushes to draft if no git context", async () => {
-    jest.mocked(getGitContext).mockResolvedValue(undefined);
+    vi.mocked(getGitContext).mockResolvedValue(undefined);
 
     await push({
       testTargetId: "someId",
       sourceDir: ".",
       client: mockedClient,
-      onError: jest.fn(),
+      onError: vi.fn(),
     });
 
     expect(mockedClient.POST).toHaveBeenCalledWith(
@@ -91,7 +92,7 @@ describe("push", () => {
   });
 
   it("calls the handleError callback on error", async () => {
-    jest.mocked(getGitContext).mockResolvedValue({
+    vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/different",
       repo: "my-repo",
@@ -99,13 +100,13 @@ describe("push", () => {
       sha: "sha256-12123as",
     });
 
-    mockedClient.POST.mockResolvedValue({
+    vi.mocked(mockedClient.POST).mockResolvedValue({
       data: undefined,
       error: [mock()],
       response: mock(),
     });
 
-    const handleError = jest.fn();
+    const handleError = vi.fn();
     await push({
       testTargetId: "someId",
       sourceDir: ".",

@@ -19,7 +19,7 @@ import {
   getTestCases,
 } from "../tools";
 import { client, handleError } from "../tools/client";
-import { readTestCasesFromDir } from "../tools/sync/yml";
+import { readTestCasesFromDir } from "../tools/sync/yaml";
 import { ensureChromiumIsInstalled } from "./installation";
 
 export type DebugtopusOptions = {
@@ -81,11 +81,13 @@ const prepareDirectories = async (
     // at runtime, we are installed in an arbitrary npx cache folder,
     // we need to find the rootDir ourselves and cannot rely on paths relative to src
     const nodeModule = require.main;
-    if (!nodeModule) {
-      throw new Error("package was not installed as valid nodeJS module");
+    if (nodeModule) {
+      const appDir = dirname(nodeModule.filename);
+      packageRootDir = getPackageRootLevel(appDir);
+    } else {
+      console.warn("package was not installed as valid nodeJS module");
+      packageRootDir = process.cwd();
     }
-    const appDir = dirname(nodeModule.filename);
-    packageRootDir = getPackageRootLevel(appDir);
   }
 
   const tempDir = path.join(packageRootDir, "octomind-cli-debug");

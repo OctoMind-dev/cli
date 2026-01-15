@@ -6,7 +6,7 @@ import { findOctomindFolder } from "../helpers";
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { getEnvironments } from "./environments";
-import { buildFilename, readTestCasesFromDir } from "./sync/yml";
+import { buildFilename, readTestCasesFromDir } from "./sync/yaml";
 
 export type TestCaseResponse = components["schemas"]["TestCaseResponse"];
 export type TestCasesResponse = components["schemas"]["TestCasesResponse"];
