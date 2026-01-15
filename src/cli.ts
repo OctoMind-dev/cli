@@ -181,7 +181,7 @@ export const buildCmd = (): CompletableCommand => {
     .requiredOption("-u, --url <url>", "Url the tests should run against")
     .option(
       "-c, --test-case-id [uuid]",
-      "id of the test case you want to run, if not provided will run all test cases in the test target",
+      "Id of the test case you want to run, if not provided will run all test cases in the test target",
     )
     .option(
       "-e, --environment-id [uuid]",
