@@ -1,14 +1,25 @@
+import path from "node:path";
+
+import { createTwoFilesPatch } from "diff";
+import open from "open";
+import yaml from "yaml";
+
 import { OCTOMIND_FOLDER_NAME } from "../../constants";
 import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
 } from "../../helpers";
-import { client, handleError } from "../client";
+import { BASE_URL, client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
-import { SyncTestCase } from "../sync/types";
-import { readTestCasesFromDir } from "../sync/yaml";
+import { SyncDataByStableId, SyncTestCase } from "../sync/types";
+import {
+  buildFilename,
+  readTestCasesFromDir,
+  writeSingleTestCaseYaml,
+} from "../sync/yaml";
 import { getRelevantTestCases, loadTestCase } from "./getRelevantTestCases";
+import { waitForLocalChangesToBeFinished } from "./waitForLocalChanges";
 
 type CreateOptions = {
   testTargetId: string;
@@ -47,6 +58,61 @@ const getDependecyTestCases = async ({
   );
   checkForConsistency(relevantTestCases);
   return { dependencyTestCase, relevantTestCases };
+};
+
+const openBrowserAndPoll = async ({
+  newTestCase,
+  syncData,
+  testTargetId,
+}: {
+  newTestCase: SyncTestCase;
+  syncData: SyncDataByStableId[number];
+  testTargetId: string;
+}) => {
+  const { versionId } = syncData;
+
+  const parsedBaseUrl = URL.parse(BASE_URL);
+  const localEditingUrl = new URL(
+    `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${testTargetId}/testcases/${versionId}/localEdit`,
+  );
+
+  await open(localEditingUrl.href);
+
+  console.log(
+    `Navigating to local url, open it manually if a browser didn't open already: ${localEditingUrl}`,
+  );
+
+  const createResult = await waitForLocalChangesToBeFinished(
+    versionId,
+    newTestCase,
+    { testTargetId },
+  );
+  return createResult;
+};
+
+const writeOutput = async ({
+  testCaseFilePath,
+  createResult,
+}: {
+  testCaseFilePath: string;
+  createResult: SyncTestCase | "cancelled";
+}): Promise<void> => {
+  if (createResult === "cancelled") {
+    console.log("Cancelled editing test case, exiting");
+    return;
+  }
+
+  await writeSingleTestCaseYaml(testCaseFilePath, createResult);
+
+  const diff = createTwoFilesPatch(
+    "old.yaml",
+    "new.yaml",
+    "",
+    yaml.stringify(createResult),
+  );
+
+  console.log(`Edited test case successfully`);
+  console.log(diff);
 };
 
 export const create = async (options: CreateOptions): Promise<void> => {
@@ -92,5 +158,25 @@ export const create = async (options: CreateOptions): Promise<void> => {
     },
   );
 
-  console.log(response);
+  if (!response) {
+    throw new Error(
+      `Could not create new test case with id '${newTestCase.id}'`,
+    );
+  }
+  const syncData = response.syncDataByStableId[newTestCase.id];
+  if (!syncData) {
+    throw new Error(`Could not create test case with id '${newTestCase.id}'`);
+  }
+
+  const createResult = await openBrowserAndPoll({
+    newTestCase,
+    syncData,
+    testTargetId: options.testTargetId,
+  });
+
+  const newTestCasePath = path.join(
+    octomindRoot,
+    buildFilename(newTestCase, octomindRoot),
+  );
+  await writeOutput({ createResult, testCaseFilePath: newTestCasePath });
 };
