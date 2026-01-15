@@ -218,8 +218,11 @@ describe("debugtopus", () => {
         data: undefined,
       });
       mockedExistsSync.mockImplementation(
-        (p: Parameters<typeof existsSync>[0]) =>
-          (typeof p === "string" ? p : p.toString()).includes("node_modules"),
+        (pathThatShouldExist: Parameters<typeof existsSync>[0]) =>
+          (typeof pathThatShouldExist === "string"
+            ? pathThatShouldExist
+            : pathThatShouldExist.toString()
+          ).includes("node_modules"),
       );
       mockedFs.mkdir.mockResolvedValue(undefined);
       mockedFs.rm.mockResolvedValue(undefined);
