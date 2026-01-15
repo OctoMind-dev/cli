@@ -15,6 +15,7 @@ import { draftPush } from "../sync/push";
 import { SyncDataByStableId, SyncTestCase } from "../sync/types";
 import {
   buildFilename,
+  buildFolderName,
   readTestCasesFromDir,
   writeSingleTestCaseYaml,
 } from "../sync/yaml";
@@ -56,7 +57,6 @@ const getDependecyTestCases = async ({
     testCasesById,
     dependencyTestCase,
   );
-  checkForConsistency(relevantTestCases);
   return { dependencyTestCase, relevantTestCases };
 };
 
@@ -146,10 +146,11 @@ export const create = async (options: CreateOptions): Promise<void> => {
     localEditingStatus: "IN_PROGRESS" as const,
   };
   testCasesToPush.push(newTestCase);
+  checkForConsistency(testCasesToPush);
 
   const response = await draftPush(
     {
-      testCases: [newTestCase],
+      testCases: testCasesToPush,
     },
     {
       testTargetId: options.testTargetId,
@@ -174,9 +175,8 @@ export const create = async (options: CreateOptions): Promise<void> => {
     testTargetId: options.testTargetId,
   });
 
-  const newTestCasePath = path.join(
-    octomindRoot,
-    buildFilename(newTestCase, octomindRoot),
-  );
+  const testCaseFolder = buildFolderName(newTestCase, testCasesToPush, octomindRoot)
+  const newTestCaseName = buildFilename(newTestCase, octomindRoot)
+  const newTestCasePath = path.join(testCaseFolder, newTestCaseName)
   await writeOutput({ createResult, testCaseFilePath: newTestCasePath });
 };
