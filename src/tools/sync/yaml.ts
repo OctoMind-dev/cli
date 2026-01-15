@@ -201,6 +201,15 @@ export const readTestCasesFromDir = (startDir: string): SyncTestCase[] => {
   return testCases;
 };
 
+export const loadTestCase = (testCasePath: string): SyncTestCase => {
+  try {
+    const content = fs.readFileSync(testCasePath, "utf8");
+    return yaml.parse(content);
+  } catch (error) {
+    throw new Error(`Could not parse ${testCasePath}: ${error}`);
+  }
+};
+
 export const cleanupFilesystem = ({
   newTestCases,
   destination,

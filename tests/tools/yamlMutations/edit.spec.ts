@@ -1,23 +1,22 @@
-import fs from "fs";
-
 import open from "open";
-import ora from "ora";
-import { beforeEach, describe, expect, it, MockedObject, vi } from "vitest";
-import { mock } from "vitest-mock-extended";
-import yaml from "yaml";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
 } from "../../../src/helpers";
-import { client } from "../../../src/tools/client";
 import { draftPush } from "../../../src/tools/sync/push";
-import { readTestCasesFromDir } from "../../../src/tools/sync/yaml";
+import {
+  loadTestCase,
+  readTestCasesFromDir,
+} from "../../../src/tools/sync/yaml";
 import { edit } from "../../../src/tools/yamlMutations/edit";
 import { waitForLocalChangesToBeFinished } from "../../../src/tools/yamlMutations/waitForLocalChanges";
-import { createMockSyncTestCase } from "../../mocks";
+import {
+  createMockDraftPushResponse,
+  createMockSyncTestCase,
+} from "../../mocks";
 
-vi.mock("fs");
 vi.mock("open");
 vi.mock("../../../src/helpers");
 vi.mock("../../../src/tools/client");
@@ -27,18 +26,20 @@ vi.mock("../../../src/tools/sync/consistency");
 vi.mock("../../../src/tools/yamlMutations/waitForLocalChanges");
 
 describe("edit", () => {
-  let mockedClient: MockedObject<typeof client>;
+  const testCase = createMockSyncTestCase({ id: "test-id" });
 
   beforeEach(() => {
     console.log = vi.fn();
 
-    mockedClient = vi.mocked(client);
-
+    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
+    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
+      "/mock/.octomind/test.yaml",
+    );
+    vi.mocked(loadTestCase).mockReturnValue(testCase);
+    vi.mocked(readTestCasesFromDir).mockReturnValue([testCase]);
     vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue(
       createMockSyncTestCase({ id: "test-id" }),
     );
-
-    vi.mocked(readTestCasesFromDir).mockReturnValue([]);
   });
 
   it("throws if octomind folder is not found", async () => {
@@ -50,7 +51,6 @@ describe("edit", () => {
   });
 
   it("throws if file path is not found", async () => {
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
     vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(null);
 
     await expect(
@@ -59,11 +59,9 @@ describe("edit", () => {
   });
 
   it("throws if test case file cannot be parsed", async () => {
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
-    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
-      "/mock/.octomind/test.yaml",
-    );
-    vi.mocked(fs.readFileSync).mockReturnValue("this: is: invalid: ");
+    vi.mocked(loadTestCase).mockImplementation(() => {
+      throw new Error("Could not parse /mock/.octomind/test.yaml");
+    });
 
     await expect(
       edit({ testTargetId: "someId", filePath: "test.yaml" }),
@@ -71,14 +69,6 @@ describe("edit", () => {
   });
 
   it("throws if draftPush returns no response", async () => {
-    const testCase = createMockSyncTestCase({ id: "test-id" });
-
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
-    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
-      "/mock/.octomind/test.yaml",
-    );
-    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(testCase));
-    vi.mocked(readTestCasesFromDir).mockReturnValue([testCase]);
     vi.mocked(draftPush).mockResolvedValue(undefined);
 
     await expect(
@@ -87,14 +77,6 @@ describe("edit", () => {
   });
 
   it("throws if versionId is not returned for test case", async () => {
-    const testCase = createMockSyncTestCase({ id: "test-id" });
-
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
-    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
-      "/mock/.octomind/test.yaml",
-    );
-    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(testCase));
-    vi.mocked(readTestCasesFromDir).mockReturnValue([testCase]);
     vi.mocked(draftPush).mockResolvedValue({
       success: true,
       versionIds: [],
@@ -107,30 +89,9 @@ describe("edit", () => {
   });
 
   it("exits gracefully when editing is cancelled", async () => {
-    const testCase = createMockSyncTestCase({ id: "test-id" });
-
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
-    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
-      "/mock/.octomind/test.yaml",
+    vi.mocked(draftPush).mockResolvedValue(
+      createMockDraftPushResponse("test-id"),
     );
-    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(testCase));
-    vi.mocked(readTestCasesFromDir).mockReturnValue([testCase]);
-    vi.mocked(draftPush).mockResolvedValue({
-      success: true,
-      versionIds: [],
-      syncDataByStableId: { "test-id": { versionId: "version-123" } },
-    });
-    vi.mocked(mockedClient.GET)
-      .mockResolvedValueOnce({
-        data: { localEditingStatus: "IN_PROGRESS" },
-        error: undefined,
-        response: mock(),
-      })
-      .mockResolvedValueOnce({
-        data: { localEditingStatus: "CANCELLED" },
-        error: undefined,
-        response: mock(),
-      });
     vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue("cancelled");
 
     await edit({ testTargetId: "someId", filePath: "test.yaml" });
@@ -141,30 +102,9 @@ describe("edit", () => {
   });
 
   it("exits gracefully when editing is finished", async () => {
-    const testCase = createMockSyncTestCase({ id: "test-id" });
-
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
-    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
-      "/mock/.octomind/test.yaml",
+    vi.mocked(draftPush).mockResolvedValue(
+      createMockDraftPushResponse("test-id"),
     );
-    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(testCase));
-    vi.mocked(readTestCasesFromDir).mockReturnValue([testCase]);
-    vi.mocked(draftPush).mockResolvedValue({
-      success: true,
-      versionIds: [],
-      syncDataByStableId: { "test-id": { versionId: "version-123" } },
-    });
-    vi.mocked(mockedClient.GET)
-      .mockResolvedValueOnce({
-        data: { localEditingStatus: "IN_PROGRESS" },
-        error: undefined,
-        response: mock(),
-      })
-      .mockResolvedValueOnce({
-        data: { localEditingStatus: "DONE" },
-        error: undefined,
-        response: mock(),
-      });
 
     await edit({ testTargetId: "someId", filePath: "test.yaml" });
 
@@ -184,21 +124,9 @@ describe("edit", () => {
     testResultId,
     expectedUrl,
   }) => {
-    const testCase = createMockSyncTestCase({ id: "test-id" });
-
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
-    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
-      "/mock/.octomind/test.yaml",
+    vi.mocked(draftPush).mockResolvedValue(
+      createMockDraftPushResponse("test-id", { testResultId }),
     );
-    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(testCase));
-    vi.mocked(readTestCasesFromDir).mockReturnValue([testCase]);
-    vi.mocked(draftPush).mockResolvedValue({
-      success: true,
-      versionIds: [],
-      syncDataByStableId: {
-        "test-id": { versionId: "version-123", testResultId },
-      },
-    });
     vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue("cancelled");
 
     await edit({ testTargetId: "someId", filePath: "test.yaml" });
