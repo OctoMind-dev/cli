@@ -17,7 +17,10 @@ import {
 } from "../../../src/tools/sync/yaml";
 import { create } from "../../../src/tools/yamlMutations/create";
 import { waitForLocalChangesToBeFinished } from "../../../src/tools/yamlMutations/waitForLocalChanges";
-import { createMockSyncTestCase } from "../../mocks";
+import {
+  createMockDraftPushResponse,
+  createMockSyncTestCase,
+} from "../../mocks";
 
 vi.mock("fs");
 vi.mock("open");
@@ -27,17 +30,6 @@ vi.mock("../../../src/tools/sync/push");
 vi.mock("../../../src/tools/sync/yaml");
 vi.mock("../../../src/tools/sync/consistency");
 vi.mock("../../../src/tools/yamlMutations/waitForLocalChanges");
-
-const mockSuccessfulDraftPush = () => {
-  vi.mocked(draftPush).mockImplementation(async ({ testCases }) => {
-    const newTestCase = testCases[0];
-    return {
-      success: true,
-      versionIds: [],
-      syncDataByStableId: { [newTestCase.id]: { versionId: "version-123" } },
-    };
-  });
-};
 
 describe("create", () => {
   beforeEach(() => {
@@ -109,7 +101,9 @@ describe("create", () => {
   });
 
   it("exits gracefully when creation is cancelled", async () => {
-    mockSuccessfulDraftPush();
+    vi.mocked(draftPush).mockImplementation(async ({ testCases }) =>
+      createMockDraftPushResponse(testCases[0].id),
+    );
     vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue("cancelled");
 
     await create({ testTargetId: "someId", name: "Test Name" });
@@ -120,7 +114,9 @@ describe("create", () => {
   });
 
   it("exits gracefully when creation is finished", async () => {
-    mockSuccessfulDraftPush();
+    vi.mocked(draftPush).mockImplementation(async ({ testCases }) =>
+      createMockDraftPushResponse(testCases[0].id),
+    );
 
     await create({ testTargetId: "someId", name: "Test Name" });
 
@@ -186,7 +182,9 @@ describe("create", () => {
   });
 
   it("opens browser with correct URL", async () => {
-    mockSuccessfulDraftPush();
+    vi.mocked(draftPush).mockImplementation(async ({ testCases }) =>
+      createMockDraftPushResponse(testCases[0].id),
+    );
 
     await create({ testTargetId: "someId", name: "Test Name" });
 

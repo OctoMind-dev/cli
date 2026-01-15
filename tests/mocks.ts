@@ -3,7 +3,7 @@ import {
   TestCaseResponse,
   TestReport,
 } from "../src/tools";
-import { SyncTestCase } from "../src/tools/sync/types";
+import { SyncDataByStableId, SyncTestCase } from "../src/tools/sync/types";
 
 export const createMockSyncTestCase = (
   overrides?: Partial<SyncTestCase>,
@@ -75,4 +75,19 @@ export const createMockTestReport = (
   testTargetId: "",
   updatedAt: new Date().toISOString(),
   ...overrides,
+});
+
+export const createMockDraftPushResponse = (
+  testCaseId: string,
+  overrides?: Partial<SyncDataByStableId[string]>,
+): {
+  success: boolean;
+  versionIds: string[];
+  syncDataByStableId: SyncDataByStableId;
+} => ({
+  success: true,
+  versionIds: [],
+  syncDataByStableId: {
+    [testCaseId]: { versionId: "version-123", ...overrides },
+  },
 });
