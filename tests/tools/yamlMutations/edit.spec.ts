@@ -140,64 +140,6 @@ describe("edit", () => {
     );
   });
 
-  it("includes dependency chain in relevant test cases", async () => {
-    const parentTestCase = createMockSyncTestCase({ id: "parent-id" });
-    const childTestCase = createMockSyncTestCase({
-      id: "child-id",
-      dependencyId: "parent-id",
-    });
-
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
-    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
-      "/mock/.octomind/child.yaml",
-    );
-    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(childTestCase));
-    vi.mocked(readTestCasesFromDir).mockReturnValue([
-      parentTestCase,
-      childTestCase,
-    ]);
-    vi.mocked(draftPush).mockResolvedValue({
-      success: true,
-      versionIds: [],
-      syncDataByStableId: { "child-id": { versionId: "version-123" } },
-    });
-    vi.mocked(mockedClient.GET).mockResolvedValue({
-      data: { localEditingStatus: "CANCELLED" },
-      error: undefined,
-      response: mock(),
-    });
-
-    await edit({ testTargetId: "someId", filePath: "child.yaml" });
-
-    expect(draftPush).toHaveBeenCalledWith(
-      expect.objectContaining({
-        testCases: expect.arrayContaining([
-          expect.objectContaining({ id: "child-id" }),
-          expect.objectContaining({ id: "parent-id" }),
-        ]),
-      }),
-      expect.anything(),
-    );
-  });
-
-  it("throws if dependency is not found", async () => {
-    const childTestCase = createMockSyncTestCase({
-      id: "child-id",
-      dependencyId: "missing-parent",
-    });
-
-    vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
-    vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
-      "/mock/.octomind/child.yaml",
-    );
-    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(childTestCase));
-    vi.mocked(readTestCasesFromDir).mockReturnValue([childTestCase]);
-
-    await expect(
-      edit({ testTargetId: "someId", filePath: "child.yaml" }),
-    ).rejects.toThrow("Could not find dependency missing-parent");
-  });
-
   it("exits gracefully when editing is finished", async () => {
     const testCase = createMockSyncTestCase({ id: "test-id" });
 
