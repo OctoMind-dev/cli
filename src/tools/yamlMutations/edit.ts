@@ -16,34 +16,12 @@ import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
 import { SyncTestCase } from "../sync/types";
 import { readTestCasesFromDir, writeSingleTestCaseYaml } from "../sync/yaml";
+import { getRelevantTestCases } from "./getRelevantTestCases";
 import { waitForLocalChangesToBeFinished } from "./waitForLocalChanges";
 
 type EditOptions = {
   testTargetId: string;
   filePath: string;
-};
-
-const getRelevantTestCases = (
-  testCasesById: Record<string, SyncTestCase>,
-  startTestCase: SyncTestCase,
-): SyncTestCase[] => {
-  let dependencyId = startTestCase.dependencyId;
-  const result: SyncTestCase[] = [startTestCase];
-
-  while (dependencyId) {
-    const currentTestCase = testCasesById[dependencyId];
-
-    if (!currentTestCase) {
-      throw new Error(
-        `Could not find dependency ${dependencyId} for ${startTestCase.id}`,
-      );
-    }
-
-    result.push(currentTestCase);
-    dependencyId = currentTestCase?.dependencyId;
-  }
-
-  return result;
 };
 
 const loadTestCase = (testCasePath: string): SyncTestCase => {
