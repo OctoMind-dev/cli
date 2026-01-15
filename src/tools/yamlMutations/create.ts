@@ -175,8 +175,12 @@ export const create = async (options: CreateOptions): Promise<void> => {
     testTargetId: options.testTargetId,
   });
 
-  const testCaseFolder = buildFolderName(newTestCase, testCasesToPush, octomindRoot)
-  const newTestCaseName = buildFilename(newTestCase, octomindRoot)
-  const newTestCasePath = path.join(testCaseFolder, newTestCaseName)
+  const testCaseFolder = buildFolderName(
+    newTestCase,
+    testCasesToPush,
+    octomindRoot,
+  );
+  const newTestCaseName = buildFilename(newTestCase, octomindRoot);
+  const newTestCasePath = path.join(testCaseFolder, newTestCaseName);
   await writeOutput({ createResult, testCaseFilePath: newTestCasePath });
 };
