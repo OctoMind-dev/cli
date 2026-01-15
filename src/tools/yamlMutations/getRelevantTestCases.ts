@@ -1,3 +1,7 @@
+import fs from "fs";
+
+import yaml from "yaml";
+
 import { SyncTestCase } from "../sync/types";
 
 type LinkedTestCaseId = {
@@ -70,4 +74,13 @@ export const getRelevantTestCases = (
   }
 
   return result;
+};
+
+export const loadTestCase = (testCasePath: string): SyncTestCase => {
+  try {
+    const content = fs.readFileSync(testCasePath, "utf8");
+    return yaml.parse(content);
+  } catch (error) {
+    throw new Error(`Could not parse ${testCasePath}: ${error}`);
+  }
 };
