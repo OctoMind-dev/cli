@@ -31,9 +31,9 @@ vi.mock("../../../src/tools/sync/yaml");
 vi.mock("../../../src/tools/sync/consistency");
 vi.mock("../../../src/tools/yamlMutations/waitForLocalChanges");
 
-const GENERATED_TEST_ID = "00000000-0000-0000-0000-000000000000";
-
 describe("create", () => {
+  const GENERATED_TEST_ID = "00000000-0000-0000-0000-000000000000";
+
   beforeEach(() => {
     console.log = vi.fn();
 
@@ -149,7 +149,8 @@ describe("create", () => {
   });
 
   it("includes dependency when dependencyPath is provided", async () => {
-    const dependencyTestCase = createMockSyncTestCase({ id: "dependency-id" });
+    const dependencyId = "dependency-id";
+    const dependencyTestCase = createMockSyncTestCase({ id: dependencyId });
 
     vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
       "/mock/.octomind/dependency.yaml",
@@ -170,7 +171,7 @@ describe("create", () => {
         testCases: expect.arrayContaining([
           expect.objectContaining({
             id: GENERATED_TEST_ID,
-            dependencyId: "dependency-id",
+            dependencyId,
           }),
         ]),
       },
