@@ -1,8 +1,5 @@
-import fs from "fs";
-
 import open from "open";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import yaml from "yaml";
 
 import {
   findOctomindFolder,
@@ -12,6 +9,7 @@ import { draftPush } from "../../../src/tools/sync/push";
 import {
   buildFilename,
   buildFolderName,
+  loadTestCase,
   readTestCasesFromDir,
   writeSingleTestCaseYaml,
 } from "../../../src/tools/sync/yaml";
@@ -22,7 +20,6 @@ import {
   createMockSyncTestCase,
 } from "../../mocks";
 
-vi.mock("fs");
 vi.mock("open");
 vi.mock("../../../src/helpers");
 vi.mock("../../../src/tools/client");
@@ -75,7 +72,9 @@ describe("create", () => {
     vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
       "/mock/.octomind/dependency.yaml",
     );
-    vi.mocked(fs.readFileSync).mockReturnValue("this: is: invalid: ");
+    vi.mocked(loadTestCase).mockImplementation(() => {
+      throw new Error("Could not parse /mock/.octomind/dependency.yaml");
+    });
 
     await expect(
       create({
@@ -119,7 +118,7 @@ describe("create", () => {
   it("exits gracefully when creation is finished", async () => {
     await create({ testTargetId: "someId", name: "Test Name" });
 
-    expect(console.log).toHaveBeenCalledWith("Edited test case successfully");
+    expect(console.log).toHaveBeenCalledWith("Created test case successfully");
     expect(writeSingleTestCaseYaml).toHaveBeenCalledWith(
       "/mock/.octomind/new-test.yaml",
       expect.objectContaining({ id: GENERATED_TEST_ID }),
@@ -155,9 +154,7 @@ describe("create", () => {
     vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
       "/mock/.octomind/dependency.yaml",
     );
-    vi.mocked(fs.readFileSync).mockReturnValue(
-      yaml.stringify(dependencyTestCase),
-    );
+    vi.mocked(loadTestCase).mockReturnValue(dependencyTestCase);
     vi.mocked(readTestCasesFromDir).mockReturnValue([dependencyTestCase]);
 
     await create({

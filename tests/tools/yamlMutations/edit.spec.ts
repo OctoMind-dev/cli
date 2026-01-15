@@ -1,15 +1,12 @@
-import fs from "fs";
-
 import open from "open";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import yaml from "yaml";
 
 import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
 } from "../../../src/helpers";
 import { draftPush } from "../../../src/tools/sync/push";
-import { readTestCasesFromDir } from "../../../src/tools/sync/yaml";
+import { loadTestCase, readTestCasesFromDir } from "../../../src/tools/sync/yaml";
 import { edit } from "../../../src/tools/yamlMutations/edit";
 import { waitForLocalChangesToBeFinished } from "../../../src/tools/yamlMutations/waitForLocalChanges";
 import {
@@ -17,7 +14,6 @@ import {
   createMockSyncTestCase,
 } from "../../mocks";
 
-vi.mock("fs");
 vi.mock("open");
 vi.mock("../../../src/helpers");
 vi.mock("../../../src/tools/client");
@@ -36,7 +32,7 @@ describe("edit", () => {
     vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
       "/mock/.octomind/test.yaml",
     );
-    vi.mocked(fs.readFileSync).mockReturnValue(yaml.stringify(testCase));
+    vi.mocked(loadTestCase).mockReturnValue(testCase);
     vi.mocked(readTestCasesFromDir).mockReturnValue([testCase]);
     vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue(
       createMockSyncTestCase({ id: "test-id" }),
@@ -60,7 +56,9 @@ describe("edit", () => {
   });
 
   it("throws if test case file cannot be parsed", async () => {
-    vi.mocked(fs.readFileSync).mockReturnValue("this: is: invalid: ");
+    vi.mocked(loadTestCase).mockImplementation(() => {
+      throw new Error("Could not parse /mock/.octomind/test.yaml");
+    });
 
     await expect(
       edit({ testTargetId: "someId", filePath: "test.yaml" }),

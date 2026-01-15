@@ -10,8 +10,12 @@ import {
 import { BASE_URL, client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
-import { readTestCasesFromDir, writeSingleTestCaseYaml } from "../sync/yaml";
-import { getRelevantTestCases, loadTestCase } from "./getRelevantTestCases";
+import {
+  loadTestCase,
+  readTestCasesFromDir,
+  writeSingleTestCaseYaml,
+} from "../sync/yaml";
+import { getRelevantTestCases } from "./getRelevantTestCases";
 import { waitForLocalChangesToBeFinished } from "./waitForLocalChanges";
 
 type EditOptions = {

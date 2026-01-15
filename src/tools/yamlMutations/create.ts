@@ -16,10 +16,11 @@ import { SyncDataByStableId, SyncTestCase } from "../sync/types";
 import {
   buildFilename,
   buildFolderName,
+  loadTestCase,
   readTestCasesFromDir,
   writeSingleTestCaseYaml,
 } from "../sync/yaml";
-import { getRelevantTestCases, loadTestCase } from "./getRelevantTestCases";
+import { getRelevantTestCases } from "./getRelevantTestCases";
 import { waitForLocalChangesToBeFinished } from "./waitForLocalChanges";
 
 type CreateOptions = {
@@ -111,7 +112,7 @@ const writeOutput = async ({
     yaml.stringify(createResult),
   );
 
-  console.log(`Edited test case successfully`);
+  console.log(`Created test case successfully`);
   console.log(diff);
 };
 
