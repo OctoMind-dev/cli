@@ -155,7 +155,7 @@ export const buildCmd = (): CompletableCommand => {
     .addOption(testTargetIdOption)
     .option("-e, --environment-name [name]", "Environment name", "default")
     .option("-d, --description [text]", "Test description")
-    .option("-g, --tags [tags]", "comma separated list of tags", splitter)
+    .option("-g, --tags [tags]", "Comma separated list of tags", splitter)
     .option(
       "-v, --variables-to-overwrite [variables]",
       "JSON object of variables to overwrite",
@@ -179,20 +179,24 @@ export const buildCmd = (): CompletableCommand => {
     .completer(optionsCompleter)
     .description("Execute local YAML test cases")
     .helpGroup("execute")
-    .requiredOption("-u, --url <url>", "url the tests should run against")
+    .requiredOption("-u, --url <url>", "Url the tests should run against")
+    .option(
+      "-c, --test-case-id [uuid]",
+      "Id of the test case you want to run, if not provided will run all test cases in the test target",
+    )
     .option(
       "-e, --environment-id [uuid]",
-      "id of the environment you want to run against, if not provided will run all test cases against the default environment",
+      "Id of the environment you want to run against, if not provided will run all test cases against the default environment",
     )
     .option(
       "-t, --test-target-id [uuid]",
-      "id of the test target of the test case, if not provided will use the test target id from the config",
+      "Id of the test target of the test case, if not provided will use the test target id from the config",
     )
     .option(
       "--headless",
-      "if we should run headless without the UI of playwright and the browser",
+      "If we should run headless without the UI of playwright and the browser",
     )
-    .option("--bypass-proxy", "bypass proxy when accessing the test target")
+    .option("--bypass-proxy", "Bypass proxy when accessing the test target")
     .option("--browser [CHROMIUM, FIREFOX, SAFARI]", "Browser type", "CHROMIUM")
     .option("--breakpoint [DESKTOP, MOBILE, TABLET]", "Breakpoint", "DESKTOP")
     .action(addTestTargetWrapper(executeLocalTestCases));

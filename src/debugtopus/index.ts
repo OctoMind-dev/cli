@@ -19,7 +19,9 @@ import {
   getTestCases,
 } from "../tools";
 import { client, handleError } from "../tools/client";
+import { SyncTestCase } from "../tools/sync/types";
 import { readTestCasesFromDir } from "../tools/sync/yaml";
+import { getRelevantTestCases } from "../tools/yamlMutations/getRelevantTestCases";
 import { ensureChromiumIsInstalled } from "./installation";
 
 export type DebugtopusOptions = {
@@ -177,6 +179,21 @@ const runTests = async ({
   }
 };
 
+const getFilteredTestCaseWithDependencies = (
+  testCases: SyncTestCase[],
+  filterTestCaseId: string,
+): SyncTestCase[] => {
+  const filteredTestCase = testCases.find(
+    (testCase) => testCase.id === filterTestCaseId,
+  );
+  if (!filteredTestCase) {
+    throw new Error(`Could not find test case with id ${filterTestCaseId}`);
+  }
+
+  const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));
+  return getRelevantTestCases(testCasesById, filteredTestCase);
+};
+
 export const runDebugtopus = async (options: DebugtopusOptions) => {
   const baseApiOptions = {
     testTargetId: options.testTargetId,
@@ -275,12 +292,20 @@ export const executeLocalTestCases = async (
     );
   }
 
-  const testCases = readTestCasesFromDir(octomindRoot);
+  let testCases = readTestCasesFromDir(octomindRoot);
+  if (options.testCaseId) {
+    testCases = getFilteredTestCaseWithDependencies(
+      testCases,
+      options.testCaseId,
+    );
+  }
+
   const body = {
     testCases,
     testTargetId: options.testTargetId,
     executionUrl: options.url,
     environmentId: options.environmentId,
+    filterTestCaseIds: options.testCaseId ? [options.testCaseId] : undefined,
   };
   const { error, response } = await client.POST(
     "/apiKey/beta/test-targets/{testTargetId}/code",
