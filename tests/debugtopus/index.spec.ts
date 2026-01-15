@@ -229,9 +229,8 @@ describe("debugtopus", () => {
       mockedCreateWriteStream.mockReturnValue(mockDeep());
       mockedPipeline.mockResolvedValue(undefined);
       mockedFs.readFile.mockResolvedValue(mockZipBuffer);
-      mockedOpen.buffer = vi
-        .fn()
-        .mockResolvedValue({ extract: vi.fn().mockResolvedValue(undefined) });
+      const mockDirectory = { extract: vi.fn().mockResolvedValue(undefined) };
+      mockedOpen.buffer = vi.fn().mockResolvedValue(mockDirectory);
       mockedGetPlaywrightConfig.mockResolvedValue(mockConfig);
       mockedEnsureChromiumIsInstalled.mockResolvedValue(undefined);
       vi.mocked(exec).mockImplementation(
