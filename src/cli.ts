@@ -408,11 +408,10 @@ export const buildCmd = (): CompletableCommand => {
     .description("Edit yaml test case")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
-    .requiredOption(
-      "-f, --file-path <path>",
-      "The path to the local yaml file you want to edit",
-    )
-    .action(addTestTargetWrapper(edit));
+    .argument("<file-path>", "The path to the local yaml file you want to edit")
+    .action((filePath, options) =>
+      addTestTargetWrapper(edit)({ ...options, filePath }),
+    );
 
   createCommandWithCommonOptions(program, "list-test-targets")
     .description("List all test targets")
