@@ -1,36 +1,26 @@
-import fs from "fs";
-
 import { createTwoFilesPatch } from "diff";
 import open from "open";
-import ora from "ora";
 import yaml from "yaml";
 
 import { OCTOMIND_FOLDER_NAME } from "../../constants";
 import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
-  sleep,
 } from "../../helpers";
 import { BASE_URL, client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
-import { SyncTestCase } from "../sync/types";
-import { readTestCasesFromDir, writeSingleTestCaseYaml } from "../sync/yaml";
+import {
+  loadTestCase,
+  readTestCasesFromDir,
+  writeSingleTestCaseYaml,
+} from "../sync/yaml";
 import { getRelevantTestCases } from "./getRelevantTestCases";
 import { waitForLocalChangesToBeFinished } from "./waitForLocalChanges";
 
 type EditOptions = {
   testTargetId: string;
   filePath: string;
-};
-
-const loadTestCase = (testCasePath: string): SyncTestCase => {
-  try {
-    const content = fs.readFileSync(testCasePath, "utf8");
-    return yaml.parse(content);
-  } catch (error) {
-    throw new Error(`Could not parse ${testCasePath}: ${error}`);
-  }
 };
 
 export const edit = async (options: EditOptions): Promise<void> => {
