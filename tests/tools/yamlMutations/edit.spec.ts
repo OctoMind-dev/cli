@@ -6,7 +6,10 @@ import {
   getAbsoluteFilePathInOctomindRoot,
 } from "../../../src/helpers";
 import { draftPush } from "../../../src/tools/sync/push";
-import { loadTestCase, readTestCasesFromDir } from "../../../src/tools/sync/yaml";
+import {
+  loadTestCase,
+  readTestCasesFromDir,
+} from "../../../src/tools/sync/yaml";
 import { edit } from "../../../src/tools/yamlMutations/edit";
 import { waitForLocalChangesToBeFinished } from "../../../src/tools/yamlMutations/waitForLocalChanges";
 import {

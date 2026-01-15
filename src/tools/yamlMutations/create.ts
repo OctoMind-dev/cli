@@ -61,17 +61,13 @@ const getDependencyTestCases = async ({
   return { dependencyTestCase, relevantTestCases };
 };
 
-const openBrowserAndPoll = async ({
-  newTestCase,
-  syncData,
+const openBrowser = async ({
+  versionId,
   testTargetId,
 }: {
-  newTestCase: SyncTestCase;
-  syncData: SyncDataByStableId[number];
+  versionId: string;
   testTargetId: string;
-}) => {
-  const { versionId } = syncData;
-
+}): Promise<void> => {
   const parsedBaseUrl = URL.parse(BASE_URL);
   const localEditingUrl = new URL(
     `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${testTargetId}/testcases/${versionId}/localEdit`,
@@ -82,13 +78,6 @@ const openBrowserAndPoll = async ({
   console.log(
     `Navigating to local url, open it manually if a browser didn't open already: ${localEditingUrl}`,
   );
-
-  const createResult = await waitForLocalChangesToBeFinished(
-    versionId,
-    newTestCase,
-    { testTargetId },
-  );
-  return createResult;
 };
 
 const writeOutput = async ({
@@ -170,11 +159,15 @@ export const create = async (options: CreateOptions): Promise<void> => {
     throw new Error(`Could not create test case with id '${newTestCase.id}'`);
   }
 
-  const createResult = await openBrowserAndPoll({
-    newTestCase,
-    syncData,
+  await openBrowser({
+    versionId: syncData.versionId,
     testTargetId: options.testTargetId,
   });
+  const createResult = await waitForLocalChangesToBeFinished(
+    syncData.versionId,
+    newTestCase,
+    { testTargetId: options.testTargetId },
+  );
 
   const testCaseFolder = buildFolderName(
     newTestCase,
