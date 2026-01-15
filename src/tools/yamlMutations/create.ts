@@ -28,7 +28,7 @@ type CreateOptions = {
   dependencyPath?: string;
 };
 
-const getDependecyTestCases = async ({
+const getDependencyTestCases = async ({
   octomindRoot,
   dependencyPath,
 }: {
@@ -127,7 +127,7 @@ export const create = async (options: CreateOptions): Promise<void> => {
   const testCasesToPush: SyncTestCase[] = [];
   if (options.dependencyPath) {
     const { dependencyTestCase, relevantTestCases } =
-      await getDependecyTestCases({
+      await getDependencyTestCases({
         octomindRoot,
         dependencyPath: options.dependencyPath,
       });

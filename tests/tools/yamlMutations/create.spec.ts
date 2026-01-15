@@ -31,13 +31,19 @@ vi.mock("../../../src/tools/sync/yaml");
 vi.mock("../../../src/tools/sync/consistency");
 vi.mock("../../../src/tools/yamlMutations/waitForLocalChanges");
 
+const GENERATED_TEST_ID = "00000000-0000-0000-0000-000000000000";
+
 describe("create", () => {
   beforeEach(() => {
     console.log = vi.fn();
 
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(GENERATED_TEST_ID);
     vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
+    vi.mocked(draftPush).mockResolvedValue(
+      createMockDraftPushResponse(GENERATED_TEST_ID),
+    );
     vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue(
-      createMockSyncTestCase({ id: "test-id" }),
+      createMockSyncTestCase({ id: GENERATED_TEST_ID }),
     );
 
     vi.mocked(readTestCasesFromDir).mockReturnValue([]);
@@ -101,9 +107,6 @@ describe("create", () => {
   });
 
   it("exits gracefully when creation is cancelled", async () => {
-    vi.mocked(draftPush).mockImplementation(async ({ testCases }) =>
-      createMockDraftPushResponse(testCases[0].id),
-    );
     vi.mocked(waitForLocalChangesToBeFinished).mockResolvedValue("cancelled");
 
     await create({ testTargetId: "someId", name: "Test Name" });
@@ -114,40 +117,35 @@ describe("create", () => {
   });
 
   it("exits gracefully when creation is finished", async () => {
-    vi.mocked(draftPush).mockImplementation(async ({ testCases }) =>
-      createMockDraftPushResponse(testCases[0].id),
-    );
-
     await create({ testTargetId: "someId", name: "Test Name" });
 
     expect(console.log).toHaveBeenCalledWith("Edited test case successfully");
     expect(writeSingleTestCaseYaml).toHaveBeenCalledWith(
       "/mock/.octomind/new-test.yaml",
-      expect.objectContaining({ id: "test-id" }),
+      expect.objectContaining({ id: GENERATED_TEST_ID }),
     );
   });
 
   it("creates test case with correct properties", async () => {
-    vi.mocked(draftPush).mockImplementation(async ({ testCases }) => {
-      const newTestCase = testCases[0];
-      expect(newTestCase).toMatchObject({
-        version: "1",
-        description: "My New Test",
-        runStatus: "OFF",
-        localEditingStatus: "IN_PROGRESS",
-        elements: [],
-        prompt: "",
-      });
-      expect(newTestCase.id).toBeDefined();
-      expect(newTestCase.dependencyId).toBeUndefined();
-      return {
-        success: true,
-        versionIds: [],
-        syncDataByStableId: { [newTestCase.id]: { versionId: "version-123" } },
-      };
-    });
-
     await create({ testTargetId: "someId", name: "My New Test" });
+
+    expect(draftPush).toHaveBeenCalledWith(
+      {
+        testCases: [
+          expect.objectContaining({
+            id: GENERATED_TEST_ID,
+            version: "1",
+            description: "My New Test",
+            runStatus: "OFF",
+            localEditingStatus: "IN_PROGRESS",
+            elements: [],
+            prompt: "",
+            dependencyId: undefined,
+          }),
+        ],
+      },
+      expect.anything(),
+    );
   });
 
   it("includes dependency when dependencyPath is provided", async () => {
@@ -160,32 +158,27 @@ describe("create", () => {
       yaml.stringify(dependencyTestCase),
     );
     vi.mocked(readTestCasesFromDir).mockReturnValue([dependencyTestCase]);
-    vi.mocked(draftPush).mockImplementation(async ({ testCases }) => {
-      const newTestCase = testCases.find(
-        (tc) => tc.dependencyId === "dependency-id",
-      );
-      expect(newTestCase).toBeDefined();
-      expect(newTestCase?.dependencyId).toBe("dependency-id");
-      const id = newTestCase?.id ?? "fallback";
-      return {
-        success: true,
-        versionIds: [],
-        syncDataByStableId: { [id]: { versionId: "version-123" } },
-      };
-    });
 
     await create({
       testTargetId: "someId",
       name: "Test With Dependency",
       dependencyPath: "dependency.yaml",
     });
+
+    expect(draftPush).toHaveBeenCalledWith(
+      {
+        testCases: expect.arrayContaining([
+          expect.objectContaining({
+            id: GENERATED_TEST_ID,
+            dependencyId: "dependency-id",
+          }),
+        ]),
+      },
+      expect.anything(),
+    );
   });
 
   it("opens browser with correct URL", async () => {
-    vi.mocked(draftPush).mockImplementation(async ({ testCases }) =>
-      createMockDraftPushResponse(testCases[0].id),
-    );
-
     await create({ testTargetId: "someId", name: "Test Name" });
 
     expect(open).toHaveBeenCalledWith(
