@@ -194,11 +194,10 @@ describe("debugtopus", () => {
 
   describe("executeLocalTestCases", () => {
     const OCTOMIND_ROOT = "/project/.octomind";
+    const mockZipBuffer = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
+    const mockConfig = "export default { testDir: './tests' };";
 
-    it("should execute local test cases from zip response body", async () => {
-      const mockTestCases = [createMockSyncTestCase()];
-      const mockZipBuffer = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
-      const mockConfig = "export default { testDir: './tests' };";
+    const setupExecutionMocks = () => {
       const mockReadableStream = new ReadableStream({
         start(controller) {
           controller.enqueue(mockZipBuffer);
@@ -211,33 +210,27 @@ describe("debugtopus", () => {
         writable: true,
         configurable: true,
       });
-      const mockDirectory = { extract: vi.fn().mockResolvedValue(undefined) };
 
       vi.mocked(findOctomindFolder).mockResolvedValue(OCTOMIND_ROOT);
-      mockedReadTestCasesFromDir.mockReturnValue(mockTestCases);
       mockedClient.POST.mockResolvedValue({
         error: undefined,
         response: mockResponse,
         data: undefined,
       });
       mockedExistsSync.mockImplementation(
-        (pathThatShouldExist: Parameters<typeof existsSync>[0]) => {
-          const pathStr =
-            typeof pathThatShouldExist === "string"
-              ? pathThatShouldExist
-              : pathThatShouldExist.toString();
-          return pathStr.includes("node_modules");
-        },
+        (p: Parameters<typeof existsSync>[0]) =>
+          (typeof p === "string" ? p : p.toString()).includes("node_modules"),
       );
       mockedFs.mkdir.mockResolvedValue(undefined);
       mockedFs.rm.mockResolvedValue(undefined);
       mockedCreateWriteStream.mockReturnValue(mockDeep());
       mockedPipeline.mockResolvedValue(undefined);
       mockedFs.readFile.mockResolvedValue(mockZipBuffer);
-      mockedOpen.buffer = vi.fn().mockResolvedValue(mockDirectory);
+      mockedOpen.buffer = vi
+        .fn()
+        .mockResolvedValue({ extract: vi.fn().mockResolvedValue(undefined) });
       mockedGetPlaywrightConfig.mockResolvedValue(mockConfig);
       mockedEnsureChromiumIsInstalled.mockResolvedValue(undefined);
-
       vi.mocked(exec).mockImplementation(
         (
           _command: string,
@@ -252,6 +245,12 @@ describe("debugtopus", () => {
           return mock();
         },
       );
+    };
+
+    it("should execute local test cases from zip response body", async () => {
+      const mockTestCases = [createMockSyncTestCase()];
+      setupExecutionMocks();
+      mockedReadTestCasesFromDir.mockReturnValue(mockTestCases);
 
       await executeLocalTestCases({
         testTargetId: "test-target-id",
@@ -278,6 +277,45 @@ describe("debugtopus", () => {
         expect.stringContaining("config.ts"),
         mockConfig,
       );
+    });
+
+    it("should filter test cases by testCaseId when provided", async () => {
+      setupExecutionMocks();
+      mockedReadTestCasesFromDir.mockReturnValue([
+        createMockSyncTestCase({ id: "other-1" }),
+        createMockSyncTestCase({ id: "target-id" }),
+        createMockSyncTestCase({ id: "other-2" }),
+      ]);
+
+      await executeLocalTestCases({
+        testTargetId: "test-target-id",
+        url: "https://example.com",
+        testCaseId: "target-id",
+      });
+
+      expect(mockedClient.POST).toHaveBeenCalledWith(
+        "/apiKey/beta/test-targets/{testTargetId}/code",
+        expect.objectContaining({
+          body: expect.objectContaining({
+            testCases: [expect.objectContaining({ id: "target-id" })],
+          }),
+        }),
+      );
+    });
+
+    it("should throw an error if testCaseId does not match any test case", async () => {
+      vi.mocked(findOctomindFolder).mockResolvedValue(OCTOMIND_ROOT);
+      mockedReadTestCasesFromDir.mockReturnValue([
+        createMockSyncTestCase({ id: "test-case-1" }),
+      ]);
+
+      await expect(
+        executeLocalTestCases({
+          testTargetId: "test-target-id",
+          url: "https://example.com",
+          testCaseId: "non-existent-id",
+        }),
+      ).rejects.toThrow("Could not find test case with id non-existent-id");
     });
   });
 });

@@ -275,7 +275,16 @@ export const executeLocalTestCases = async (
     );
   }
 
-  const testCases = readTestCasesFromDir(octomindRoot);
+  let testCases = readTestCasesFromDir(octomindRoot);
+  if (options.testCaseId) {
+    testCases = testCases.filter(
+      (testCase) => testCase.id === options.testCaseId,
+    );
+    if (testCases.length === 0) {
+      throw new Error(`Could not find test case with id ${options.testCaseId}`);
+    }
+  }
+
   const body = {
     testCases,
     testTargetId: options.testTargetId,
