@@ -410,8 +410,14 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
     .requiredOption(
-      "-n, --name <path>",
+      "-n, --name [string]",
       "The name of the test case you want to create",
+    )
+    .addOption(
+      new Option(
+        "-d, --dependency <path>",
+        "The path of to test case you want to use as dependency",
+      ),
     )
     .action(addTestTargetWrapper(create));
 

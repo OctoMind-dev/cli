@@ -2,14 +2,12 @@ import fs from "fs";
 
 import { createTwoFilesPatch } from "diff";
 import open from "open";
-import ora from "ora";
 import yaml from "yaml";
 
 import { OCTOMIND_FOLDER_NAME } from "../../constants";
 import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
-  sleep,
 } from "../../helpers";
 import { BASE_URL, client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";

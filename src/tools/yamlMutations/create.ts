@@ -1,22 +1,13 @@
-import fs from "fs";
-import path from "path";
-
-import yaml from "yaml";
-
 import { OCTOMIND_FOLDER_NAME } from "../../constants";
-import {
-  findOctomindFolder,
-  getAbsoluteFilePathInOctomindRoot,
-} from "../../helpers";
+import { findOctomindFolder } from "../../helpers";
 import { client, handleError } from "../client";
-import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
 import { SyncTestCase } from "../sync/types";
-import { readTestCasesFromDir } from "../sync/yml";
 
 type CreateOptions = {
   testTargetId: string;
   name: string;
+  from: string;
 };
 
 export const create = async (options: CreateOptions): Promise<void> => {
