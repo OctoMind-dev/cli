@@ -17,6 +17,11 @@ export function promptUser(question: string): Promise<string> {
   });
 }
 
+export async function confirmAction(message: string): Promise<boolean> {
+  const answer = await promptUser(`${message} (y/N): `);
+  return answer.toLowerCase() === "y" || answer.toLowerCase() === "yes";
+}
+
 export const resolveTestTargetId = async (
   providedTestTargetId?: string,
 ): Promise<string> => {

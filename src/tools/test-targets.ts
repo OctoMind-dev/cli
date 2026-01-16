@@ -3,7 +3,7 @@ import path from "path";
 import ora from "ora";
 
 import { OCTOMIND_FOLDER_NAME } from "../constants";
-import { findOctomindFolder } from "../helpers";
+import { confirmAction, findOctomindFolder } from "../helpers";
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { push } from "./sync/push";
@@ -19,6 +19,13 @@ export const getTestTargets = async () => {
   }
 
   return data;
+};
+
+export const getTestTargetById = async (
+  testTargetId: string,
+): Promise<{ id: string; app: string } | undefined> => {
+  const testTargets = await getTestTargets();
+  return testTargets.find((t) => t.id === testTargetId);
 };
 
 export const listTestTargets = async (options: ListOptions): Promise<void> => {
@@ -81,7 +88,7 @@ export const pullTestTarget = async (
 };
 
 export const pushTestTarget = async (
-  options: { testTargetId: string } & ListOptions,
+  options: { testTargetId: string; yes?: boolean } & ListOptions,
 ): Promise<void> => {
   const sourceDir = await findOctomindFolder();
   if (!sourceDir) {
@@ -90,6 +97,19 @@ export const pushTestTarget = async (
     );
   }
   const throbber = ora("Pushing test cases").start();
+
+  const testTarget = await getTestTargetById(options.testTargetId);
+  const testTargetName = testTarget?.app ?? options.testTargetId;
+
+  if (!options.yes) {
+    const confirmed = await confirmAction(
+      `Push local changes to test target "${testTargetName}"?`,
+    );
+    if (!confirmed) {
+      console.log("Push cancelled.");
+      return;
+    }
+  }
 
   const data = await push({
     ...options,

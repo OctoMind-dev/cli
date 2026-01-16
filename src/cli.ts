@@ -405,6 +405,7 @@ export const buildCmd = (): CompletableCommand => {
     .description("Push local YAML test cases to the test target")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
+    .option("-y, --yes", "Skip confirmation prompt")
     .action(addTestTargetWrapper(pushTestTarget));
 
   // noinspection RequiredAttributes

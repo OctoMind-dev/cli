@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
 
-import { findOctomindFolder } from "../../src/helpers";
+import { confirmAction, findOctomindFolder } from "../../src/helpers";
 import { pushTestTarget } from "../../src/tools";
 import { client } from "../../src/tools/client";
 import { getGitContext } from "../../src/tools/sync/git";
@@ -15,6 +15,7 @@ vi.mock("../../src/tools/client");
 describe("push", () => {
   beforeEach(() => {
     vi.mocked(findOctomindFolder).mockResolvedValue("/project/.octomind");
+    vi.mocked(confirmAction).mockResolvedValue(true);
     vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
       ref: "refs/heads/main",
@@ -24,6 +25,11 @@ describe("push", () => {
     });
 
     vi.mocked(readTestCasesFromDir).mockReturnValue([]);
+    vi.mocked(client).GET.mockResolvedValue({
+      data: [{ id: "someId", app: "My Test App" }],
+      error: undefined,
+      response: mock(),
+    });
     vi.mocked(client).POST.mockResolvedValue({
       data: undefined,
       error: undefined,
@@ -43,6 +49,7 @@ describe("push", () => {
 
     await pushTestTarget({
       testTargetId: "someId",
+      yes: true,
     });
 
     expect(client.POST).toHaveBeenCalledWith(
@@ -62,11 +69,61 @@ describe("push", () => {
 
     await pushTestTarget({
       testTargetId: "someId",
+      yes: true,
     });
 
     expect(client.POST).toHaveBeenCalledWith(
       "/apiKey/beta/test-targets/{testTargetId}/draft/push",
       expect.anything(),
     );
+  });
+
+  describe("confirmation", () => {
+    it("prompts for confirmation with test target name", async () => {
+      await pushTestTarget({
+        testTargetId: "someId",
+      });
+
+      expect(confirmAction).toHaveBeenCalledWith(
+        'Push local changes to test target "My Test App"?',
+      );
+    });
+
+    it("skips confirmation when --yes flag is provided", async () => {
+      await pushTestTarget({
+        testTargetId: "someId",
+        yes: true,
+      });
+
+      expect(confirmAction).not.toHaveBeenCalled();
+      expect(client.POST).toHaveBeenCalled();
+    });
+
+    it("does not push when user declines confirmation", async () => {
+      vi.mocked(confirmAction).mockResolvedValue(false);
+
+      await pushTestTarget({
+        testTargetId: "someId",
+      });
+
+      expect(client.POST).not.toHaveBeenCalled();
+      expect(console.log).toHaveBeenCalledWith("Push cancelled.");
+    });
+
+    it("falls back to test target ID if name not found", async () => {
+      vi.mocked(client).GET.mockResolvedValue({
+        data: [],
+        error: undefined,
+        response: mock(),
+      });
+
+      await pushTestTarget({
+        testTargetId: "unknownId",
+      });
+
+      expect(confirmAction).toHaveBeenCalledWith(
+        'Push local changes to test target "unknownId"?',
+      );
+    });
   });
 });
