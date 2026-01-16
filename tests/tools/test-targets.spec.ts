@@ -26,7 +26,7 @@ describe("push", () => {
 
     vi.mocked(readTestCasesFromDir).mockReturnValue([]);
     vi.mocked(client).GET.mockResolvedValue({
-      data: [{ id: "someId", app: "My Test App" }],
+      data: { id: "someId", app: "My Test App" },
       error: undefined,
       response: mock(),
     });
@@ -80,12 +80,19 @@ describe("push", () => {
 
   describe("confirmation", () => {
     it("prompts for confirmation with test target name", async () => {
+      const id = "someId";
+      const name = "My Test App";
+      vi.mocked(client).GET.mockResolvedValue({
+        data: { id, app: name },
+        error: undefined,
+        response: mock(),
+      });
       await pushTestTarget({
         testTargetId: "someId",
       });
 
       expect(confirmAction).toHaveBeenCalledWith(
-        'Push local changes to test target "My Test App"?',
+        `Push local changes to test target "${name}" with id "${id}"?`,
       );
     });
 
@@ -108,22 +115,6 @@ describe("push", () => {
 
       expect(client.POST).not.toHaveBeenCalled();
       expect(console.log).toHaveBeenCalledWith("Push cancelled.");
-    });
-
-    it("falls back to test target ID if name not found", async () => {
-      vi.mocked(client).GET.mockResolvedValue({
-        data: [],
-        error: undefined,
-        response: mock(),
-      });
-
-      await pushTestTarget({
-        testTargetId: "unknownId",
-      });
-
-      expect(confirmAction).toHaveBeenCalledWith(
-        'Push local changes to test target "unknownId"?',
-      );
     });
   });
 });

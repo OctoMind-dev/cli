@@ -7,7 +7,7 @@ import { confirmAction, findOctomindFolder } from "../helpers";
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { push } from "./sync/push";
-import { readTestCasesFromDir, writeYaml } from "./sync/yaml";
+import { writeYaml } from "./sync/yaml";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");
@@ -21,11 +21,25 @@ export const getTestTargets = async () => {
   return data;
 };
 
-export const getTestTargetById = async (
-  testTargetId: string,
-): Promise<{ id: string; app: string } | undefined> => {
-  const testTargets = await getTestTargets();
-  return testTargets.find((t) => t.id === testTargetId);
+export const getTestTarget = async (id: string) => {
+  const { data, error } = await client.GET(
+    "/apiKey/v3/test-targets/{testTargetId}",
+    {
+      params: {
+        path: {
+          testTargetId: id,
+        },
+      },
+    },
+  );
+
+  handleError(error);
+
+  if (!data) {
+    throw Error(`No test target with id ${id} found`);
+  }
+
+  return data;
 };
 
 export const listTestTargets = async (options: ListOptions): Promise<void> => {
@@ -90,20 +104,21 @@ export const pullTestTarget = async (
 export const pushTestTarget = async (
   options: { testTargetId: string; yes?: boolean } & ListOptions,
 ): Promise<void> => {
+  const localThrobber = ora("Reading local test cases").start();
   const sourceDir = await findOctomindFolder();
   if (!sourceDir) {
     throw new Error(
       `No ${OCTOMIND_FOLDER_NAME} folder found, please pull first.`,
     );
   }
-  const throbber = ora("Pushing test cases").start();
 
-  const testTarget = await getTestTargetById(options.testTargetId);
-  const testTargetName = testTarget?.app ?? options.testTargetId;
+  const testTarget = await getTestTarget(options.testTargetId);
+
+  localThrobber.succeed("Local test cases read successfully");
 
   if (!options.yes) {
     const confirmed = await confirmAction(
-      `Push local changes to test target "${testTargetName}"?`,
+      `Push local changes to test target "${testTarget.app}" with id "${testTarget.id}"?`,
     );
     if (!confirmed) {
       console.log("Push cancelled.");
@@ -111,6 +126,7 @@ export const pushTestTarget = async (
     }
   }
 
+  const pushThrobber = ora("Pushing test cases").start();
   const data = await push({
     ...options,
     sourceDir,
@@ -123,5 +139,5 @@ export const pushTestTarget = async (
     logJson(data);
   }
 
-  throbber.succeed("Test cases pushed successfully");
+  pushThrobber.succeed("Test cases pushed successfully");
 };

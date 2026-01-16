@@ -2,7 +2,7 @@ import fsPromises from "fs/promises";
 import os from "os";
 import path from "path";
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { OCTOMIND_FOLDER_NAME } from "../src/constants";
 import {
