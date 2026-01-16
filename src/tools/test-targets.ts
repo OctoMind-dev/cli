@@ -1,11 +1,13 @@
 import path from "path";
 
+import ora from "ora";
+
 import { OCTOMIND_FOLDER_NAME } from "../constants";
 import { findOctomindFolder } from "../helpers";
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { push } from "./sync/push";
-import { writeYaml } from "./sync/yaml";
+import { readTestCasesFromDir, writeYaml } from "./sync/yaml";
 
 export const getTestTargets = async () => {
   const { data, error } = await client.GET("/apiKey/v3/test-targets");
@@ -87,6 +89,7 @@ export const pushTestTarget = async (
       `No ${OCTOMIND_FOLDER_NAME} folder found, please pull first.`,
     );
   }
+  const throbber = ora("Pushing test cases").start();
 
   const data = await push({
     ...options,
@@ -99,4 +102,6 @@ export const pushTestTarget = async (
   if (options.json) {
     logJson(data);
   }
+
+  throbber.succeed("Test cases pushed successfully");
 };
