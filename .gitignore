@@ -9,3 +9,4 @@ octomind-cli-debug/
 vhs/
 .octomind
 src/schemas
+**/.DS_Store
