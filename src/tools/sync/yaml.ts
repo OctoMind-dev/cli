@@ -4,10 +4,10 @@ import path from "path";
 
 import yaml from "yaml";
 
-import { pushTestTargetBody } from "../../schemas/octomindExternalAPI";
+import { PushTestTargetBody } from "../../schemas/octomindExternalAPI";
 import { SyncTestCase, TestTargetSyncData } from "./types";
 
-const syncTestCaseSchema = pushTestTargetBody.shape.testCases.element;
+const syncTestCaseSchema = PushTestTargetBody.shape.testCases.element;
 
 const removeDiacritics = (str: string): string => {
   // diacritics lead to issues in the file system afterward, cf. https://www.reddit.com/r/MacOS/comments/jhjv41/psa_beware_of_umlauts_and_other_accented/
