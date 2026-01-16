@@ -8,6 +8,7 @@ import { Readable } from "stream";
 import { ReadableStream } from "stream/web";
 import { promisify } from "util";
 
+import ora from "ora";
 import { Open } from "unzipper";
 
 import { OCTOMIND_FOLDER_NAME } from "../constants";
@@ -292,6 +293,8 @@ export const executeLocalTestCases = async (
     );
   }
 
+  const throbber = ora("Generating code").start();
+
   let testCases = readTestCasesFromDir(octomindRoot);
   if (options.testCaseId) {
     testCases = getFilteredTestCaseWithDependencies(
@@ -344,6 +347,8 @@ export const executeLocalTestCases = async (
   }
 
   writeFileSync(dirs.configFilePath, config);
+
+  throbber.succeed("Code generated");
 
   await runTests({ ...dirs, runMode: options.headless ? "headless" : "ui" });
 };
