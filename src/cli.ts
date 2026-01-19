@@ -1,3 +1,5 @@
+import { configure, getConsoleSink } from "@logtape/logtape";
+import { getPrettyFormatter } from "@logtape/pretty";
 import { Option } from "commander";
 
 import {
@@ -77,7 +79,27 @@ const createCommandWithCommonOptions = (
     .option("-j, --json", "Output raw JSON response") as CompletableCommand;
 };
 
-export const buildCmd = (): CompletableCommand => {
+export const buildCmd = async (): Promise<CompletableCommand> => {
+  await configure({
+    sinks: {
+      console: getConsoleSink({
+        formatter: getPrettyFormatter({
+          timestamp: "none",
+          categoryStyle: "dim",
+          messageColor: "white",
+        }),
+      }),
+    },
+    loggers: [
+      {
+        category: ["logtape", "meta"],
+        sinks: ["console"],
+        lowestLevel: "warning",
+      },
+      { category: "octomind", lowestLevel: "debug", sinks: ["console"] },
+    ],
+  });
+
   const program = new CompletableCommand();
 
   program

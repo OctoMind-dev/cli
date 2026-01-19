@@ -1,5 +1,3 @@
-import pino from "pino";
+import { getLogger } from "@logtape/logtape";
 
-export const logger = pino({
-  level: process.env.LOG_LEVEL || "info",
-});
+export const logger = getLogger("octomind");
