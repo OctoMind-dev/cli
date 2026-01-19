@@ -406,6 +406,7 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
     .option("-y, --yes", "Skip confirmation prompt")
+    .option("-f, --force", "Force push to main, ignoring any git context")
     .action(addTestTargetWrapper(pushTestTarget));
 
   // noinspection RequiredAttributes

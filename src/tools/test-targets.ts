@@ -102,7 +102,11 @@ export const pullTestTarget = async (
 };
 
 export const pushTestTarget = async (
-  options: { testTargetId: string; yes?: boolean } & ListOptions,
+  options: {
+    testTargetId: string;
+    yes?: boolean;
+    force?: boolean;
+  } & ListOptions,
 ): Promise<void> => {
   const localThrobber = ora("Reading local test cases").start();
   const sourceDir = await findOctomindFolder();
@@ -139,5 +143,5 @@ export const pushTestTarget = async (
     logJson(data);
   }
 
-  pushThrobber.succeed("Test cases pushed successfully");
+  pushThrobber.succeed(`Test cases pushed as ${data?.pushResult}`);
 };
