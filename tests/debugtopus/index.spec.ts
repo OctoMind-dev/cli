@@ -311,7 +311,7 @@ describe("debugtopus", () => {
       await executeLocalTestCases({
         testTargetId: "test-target-id",
         url: "https://example.com",
-        testCaseName: "target-test.yaml",
+        testCasePath: "target-test.yaml",
       });
 
       expect(mockedGetAbsoluteFilePathInOctomindRoot).toHaveBeenCalledWith({
@@ -343,7 +343,7 @@ describe("debugtopus", () => {
         executeLocalTestCases({
           testTargetId: "test-target-id",
           url: "https://example.com",
-          testCaseName: "non-existent.yaml",
+          testCasePath: "non-existent.yaml",
         }),
       ).rejects.toThrow(
         `Could not find non-existent.yaml in folder ${OCTOMIND_ROOT}`,

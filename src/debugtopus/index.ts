@@ -185,29 +185,29 @@ const runTests = async ({
 
 const getFilteredTestCaseWithDependencies = async ({
   testCases,
-  filterTestCaseName,
+  filterTestCasePath,
   octomindRoot,
 }: {
   testCases: SyncTestCase[];
-  filterTestCaseName: string;
+  filterTestCasePath: string;
   octomindRoot: string;
 }): Promise<{
   relevantTestCases: SyncTestCase[];
   filterTestCaseId: string;
 }> => {
-  const filterTestCaseFilePath = await getAbsoluteFilePathInOctomindRoot({
+  const absoluteTestCaseFilePath = await getAbsoluteFilePathInOctomindRoot({
     octomindRoot,
-    filePath: filterTestCaseName,
+    filePath: filterTestCasePath,
   });
-  if (!filterTestCaseFilePath) {
+  if (!absoluteTestCaseFilePath) {
     throw new Error(
-      `Could not find ${filterTestCaseName} in folder ${octomindRoot}`,
+      `Could not find ${filterTestCasePath} in folder ${octomindRoot}`,
     );
   }
 
-  const filteredTestCase = loadTestCase(filterTestCaseFilePath);
+  const filteredTestCase = loadTestCase(absoluteTestCaseFilePath);
   if (!filteredTestCase) {
-    throw new Error(`Could not find test case with id ${filterTestCaseName}`);
+    throw new Error(`Could not find test case with id ${filterTestCasePath}`);
   }
 
   const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));
@@ -307,7 +307,7 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
 };
 
 export const executeLocalTestCases = async (
-  options: Omit<DebugtopusOptions, "testCaseId"> & { testCaseName?: string },
+  options: Omit<DebugtopusOptions, "testCaseId"> & { testCasePath?: string },
 ): Promise<void> => {
   const octomindRoot = await findOctomindFolder();
   if (!octomindRoot) {
@@ -320,10 +320,10 @@ export const executeLocalTestCases = async (
 
   let testCases = readTestCasesFromDir(octomindRoot);
   let filterTestCaseId: string | undefined = undefined;
-  if (options.testCaseName) {
+  if (options.testCasePath) {
     const filtered = await getFilteredTestCaseWithDependencies({
       testCases,
-      filterTestCaseName: options.testCaseName,
+      filterTestCasePath: options.testCasePath,
       octomindRoot,
     });
     testCases = filtered.relevantTestCases;
