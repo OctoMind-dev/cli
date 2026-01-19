@@ -5,6 +5,8 @@ import { promisify } from "util";
 
 import { chromium } from "@playwright/test";
 
+import { logger } from "../logger";
+
 export const ensureChromiumIsInstalled = async (
   packageRootDir: string,
 ): Promise<void> => {
@@ -20,7 +22,7 @@ export const ensureChromiumIsInstalled = async (
         reject(error);
         return;
       }
-      console.log(
+      logger.info(
         "Couldn't find any chromium binary, executing 'npx playwright install chromium'",
       );
 
@@ -32,7 +34,7 @@ export const ensureChromiumIsInstalled = async (
       );
 
       playwrightInstallExecution.child?.stdout?.on("data", (data) =>
-        console.log(data),
+        logger.info(data),
       );
 
       await playwrightInstallExecution;

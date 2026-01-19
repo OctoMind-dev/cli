@@ -3,6 +3,8 @@ import fs from "fs/promises";
 import { homedir } from "os";
 import { join } from "path";
 
+import { logger } from "./logger";
+
 const CONFIG_DIR = ".config";
 
 export async function getConfigPath(ensureDir?: boolean): Promise<string> {
@@ -45,9 +47,9 @@ export async function loadConfig(force?: boolean): Promise<Config> {
   } catch (error) {
     // only exit on overwrite attempt
     if (force) {
-      console.error(
-        "❌ Error parsing configuration:",
-        (error as Error).message,
+      logger.error(
+        { err: error as Error },
+        "❌ Error parsing configuration",
       );
       process.exit(1);
     }
@@ -59,10 +61,10 @@ export async function saveConfig(newConfig: Config): Promise<void> {
   try {
     const configPath = await getConfigPath(true);
     await fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), "utf8");
-    console.log(`✅ Configuration saved to ${configPath}`);
+    logger.info(`✅ Configuration saved to ${configPath}`);
     configLoaded = false;
   } catch (error) {
-    console.error("❌ Error saving configuration:", (error as Error).message);
+    logger.error({ err: error as Error }, "❌ Error saving configuration");
     process.exit(1);
   }
 }

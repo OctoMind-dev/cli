@@ -5,6 +5,8 @@ import path from "path";
 
 import which from "which";
 
+import { logger } from "../logger";
+
 export const update = async (): Promise<void> => {
   const pathToRoot = path.posix.normalize(
     path.join(homedir(), ".local", "packages"),
@@ -12,14 +14,14 @@ export const update = async (): Promise<void> => {
   const pathToPackageJson = path.join(pathToRoot, "package.json");
 
   if (!fs.existsSync(pathToPackageJson)) {
-    console.error(
+    logger.error(
       "Cannot find package.json at ~/.local/packages. If you installed globally via npm, run: npm update -g @octomind/octomind",
     );
     process.exit(1);
   }
 
   if (!(await which("npm"))) {
-    console.error(
+    logger.error(
       `cannot determine location of npm, cannot update, please update manually, package location: ${pathToPackageJson}`,
     );
     process.exit(1);
@@ -30,7 +32,7 @@ export const update = async (): Promise<void> => {
     stdio: ["ignore", "pipe", "ignore"],
   });
 
-  console.log(`version before update: ${oldVersion}`);
+  logger.info(`version before update: ${oldVersion}`);
 
   child_process.execSync("npm install @octomind/octomind@latest", {
     cwd: pathToRoot,
@@ -42,5 +44,5 @@ export const update = async (): Promise<void> => {
     stdio: ["ignore", "pipe", "ignore"],
   });
 
-  console.log(`✔ update complete: ${newVersion}`);
+    logger.info(`✔ update complete: ${newVersion}`);
 };

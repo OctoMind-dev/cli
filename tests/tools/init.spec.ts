@@ -4,6 +4,7 @@ import { loadConfig, saveConfig } from "../../src/config";
 import { promptUser } from "../../src/helpers";
 import { init } from "../../src/tools/init";
 import { getTestTargets } from "../../src/tools/test-targets";
+import { mockLogger } from "../mocks";
 
 vi.mock("../../src/config");
 vi.mock("../../src/helpers");
@@ -15,7 +16,7 @@ describe("init", () => {
   let getTestTargetsMock: Mock<typeof getTestTargets>;
 
   beforeEach(() => {
-    console.log = vi.fn();
+    mockLogger.info.mockClear();
 
     loadConfigMock = vi.mocked(loadConfig);
     loadConfigMock.mockResolvedValue({ apiKey: "apiKey" });
@@ -36,10 +37,10 @@ describe("init", () => {
       apiKey: "newApiKey",
       testTargetId: "testTargetId",
     });
-    expect(console.log).toHaveBeenCalledWith(
+    expect(mockLogger.info).toHaveBeenCalledWith(
       "Only one test target found, using it: testTargetApp (testTargetId)",
     );
-    expect(console.log).toHaveBeenNthCalledWith(
+    expect(mockLogger.info).toHaveBeenNthCalledWith(
       3,
       "\n✨ Initialization complete!",
     );
@@ -56,7 +57,7 @@ describe("init", () => {
       apiKey: "newApiKey",
       testTargetId: "testTargetId1",
     });
-    expect(console.log).toHaveBeenNthCalledWith(
+    expect(mockLogger.info).toHaveBeenNthCalledWith(
       2,
       "\n✨ Initialization complete!",
     );

@@ -1,5 +1,6 @@
 import { Config, loadConfig, saveConfig } from "../config";
 import { promptUser } from "../helpers";
+import { logger } from "../logger";
 import { getTestTargets, listTestTargets } from "./test-targets";
 
 const selectTestTarget = async (): Promise<string> => {
@@ -7,7 +8,7 @@ const selectTestTarget = async (): Promise<string> => {
   await listTestTargets({});
 
   if (testTargets.length === 1) {
-    console.log(
+    logger.info(
       `Only one test target found, using it: ${testTargets[0].app} (${testTargets[0].id})`,
     );
     return testTargets[0].id;
@@ -23,12 +24,12 @@ const selectTestTarget = async (): Promise<string> => {
     testTargetIndexAsInt < 1 ||
     testTargetIndexAsInt > testTargets.length
   ) {
-    console.log("❌ could not find a test target with the index you provided");
+    logger.info("❌ could not find a test target with the index you provided");
     process.exit(1);
   }
   const testTargetId = testTargets[testTargetIndexAsInt - 1].id;
   if (!testTargetId) {
-    console.log("❌ could not find a test target with the index you provided");
+    logger.info("❌ could not find a test target with the index you provided");
     process.exit(1);
   }
 
@@ -43,7 +44,7 @@ export const switchTestTarget = async () => {
     testTargetId,
   };
   await saveConfig(newConfig);
-  console.log(`✨ Switched to test target: ${testTargetId}`);
+  logger.info(`✨ Switched to test target: ${testTargetId}`);
 };
 
 export const init = async (options: {
@@ -52,12 +53,12 @@ export const init = async (options: {
   force?: boolean;
 }) => {
   try {
-    console.log("🚀 Initializing configuration...\n");
+    logger.info("🚀 Initializing configuration...\n");
 
     const existingConfig = await loadConfig(options.force);
 
     if (existingConfig.apiKey && !options.force) {
-      console.log("⚠️  Configuration already exists.");
+      logger.info("⚠️  Configuration already exists.");
       const overwrite = await promptUser(
         "Do you want to overwrite it? (y/N): ",
       );
@@ -66,7 +67,7 @@ export const init = async (options: {
         overwrite.toLowerCase() !== "y" &&
         overwrite.toLowerCase() !== "yes"
       ) {
-        console.log("Configuration unchanged.");
+        logger.info("Configuration unchanged.");
         return;
       }
     }
@@ -76,7 +77,7 @@ export const init = async (options: {
         "Enter your API key. Go to https://octomind.dev/docs/run-tests/execution-curl#create-an-api-key to learn how to generate one: ",
       );
       if (!options.apiKey) {
-        console.log("❌ API key is required.");
+        logger.info("❌ API key is required.");
         process.exit(1);
       }
     }
@@ -99,9 +100,9 @@ export const init = async (options: {
 
     await saveConfig(newConfig);
 
-    console.log("\n✨ Initialization complete!");
+    logger.info("\n✨ Initialization complete!");
   } catch (error) {
-    console.error("❌ Error during initialization:", (error as Error).message);
+    logger.error({ err: error as Error }, "❌ Error during initialization");
     process.exit(1);
   }
 };

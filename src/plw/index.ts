@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { createInterface } from "readline";
 
 import { loadConfig } from "../config";
+import { logger } from "../logger";
 
 interface StreamResult {
   lines: string[];
@@ -39,7 +40,7 @@ const spawnAndStreamLines = async (
 
     rl.on("line", (line: string) => {
       lines.push(line);
-      console.log(`-- ${line}`);
+      logger.info(`-- ${line}`);
       lineCount++;
 
       if (lineCount >= maxLines) {
@@ -58,7 +59,7 @@ const spawnAndStreamLines = async (
 
     child.on("exit", (code, signal) => {
       if (lineCount < maxLines) {
-        console.log(`Process exited with code ${code}, signal ${signal}`);
+        logger.info(`Process exited with code ${code}, signal ${signal}`);
       }
       resolve({ lines, detached: false, code, signal });
     });
@@ -111,19 +112,19 @@ export const startPrivateLocationWorker = async (options: {
   });
 
   if (!(await checkDockerDaemon())) {
-    console.error(
+    logger.error(
       "Docker daemon is not running. Please start Docker and try again.",
     );
     return;
   }
 
-  console.log(
+  logger.info(
     `executing command : '${command.replace(/APIKEY=[^\s&]*/g, "APIKEY=***")}'`,
   );
   const args = command.split(" ");
   const result = await spawnAndStreamLines(args[0], args.slice(1), 10);
-  console.log(`Captured ${result.lines.length} lines`);
-  console.log(`Process detached: ${result.detached}`);
+  logger.info(`Captured ${result.lines.length} lines`);
+  logger.info(`Process detached: ${result.detached}`);
 };
 
 export const stopPLW = async (): Promise<void> => {
@@ -131,9 +132,9 @@ export const stopPLW = async (): Promise<void> => {
   const args = command.split(" ");
   const result = await spawnAndStreamLines(args[0], args.slice(1), 10);
   if (result.code === 0) {
-    console.log("Private Location Worker stopped successfully.");
+    logger.info("Private Location Worker stopped successfully.");
   } else {
-    console.error(
+    logger.error(
       `Failed to stop Private Location Worker. Exit code: ${result.code}`,
     );
   }

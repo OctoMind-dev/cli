@@ -1,9 +1,23 @@
+import { vi } from "vitest";
 import {
   EnvironmentResponse,
   TestCaseResponse,
   TestReport,
 } from "../src/tools";
 import { SyncDataByStableId, SyncTestCase } from "../src/tools/sync/types";
+
+export const mockLogger = {
+  info: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+  debug: vi.fn(),
+  log: vi.fn(),
+  success: vi.fn(),
+};
+
+vi.mock("../src/logger", () => ({
+  logger: mockLogger,
+}));
 
 export const createMockSyncTestCase = (
   overrides?: Partial<SyncTestCase>,
