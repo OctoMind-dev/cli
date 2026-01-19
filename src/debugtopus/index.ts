@@ -12,7 +12,10 @@ import ora from "ora";
 import { Open } from "unzipper";
 
 import { OCTOMIND_FOLDER_NAME } from "../constants";
-import { findOctomindFolder, getAbsoluteFilePathInOctomindRoot } from "../helpers";
+import {
+  findOctomindFolder,
+  getAbsoluteFilePathInOctomindRoot,
+} from "../helpers";
 import {
   getEnvironments,
   getPlaywrightCode,
@@ -180,13 +183,18 @@ const runTests = async ({
   }
 };
 
-const getFilteredTestCaseWithDependencies = async (
-  { testCases, filterTestCaseName, octomindRoot }: {
-    testCases: SyncTestCase[],
-    filterTestCaseName: string,
-    octomindRoot: string
-  }
-): Promise<{relevantTestCases: SyncTestCase[], filterTestCaseId: string}> => {
+const getFilteredTestCaseWithDependencies = async ({
+  testCases,
+  filterTestCaseName,
+  octomindRoot,
+}: {
+  testCases: SyncTestCase[];
+  filterTestCaseName: string;
+  octomindRoot: string;
+}): Promise<{
+  relevantTestCases: SyncTestCase[];
+  filterTestCaseId: string;
+}> => {
   const filterTestCaseFilePath = await getAbsoluteFilePathInOctomindRoot({
     octomindRoot,
     filePath: filterTestCaseName,
@@ -203,8 +211,11 @@ const getFilteredTestCaseWithDependencies = async (
   }
 
   const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));
-  const relevantTestCases = getRelevantTestCases(testCasesById, filteredTestCase);
-  return {relevantTestCases, filterTestCaseId: filteredTestCase.id}
+  const relevantTestCases = getRelevantTestCases(
+    testCasesById,
+    filteredTestCase,
+  );
+  return { relevantTestCases, filterTestCaseId: filteredTestCase.id };
 };
 
 export const runDebugtopus = async (options: DebugtopusOptions) => {
@@ -241,8 +252,8 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
         .filter((testCase) =>
           options.grep
             ? testCase.description
-              ?.toLowerCase()
-              .includes(options.grep.toLowerCase())
+                ?.toLowerCase()
+                .includes(options.grep.toLowerCase())
             : true,
         )
         .map(async (testCase) => ({
@@ -313,7 +324,7 @@ export const executeLocalTestCases = async (
     const filtered = await getFilteredTestCaseWithDependencies({
       testCases,
       filterTestCaseName: options.testCaseName,
-      octomindRoot
+      octomindRoot,
     });
     testCases = filtered.relevantTestCases;
     filterTestCaseId = filtered.filterTestCaseId;
