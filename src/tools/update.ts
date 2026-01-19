@@ -7,7 +7,7 @@ import which from "which";
 
 export const update = async (): Promise<void> => {
   const pathToRoot = path.posix.normalize(
-    path.join(homedir(), "/.local/packages"),
+    path.join(homedir(), ".local", "packages"),
   );
   const pathToPackageJson = path.join(pathToRoot, "package.json");
 
@@ -25,15 +25,22 @@ export const update = async (): Promise<void> => {
     process.exit(1);
   }
 
-  console.log(`updating package.json at ${pathToPackageJson}`);
+  const oldVersion = child_process.execSync("npm list @octomind/octomind", {
+    cwd: pathToRoot,
+    stdio: ["ignore", "pipe", "ignore"],
+  });
 
-  const result = child_process.execSync(
-    "npm install @octomind/octomind@latest",
-    {
-      cwd: path.dirname(pathToRoot),
-    },
-  );
+  console.log(`version before update: ${oldVersion}`);
 
-  console.log(`${result}`);
-  console.log("\n✔ update complete");
+  child_process.execSync("npm install @octomind/octomind@latest", {
+    cwd: pathToRoot,
+    stdio: "ignore",
+  });
+
+  const newVersion = child_process.execSync("npm list @octomind/octomind", {
+    cwd: pathToRoot,
+    stdio: ["ignore", "pipe", "ignore"],
+  });
+
+  console.log(`✔ update complete: ${newVersion}`);
 };
