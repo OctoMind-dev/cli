@@ -38,7 +38,7 @@ _fast_octomind_completion() {
     
     local config_file="$HOME/.config/octomind.json"
     local context_id="default"
-    [[ -f "$config_file" ]] && context_id=$(grep -o '"testTargetId": "[^"]*' "$config_file" | cut -d'"' -f4)
+    [[ -f "$config_file" ]] && context_id=$(grep -o '"testTargetId": "[^"]*"' "$config_file" | cut -d'"' -f4)
     
     local current_subcommand="${words[2]:-base}"
     local cache_file="$cache_dir/cache_${context_id}_${current_subcommand}.txt"
