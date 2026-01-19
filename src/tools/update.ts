@@ -13,7 +13,7 @@ export const update = async (): Promise<void> => {
 
   if (!fs.existsSync(pathToPackageJson)) {
     console.error(
-      "cannot find package.json, cannot update, please update manually",
+      "Cannot find package.json at ~/.local/packages. If you installed globally via npm, run: npm update -g @octomind/octomind",
     );
     process.exit(1);
   }
