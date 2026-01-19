@@ -446,7 +446,6 @@ Push local YAML test cases to the test target
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 | `-y, --yes` | Skip confirmation prompt | No |  |
-| `-f, --force` | Force push to main, ignoring any git context | No |  |
 
 ## create-test-case
 

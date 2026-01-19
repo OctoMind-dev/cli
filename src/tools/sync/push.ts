@@ -22,7 +22,6 @@ type PushOptions = {
   branchName?: string;
   client: Client<paths>;
   onError: (error: ErrorResponse) => void;
-  force?: boolean;
 };
 
 export const push = async (
@@ -41,7 +40,7 @@ export const push = async (
     testCases,
   };
 
-  if (isDefaultBranch || options.force) {
+  if (isDefaultBranch) {
     const pushResult = await defaultPush(body, options);
     if (!pushResult) {
       return undefined;

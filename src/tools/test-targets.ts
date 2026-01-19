@@ -105,7 +105,6 @@ export const pushTestTarget = async (
   options: {
     testTargetId: string;
     yes?: boolean;
-    force?: boolean;
   } & ListOptions,
 ): Promise<void> => {
   const localThrobber = ora("Reading local test cases").start();

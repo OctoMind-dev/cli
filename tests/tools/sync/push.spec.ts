@@ -53,29 +53,6 @@ describe("push", () => {
     );
   });
 
-  it("pushes to main if forcing", async () => {
-    vi.mocked(getGitContext).mockResolvedValue({
-      defaultBranch: "refs/heads/main",
-      ref: "refs/heads/some-other-branch",
-      repo: "my-repo",
-      owner: "my-org",
-      sha: "sha256-12123as",
-    });
-
-    await push({
-      testTargetId: "someId",
-      sourceDir: ".",
-      client: mockedClient,
-      onError: vi.fn(),
-      force: true,
-    });
-
-    expect(mockedClient.POST).toHaveBeenCalledWith(
-      "/apiKey/beta/test-targets/{testTargetId}/push",
-      expect.anything(),
-    );
-  });
-
   it("pushes to draft if on other branch", async () => {
     vi.mocked(getGitContext).mockResolvedValue({
       defaultBranch: "refs/heads/main",
