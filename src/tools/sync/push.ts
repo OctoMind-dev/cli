@@ -26,7 +26,10 @@ type PushOptions = {
 
 export const push = async (
   options: PushOptions,
-): Promise<{ success: boolean; versionIds: string[] } | undefined> => {
+): Promise<
+  | { success: boolean; versionIds: string[]; pushResult: "drafts" | "enabled" }
+  | undefined
+> => {
   const testCases = readTestCasesFromDir(options.sourceDir);
   checkForConsistency(testCases);
   const context = await getGitContext();
@@ -38,9 +41,17 @@ export const push = async (
   };
 
   if (isDefaultBranch) {
-    return defaultPush(body, options);
+    const pushResult = await defaultPush(body, options);
+    if (!pushResult) {
+      return undefined;
+    }
+    return { ...pushResult, pushResult: "enabled" };
   } else {
-    return draftPush(body, options);
+    const pushResult = await draftPush(body, options);
+    if (!pushResult) {
+      return undefined;
+    }
+    return { ...pushResult, pushResult: "drafts" };
   }
 };
 

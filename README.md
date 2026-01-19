@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 4.2.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 4.3.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -237,7 +237,7 @@ Execute local YAML test cases
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-u, --url <url>` | Url the tests should run against | Yes |  |
-| `-c, --test-case-id [uuid]` | Id of the test case you want to run, if not provided will run all test cases in the test target | No |  |
+| `-p, --test-case-path [string]` | Path of the test case you want to run, if not provided will run all test cases in the test target | No |  |
 | `-e, --environment-id [uuid]` | Id of the environment you want to run against, if not provided will run all test cases against the default environment | No |  |
 | `-t, --test-target-id [uuid]` | Id of the test target of the test case, if not provided will use the test target id from the config | No |  |
 | `--headless` | If we should run headless without the UI of playwright and the browser | No |  |
@@ -445,6 +445,7 @@ Push local YAML test cases to the test target
 |:-------|:----------|:---------|:--------|
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
+| `-y, --yes` | Skip confirmation prompt | No |  |
 
 ## create-test-case
 
@@ -459,7 +460,7 @@ Create a new test case
 | `-j, --json` | Output raw JSON response | No |  |
 | `-t, --test-target-id [id]` | Test target ID, if not provided will use the test target id from the config | No |  |
 | `-n, --name <string>` | The name of the test case you want to create | Yes |  |
-| `-d, --dependency-path <path>` | The path of to test case you want to use as dependency | Yes |  |
+| `-d, --dependency-path [path]` | The path of to test case you want to use as dependency | No |  |
 
 ## edit-test-case
 
