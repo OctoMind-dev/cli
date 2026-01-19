@@ -12,7 +12,10 @@ import ora from "ora";
 import { Open } from "unzipper";
 
 import { OCTOMIND_FOLDER_NAME } from "../constants";
-import { findOctomindFolder } from "../helpers";
+import {
+  findOctomindFolder,
+  getAbsoluteFilePathInOctomindRoot,
+} from "../helpers";
 import {
   getEnvironments,
   getPlaywrightCode,
@@ -21,7 +24,7 @@ import {
 } from "../tools";
 import { client, handleError } from "../tools/client";
 import { SyncTestCase } from "../tools/sync/types";
-import { readTestCasesFromDir } from "../tools/sync/yaml";
+import { loadTestCase, readTestCasesFromDir } from "../tools/sync/yaml";
 import { getRelevantTestCases } from "../tools/yamlMutations/getRelevantTestCases";
 import { ensureChromiumIsInstalled } from "./installation";
 
@@ -180,19 +183,39 @@ const runTests = async ({
   }
 };
 
-const getFilteredTestCaseWithDependencies = (
-  testCases: SyncTestCase[],
-  filterTestCaseId: string,
-): SyncTestCase[] => {
-  const filteredTestCase = testCases.find(
-    (testCase) => testCase.id === filterTestCaseId,
-  );
+const getFilteredTestCaseWithDependencies = async ({
+  testCases,
+  filterTestCasePath,
+  octomindRoot,
+}: {
+  testCases: SyncTestCase[];
+  filterTestCasePath: string;
+  octomindRoot: string;
+}): Promise<{
+  relevantTestCases: SyncTestCase[];
+  filterTestCaseId: string;
+}> => {
+  const absoluteTestCaseFilePath = await getAbsoluteFilePathInOctomindRoot({
+    octomindRoot,
+    filePath: filterTestCasePath,
+  });
+  if (!absoluteTestCaseFilePath) {
+    throw new Error(
+      `Could not find ${filterTestCasePath} in folder ${octomindRoot}`,
+    );
+  }
+
+  const filteredTestCase = loadTestCase(absoluteTestCaseFilePath);
   if (!filteredTestCase) {
-    throw new Error(`Could not find test case with id ${filterTestCaseId}`);
+    throw new Error(`Could not find test case with id ${filterTestCasePath}`);
   }
 
   const testCasesById = Object.fromEntries(testCases.map((tc) => [tc.id, tc]));
-  return getRelevantTestCases(testCasesById, filteredTestCase);
+  const relevantTestCases = getRelevantTestCases(
+    testCasesById,
+    filteredTestCase,
+  );
+  return { relevantTestCases, filterTestCaseId: filteredTestCase.id };
 };
 
 export const runDebugtopus = async (options: DebugtopusOptions) => {
@@ -284,7 +307,7 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
 };
 
 export const executeLocalTestCases = async (
-  options: DebugtopusOptions,
+  options: Omit<DebugtopusOptions, "testCaseId"> & { testCasePath?: string },
 ): Promise<void> => {
   const octomindRoot = await findOctomindFolder();
   if (!octomindRoot) {
@@ -296,11 +319,15 @@ export const executeLocalTestCases = async (
   const throbber = ora("Generating code").start();
 
   let testCases = readTestCasesFromDir(octomindRoot);
-  if (options.testCaseId) {
-    testCases = getFilteredTestCaseWithDependencies(
+  let filterTestCaseId: string | undefined = undefined;
+  if (options.testCasePath) {
+    const filtered = await getFilteredTestCaseWithDependencies({
       testCases,
-      options.testCaseId,
-    );
+      filterTestCasePath: options.testCasePath,
+      octomindRoot,
+    });
+    testCases = filtered.relevantTestCases;
+    filterTestCaseId = filtered.filterTestCaseId;
   }
 
   const body = {
@@ -308,7 +335,7 @@ export const executeLocalTestCases = async (
     testTargetId: options.testTargetId,
     executionUrl: options.url,
     environmentId: options.environmentId,
-    filterTestCaseIds: options.testCaseId ? [options.testCaseId] : undefined,
+    filterTestCaseIds: filterTestCaseId ? [filterTestCaseId] : undefined,
   };
   const { error, response } = await client.POST(
     "/apiKey/beta/test-targets/{testTargetId}/code",

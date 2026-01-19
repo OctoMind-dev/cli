@@ -14,10 +14,14 @@ import {
   readZipFromResponseBody,
 } from "../../src/debugtopus/index";
 import { ensureChromiumIsInstalled } from "../../src/debugtopus/installation";
-import { findOctomindFolder } from "../../src/helpers";
+import {
+  findOctomindFolder,
+  getAbsoluteFilePathInOctomindRoot,
+} from "../../src/helpers";
 import { client } from "../../src/tools/client";
 import { getPlaywrightConfig } from "../../src/tools/playwright";
-import { readTestCasesFromDir } from "../../src/tools/sync/yaml";
+import { loadTestCase, readTestCasesFromDir } from "../../src/tools/sync/yaml";
+import { getRelevantTestCases } from "../../src/tools/yamlMutations/getRelevantTestCases";
 import { createMockSyncTestCase } from "../mocks";
 
 vi.mock("fs/promises");
@@ -28,6 +32,7 @@ vi.mock("../../src/tools/sync/yaml");
 vi.mock("../../src/tools/playwright");
 vi.mock("../../src/debugtopus/installation");
 vi.mock("../../src/helpers");
+vi.mock("../../src/tools/yamlMutations/getRelevantTestCases");
 vi.mock("child_process");
 vi.mock("node:stream/promises");
 vi.mock("util", () => ({
@@ -46,6 +51,11 @@ const mockedReadTestCasesFromDir = vi.mocked(readTestCasesFromDir);
 
 const mockedGetPlaywrightConfig = vi.mocked(getPlaywrightConfig);
 const mockedEnsureChromiumIsInstalled = vi.mocked(ensureChromiumIsInstalled);
+const mockedGetAbsoluteFilePathInOctomindRoot = vi.mocked(
+  getAbsoluteFilePathInOctomindRoot,
+);
+const mockedLoadTestCase = vi.mocked(loadTestCase);
+const mockedGetRelevantTestCases = vi.mocked(getRelevantTestCases);
 
 describe("debugtopus", () => {
   describe("readZipFromResponseBody", () => {
@@ -282,20 +292,35 @@ describe("debugtopus", () => {
       );
     });
 
-    it("should filter test cases by testCaseId when provided", async () => {
-      setupExecutionMocks();
-      mockedReadTestCasesFromDir.mockReturnValue([
+    it("should filter test cases by testCaseName when provided", async () => {
+      const targetTestCase = createMockSyncTestCase({ id: "target-id" });
+      const allTestCases = [
         createMockSyncTestCase({ id: "other-1" }),
-        createMockSyncTestCase({ id: "target-id" }),
+        targetTestCase,
         createMockSyncTestCase({ id: "other-2" }),
-      ]);
+      ];
+
+      setupExecutionMocks();
+      mockedReadTestCasesFromDir.mockReturnValue(allTestCases);
+      mockedGetAbsoluteFilePathInOctomindRoot.mockResolvedValue(
+        `${OCTOMIND_ROOT}/target-test.yaml`,
+      );
+      mockedLoadTestCase.mockReturnValue(targetTestCase);
+      mockedGetRelevantTestCases.mockReturnValue([targetTestCase]);
 
       await executeLocalTestCases({
         testTargetId: "test-target-id",
         url: "https://example.com",
-        testCaseId: "target-id",
+        testCasePath: "target-test.yaml",
       });
 
+      expect(mockedGetAbsoluteFilePathInOctomindRoot).toHaveBeenCalledWith({
+        octomindRoot: OCTOMIND_ROOT,
+        filePath: "target-test.yaml",
+      });
+      expect(mockedLoadTestCase).toHaveBeenCalledWith(
+        `${OCTOMIND_ROOT}/target-test.yaml`,
+      );
       expect(mockedClient.POST).toHaveBeenCalledWith(
         "/apiKey/beta/test-targets/{testTargetId}/code",
         expect.objectContaining({
@@ -307,19 +332,22 @@ describe("debugtopus", () => {
       );
     });
 
-    it("should throw an error if testCaseId does not match any test case", async () => {
+    it("should throw an error if testCaseName file is not found", async () => {
       vi.mocked(findOctomindFolder).mockResolvedValue(OCTOMIND_ROOT);
       mockedReadTestCasesFromDir.mockReturnValue([
         createMockSyncTestCase({ id: "test-case-1" }),
       ]);
+      mockedGetAbsoluteFilePathInOctomindRoot.mockResolvedValue(null);
 
       await expect(
         executeLocalTestCases({
           testTargetId: "test-target-id",
           url: "https://example.com",
-          testCaseId: "non-existent-id",
+          testCasePath: "non-existent.yaml",
         }),
-      ).rejects.toThrow("Could not find test case with id non-existent-id");
+      ).rejects.toThrow(
+        `Could not find non-existent.yaml in folder ${OCTOMIND_ROOT}`,
+      );
     });
   });
 });

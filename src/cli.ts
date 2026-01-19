@@ -181,8 +181,8 @@ export const buildCmd = (): CompletableCommand => {
     .helpGroup("execute")
     .requiredOption("-u, --url <url>", "Url the tests should run against")
     .option(
-      "-c, --test-case-id [uuid]",
-      "Id of the test case you want to run, if not provided will run all test cases in the test target",
+      "-p, --test-case-path [string]",
+      "Path of the test case you want to run, if not provided will run all test cases in the test target",
     )
     .option(
       "-e, --environment-id [uuid]",
@@ -420,7 +420,7 @@ export const buildCmd = (): CompletableCommand => {
     )
     .addOption(
       new Option(
-        "-d, --dependency-path <path>",
+        "-d, --dependency-path [path]",
         "The path of to test case you want to use as dependency",
       ),
     )
