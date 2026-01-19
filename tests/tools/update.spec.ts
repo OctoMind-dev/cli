@@ -35,7 +35,7 @@ describe("update", () => {
 
     expect(child_process.execSync).toHaveBeenCalledWith(
       "npm install @octomind/octomind@latest",
-      { cwd: path.dirname(mockPathToRoot) },
+      { cwd: mockPathToRoot, stdio: "ignore" },
     );
   });
 
