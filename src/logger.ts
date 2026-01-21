@@ -1,13 +1,11 @@
 import {
   configure,
   FormattedValues,
-  getAnsiColorFormatter,
   getConsoleSink,
   getLogger,
   getTextFormatter,
   LogLevel,
 } from "@logtape/logtape";
-import { getPrettyFormatter } from "@logtape/pretty";
 
 export const logger = getLogger("octomind");
 
@@ -20,17 +18,18 @@ const ansiColors = {
   magenta: "\x1B[35m",
   cyan: "\x1B[36m",
   white: "\x1B[37m",
+  none: "",
 };
 
 const levelColors: Record<
   LogLevel | string,
   (typeof ansiColors)[keyof typeof ansiColors]
 > = {
-  debug: ansiColors.white,
-  info: ansiColors.white,
+  trace: ansiColors.none,
+  debug: ansiColors.none,
+  info: ansiColors.none,
   warning: ansiColors.yellow,
   error: ansiColors.red,
-  trace: ansiColors.white,
   fatal: ansiColors.red,
 };
 
