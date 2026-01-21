@@ -11,9 +11,6 @@ importers:
       '@logtape/logtape':
         specifier: 2.0.0
         version: 2.0.0
-      '@logtape/pretty':
-        specifier: 2.0.0
-        version: 2.0.0(@logtape/logtape@2.0.0)
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -494,11 +491,6 @@ packages:
 
   '@logtape/logtape@2.0.0':
     resolution: {integrity: sha512-z9Hp44mIRXAzgxSyQfFQiRuJ78EMnZa6g43UCxyGOO3RgHjn/7q+5OhdbhypkeHjiJRPxv6RmRsyF0S+OOYWnA==}
-
-  '@logtape/pretty@2.0.0':
-    resolution: {integrity: sha512-S92TWceFNA5ThnTAFsTeXPg0xwlEK6Ysro7L2hFm6L+ihmxLH7eqZb++ahRZoErCSHIAz4ZeBDW04hqdRQZ10w==}
-    peerDependencies:
-      '@logtape/logtape': ^2.0.0
 
   '@noble/hashes@2.0.1':
     resolution: {integrity: sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==}
@@ -2085,10 +2077,6 @@ snapshots:
   '@kwsites/promise-deferred@1.1.1': {}
 
   '@logtape/logtape@2.0.0': {}
-
-  '@logtape/pretty@2.0.0(@logtape/logtape@2.0.0)':
-    dependencies:
-      '@logtape/logtape': 2.0.0
 
   '@noble/hashes@2.0.1': {}
 

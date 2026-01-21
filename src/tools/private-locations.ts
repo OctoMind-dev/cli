@@ -36,7 +36,9 @@ export const registerLocation = async (
     return;
   }
 
-  logger.info(`Registration result: ${response.success ? "Success" : "Failed"}`);
+  logger.info(
+    `Registration result: ${response.success ? "Success" : "Failed"}`,
+  );
 };
 
 export const unregisterLocation = async (

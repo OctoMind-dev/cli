@@ -44,5 +44,5 @@ export const update = async (): Promise<void> => {
     stdio: ["ignore", "pipe", "ignore"],
   });
 
-    logger.info(`✔ update complete: ${newVersion}`);
+  logger.info(`✔ update complete: ${newVersion}`);
 };
