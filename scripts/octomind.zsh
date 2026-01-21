@@ -28,7 +28,6 @@
 # 3. Faster Response Time: Initial completions are served from cache, eliminating the
 #    delay of spawning the CLI process on every tab press.
 #
-###-begin-octomind-completion-###
 _fast_octomind_completion() {
     local cli_path=$(command -v octomind)
     [[ -z "$cli_path" ]] && return
