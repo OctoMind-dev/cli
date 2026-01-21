@@ -66,7 +66,7 @@ const createAuthMiddleware = ({
       return response;
     },
     onError({ error }) {
-      logger.error(error);
+      logger.error("error", { error });
       process.exit(1);
     },
   };
@@ -78,7 +78,7 @@ export { client, paths };
 
 export const handleError = (error: ErrorResponse) => {
   if (error) {
-    logger.error(error);
+    logger.error("error", { error });
     if (typeof error === "string" && error.startsWith("403")) {
       logger.error(
         "You are not authorized. Check your API key or do a 'octomind init' to set it up.",

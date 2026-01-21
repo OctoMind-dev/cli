@@ -102,7 +102,7 @@ export const init = async (options: {
 
     logger.info("\n✨ Initialization complete!");
   } catch (error) {
-    logger.error({ err: error as Error }, "❌ Error during initialization");
+    logger.error("❌ Error during initialization", { error });
     process.exit(1);
   }
 };

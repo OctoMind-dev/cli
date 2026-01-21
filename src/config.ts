@@ -47,10 +47,7 @@ export async function loadConfig(force?: boolean): Promise<Config> {
   } catch (error) {
     // only exit on overwrite attempt
     if (force) {
-      logger.error(
-        { err: error as Error },
-        "❌ Error parsing configuration",
-      );
+      logger.error("❌ Error parsing configuration", { error });
       process.exit(1);
     }
     return {};
@@ -64,7 +61,7 @@ export async function saveConfig(newConfig: Config): Promise<void> {
     logger.info(`✅ Configuration saved to ${configPath}`);
     configLoaded = false;
   } catch (error) {
-    logger.error({ err: error as Error }, "❌ Error saving configuration");
+    logger.error("❌ Error saving configuration", { error });
     process.exit(1);
   }
 }

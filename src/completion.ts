@@ -3,8 +3,8 @@ import { parse } from "shell-quote";
 import { install, log, parseEnv, TabtabEnv, uninstall } from "tabtab";
 
 import { BINARY_NAME } from "./cli";
-import { logger } from "./logger";
 import { loadConfig } from "./config";
+import { logger } from "./logger";
 import { getTestReports } from "./tools";
 import { getEnvironments } from "./tools/environments";
 import { getTestCases } from "./tools/test-cases";
@@ -194,11 +194,11 @@ export const installCompletion = async () => {
   await install({
     name: BINARY_NAME,
     completer: BINARY_NAME,
-  }).catch((err) => logger.error({ err }, "INSTALL ERROR"));
+  }).catch((err) => logger.error("INSTALL ERROR", { err }));
 };
 
 export const uninstallCompletion = async () => {
   await uninstall({
     name: BINARY_NAME,
-  }).catch((err) => logger.error({ err }, "UNINSTALL ERROR"));
+  }).catch((err) => logger.error("UNINSTALL ERROR", { err }));
 };

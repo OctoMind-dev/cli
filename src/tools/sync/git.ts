@@ -34,7 +34,7 @@ export const parseGitRemote = async (): Promise<{
     const revParse = await simpleGit().revparse(["--show-toplevel"]);
     return { repo: path.basename(revParse) };
   } catch (error) {
-    logger.error({ err: error }, "Failed to parse git remote");
+    logger.error("Failed to parse git remote", { error });
     return {};
   }
 };
@@ -59,10 +59,10 @@ export const getDefaultBranch = async (
       if (symbolicRefBranch) {
         return symbolicRefBranch;
       }
-    } catch (e) {
+    } catch (error) {
       logger.warn(
-        { err: e },
         "could not identify symbolic ref, falling back to origin parsing",
+        { error },
       );
     }
   }
@@ -79,11 +79,10 @@ export const getDefaultBranch = async (
     return originDefaultBranch?.groups?.["branchName"]
       ? `refs/heads/${originDefaultBranch?.groups?.["branchName"]}`
       : FALLBACK_DEFAULT_BRANCH;
-  } catch (e) {
-    logger.warn(
-      { err: e },
-      "could not identify default branch, falling back to 'main'",
-    );
+  } catch (error) {
+    logger.warn("could not identify default branch, falling back to 'main'", {
+      error,
+    });
   }
 
   return FALLBACK_DEFAULT_BRANCH;
@@ -108,11 +107,10 @@ export const getGitContext = async (): Promise<GitContext | undefined> => {
       defaultBranch,
     };
     return ctx;
-  } catch (e) {
-    logger.warn(
-      { err: e },
-      "could not identify git context, falling back to undefined",
-    );
+  } catch (error) {
+    logger.warn("could not identify git context, falling back to undefined", {
+      error,
+    });
     return undefined;
   }
 };

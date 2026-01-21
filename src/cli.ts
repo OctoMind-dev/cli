@@ -1,4 +1,8 @@
-import { configure, getConsoleSink } from "@logtape/logtape";
+import {
+  configure,
+  getAnsiColorFormatter,
+  getConsoleSink,
+} from "@logtape/logtape";
 import { getPrettyFormatter } from "@logtape/pretty";
 import { Option } from "commander";
 
@@ -15,6 +19,7 @@ import {
 } from "./completion";
 import { executeLocalTestCases, runDebugtopus } from "./debugtopus";
 import { resolveTestTargetId } from "./helpers";
+import { configureLogger } from "./logger";
 import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
   batchGeneration,
@@ -80,25 +85,7 @@ const createCommandWithCommonOptions = (
 };
 
 export const buildCmd = async (): Promise<CompletableCommand> => {
-  await configure({
-    sinks: {
-      console: getConsoleSink({
-        formatter: getPrettyFormatter({
-          timestamp: "none",
-          categoryStyle: "dim",
-          messageColor: "white",
-        }),
-      }),
-    },
-    loggers: [
-      {
-        category: ["logtape", "meta"],
-        sinks: ["console"],
-        lowestLevel: "warning",
-      },
-      { category: "octomind", lowestLevel: "debug", sinks: ["console"] },
-    ],
-  });
+  await configureLogger();
 
   const program = new CompletableCommand();
 
