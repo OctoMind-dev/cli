@@ -397,6 +397,10 @@ export const buildCmd = (): CompletableCommand => {
     .description("Pull test cases from the test target")
     .helpGroup("test-cases")
     .addOption(testTargetIdOption)
+    .option(
+      "-p, --test-plan-id [id]",
+      "Optional test plan ID to filter test cases",
+    )
     .action(addTestTargetWrapper(pullTestTarget));
 
   // noinspection RequiredAttributes
