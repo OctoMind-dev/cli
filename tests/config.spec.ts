@@ -5,14 +5,13 @@ import path from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Config, loadConfig, resetConfig } from "../src/config";
-import { mockLogger } from "./mocks";
+import { mockLogger } from "./setup";
 
 vi.mock("fs/promises");
 const mockedFs = vi.mocked(fs);
 
 describe("Config", () => {
   beforeEach(() => {
-    mockLogger.error.mockClear();
     resetConfig();
   });
 

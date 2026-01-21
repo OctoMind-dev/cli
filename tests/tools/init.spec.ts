@@ -4,7 +4,7 @@ import { loadConfig, saveConfig } from "../../src/config";
 import { promptUser } from "../../src/helpers";
 import { init } from "../../src/tools/init";
 import { getTestTargets } from "../../src/tools/test-targets";
-import { mockLogger } from "../mocks";
+import { mockLogger } from "../setup";
 
 vi.mock("../../src/config");
 vi.mock("../../src/helpers");
@@ -16,8 +16,6 @@ describe("init", () => {
   let getTestTargetsMock: Mock<typeof getTestTargets>;
 
   beforeEach(() => {
-    mockLogger.info.mockClear();
-
     loadConfigMock = vi.mocked(loadConfig);
     loadConfigMock.mockResolvedValue({ apiKey: "apiKey" });
 

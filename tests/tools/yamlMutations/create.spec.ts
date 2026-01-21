@@ -18,8 +18,8 @@ import { waitForLocalChangesToBeFinished } from "../../../src/tools/yamlMutation
 import {
   createMockDraftPushResponse,
   createMockSyncTestCase,
-  mockLogger,
 } from "../../mocks";
+import { mockLogger } from "../../setup";
 
 vi.mock("open");
 vi.mock("../../../src/helpers");
@@ -33,8 +33,6 @@ describe("create", () => {
   const GENERATED_TEST_ID = "00000000-0000-0000-0000-000000000000";
 
   beforeEach(() => {
-    mockLogger.info.mockClear();
-
     vi.spyOn(crypto, "randomUUID").mockReturnValue(GENERATED_TEST_ID);
     vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
     vi.mocked(draftPush).mockResolvedValue(
@@ -119,7 +117,9 @@ describe("create", () => {
   it("exits gracefully when creation is finished", async () => {
     await create({ testTargetId: "someId", name: "Test Name" });
 
-    expect(mockLogger.info).toHaveBeenCalledWith("Created test case successfully");
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      "Created test case successfully",
+    );
     expect(writeSingleTestCaseYaml).toHaveBeenCalledWith(
       "/mock/.octomind/new-test.yaml",
       expect.objectContaining({ id: GENERATED_TEST_ID }),

@@ -8,7 +8,7 @@ import { findOctomindFolder } from "../../src/helpers";
 import { client, handleError } from "../../src/tools/client";
 import { buildFilename, readTestCasesFromDir } from "../../src/tools/sync/yaml";
 import { deleteTestCase } from "../../src/tools/test-cases";
-import { mockLogger } from "../mocks";
+import { mockLogger } from "../setup";
 
 vi.mock("../../src/tools/client");
 vi.mock("../../src/helpers");
@@ -19,7 +19,6 @@ describe("test-cases", () => {
 
   beforeEach(() => {
     clientDELETE = vi.mocked(client.DELETE);
-    mockLogger.info.mockClear();
   });
 
   describe("deleteTestCase via API", () => {

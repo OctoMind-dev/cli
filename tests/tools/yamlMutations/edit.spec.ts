@@ -15,8 +15,8 @@ import { waitForLocalChangesToBeFinished } from "../../../src/tools/yamlMutation
 import {
   createMockDraftPushResponse,
   createMockSyncTestCase,
-  mockLogger,
 } from "../../mocks";
+import { mockLogger } from "../../setup";
 
 vi.mock("open");
 vi.mock("../../../src/helpers");
@@ -30,8 +30,6 @@ describe("edit", () => {
   const testCase = createMockSyncTestCase({ id: "test-id" });
 
   beforeEach(() => {
-    mockLogger.info.mockClear();
-
     vi.mocked(findOctomindFolder).mockResolvedValue("/mock/.octomind");
     vi.mocked(getAbsoluteFilePathInOctomindRoot).mockResolvedValue(
       "/mock/.octomind/test.yaml",
@@ -109,7 +107,9 @@ describe("edit", () => {
 
     await edit({ testTargetId: "someId", filePath: "test.yaml" });
 
-    expect(mockLogger.info).toHaveBeenCalledWith("Edited test case successfully");
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      "Edited test case successfully",
+    );
   });
 
   it.each([

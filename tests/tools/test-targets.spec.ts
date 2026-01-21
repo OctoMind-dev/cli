@@ -6,7 +6,7 @@ import { pushTestTarget } from "../../src/tools";
 import { client } from "../../src/tools/client";
 import { getGitContext } from "../../src/tools/sync/git";
 import { readTestCasesFromDir } from "../../src/tools/sync/yaml";
-import { mockLogger } from "../mocks";
+import { mockLogger } from "../setup";
 
 vi.mock("../../src/helpers");
 vi.mock("../../src/tools/sync/git");
@@ -36,7 +36,6 @@ describe("push", () => {
       error: undefined,
       response: mock(),
     });
-    mockLogger.info.mockClear();
   });
 
   it("pushes to main if on default branch", async () => {

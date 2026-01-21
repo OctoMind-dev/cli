@@ -7,7 +7,7 @@ import {
   getGitContext,
   parseGitRemote,
 } from "../../../src/tools/sync/git";
-import { mockLogger } from "../../mocks";
+import { mockLogger } from "../../setup";
 
 vi.mock("simple-git");
 
@@ -18,8 +18,6 @@ describe("git", () => {
     mockGit = mock<SimpleGit>();
     vi.mocked(simpleGit).mockReturnValue(mockGit);
     mockGit.raw.mockResolvedValue("refs/remotes/origin/main");
-    mockLogger.error.mockClear();
-    mockLogger.warn.mockClear();
   });
 
   describe("getDefaultBranch", () => {
