@@ -27,8 +27,8 @@ importers:
         specifier: 0.15.0
         version: 0.15.0
       ora:
-        specifier: 9.0.0
-        version: 9.0.0
+        specifier: 9.1.0
+        version: 9.1.0
       otplib:
         specifier: 13.1.1
         version: 13.1.1
@@ -1368,8 +1368,8 @@ packages:
     peerDependencies:
       typescript: ^5.x
 
-  ora@9.0.0:
-    resolution: {integrity: sha512-m0pg2zscbYgWbqRR6ABga5c3sZdEon7bSgjnlXC64kxtxLOyjRcbbUkLj7HFyy/FTD+P2xdBWu8snGhYI0jc4A==}
+  ora@9.1.0:
+    resolution: {integrity: sha512-53uuLsXHOAJl5zLrUrzY9/kE+uIFEx7iaH4g2BIJQK4LZjY4LpCCYZVKDWIkL+F01wAaCg93duQ1whnK/AmY1A==}
     engines: {node: '>=20'}
 
   orval@8.0.2:
@@ -2986,7 +2986,7 @@ snapshots:
       typescript: 5.9.3
       yargs-parser: 21.1.1
 
-  ora@9.0.0:
+  ora@9.1.0:
     dependencies:
       chalk: 5.6.2
       cli-cursor: 5.0.0
@@ -2996,7 +2996,6 @@ snapshots:
       log-symbols: 7.0.1
       stdin-discarder: 0.2.2
       string-width: 8.1.0
-      strip-ansi: 7.1.2
 
   orval@8.0.2(typescript@5.9.3):
     dependencies:
