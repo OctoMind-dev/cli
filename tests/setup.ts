@@ -19,6 +19,7 @@ export const mockLogger = {
 
 vi.mock("../src/logger", () => ({
   logger: mockLogger,
+  configureLogger: vi.fn(),
 }));
 
 vi.mock("@logtape/logtape");
