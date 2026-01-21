@@ -1,9 +1,3 @@
-import {
-  configure,
-  getAnsiColorFormatter,
-  getConsoleSink,
-} from "@logtape/logtape";
-import { getPrettyFormatter } from "@logtape/pretty";
 import { Option } from "commander";
 
 import {
