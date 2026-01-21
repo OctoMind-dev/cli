@@ -39,8 +39,7 @@ export const configureLogger = async (): Promise<void> =>
         formatter: getTextFormatter({
           timestamp: "disabled",
           level: "full",
-
-          format(values: FormattedValues): string {
+          format: (values: FormattedValues): string => {
             return levelColors[values.level] + values.message;
           },
         }),
