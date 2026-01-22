@@ -189,9 +189,7 @@ describe("yaml", () => {
       const testCase = createMockSyncTestCase();
       const filePath = path.join(tmpDir, "test1", "test.yaml");
       fs.writeFileSync(filePath, yaml.stringify(testCase));
-      expect(readTestCasesFromDir(tmpDir)).toEqual([
-        { ...testCase, filePath },
-      ]);
+      expect(readTestCasesFromDir(tmpDir)).toEqual([{ ...testCase, filePath }]);
     });
 
     it("should skip invalid test cases and log an error", () => {
