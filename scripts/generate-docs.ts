@@ -105,7 +105,7 @@ export function generateCommandDocs(command: Command, level = 1): string {
  */
 async function main() {
   try {
-    const program = buildCmd();
+    const program = await buildCmd();
     
     const markdown = generateCommandDocs(program);
     

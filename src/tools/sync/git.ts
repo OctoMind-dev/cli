@@ -2,6 +2,7 @@ import path from "path";
 
 import { simpleGit } from "simple-git";
 
+import { logger } from "../../logger";
 import { ExecutionContext } from "./types";
 
 const FALLBACK_DEFAULT_BRANCH = "refs/heads/main";
@@ -33,7 +34,7 @@ export const parseGitRemote = async (): Promise<{
     const revParse = await simpleGit().revparse(["--show-toplevel"]);
     return { repo: path.basename(revParse) };
   } catch (error) {
-    console.error(error);
+    logger.error("Failed to parse git remote", { error });
     return {};
   }
 };
@@ -58,10 +59,10 @@ export const getDefaultBranch = async (
       if (symbolicRefBranch) {
         return symbolicRefBranch;
       }
-    } catch (e) {
-      console.warn(
+    } catch (error) {
+      logger.warn(
         "could not identify symbolic ref, falling back to origin parsing",
-        e,
+        { error },
       );
     }
   }
@@ -69,7 +70,7 @@ export const getDefaultBranch = async (
   try {
     const origin = await simpleGit().remote(["show", "origin"]);
     if (!origin) {
-      console.warn("could not identify default branch, falling back to 'main'");
+      logger.warn("could not identify default branch, falling back to 'main'");
       return FALLBACK_DEFAULT_BRANCH;
     }
 
@@ -78,11 +79,10 @@ export const getDefaultBranch = async (
     return originDefaultBranch?.groups?.["branchName"]
       ? `refs/heads/${originDefaultBranch?.groups?.["branchName"]}`
       : FALLBACK_DEFAULT_BRANCH;
-  } catch (e) {
-    console.warn(
-      "could not identify default branch, falling back to 'main'",
-      e,
-    );
+  } catch (error) {
+    logger.warn("could not identify default branch, falling back to 'main'", {
+      error,
+    });
   }
 
   return FALLBACK_DEFAULT_BRANCH;
@@ -107,11 +107,10 @@ export const getGitContext = async (): Promise<GitContext | undefined> => {
       defaultBranch,
     };
     return ctx;
-  } catch (e) {
-    console.warn(
-      "could not identify git context, falling back to undefined",
-      e,
-    );
+  } catch (error) {
+    logger.warn("could not identify git context, falling back to undefined", {
+      error,
+    });
     return undefined;
   }
 };

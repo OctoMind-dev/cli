@@ -38,6 +38,7 @@
   "author": "octomind",
   "license": "MIT",
   "dependencies": {
+    "@logtape/logtape": "2.0.0",
     "@playwright/test": "1.57.0",
     "@types/shell-quote": "1.7.5",
     "commander": "14.0.2",
