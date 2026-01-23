@@ -272,7 +272,7 @@ export const cleanupFilesystem = ({
   for (const localTestCase of localTestCases) {
     // If the local test case is not in the remote test cases, remove it
     if (!remoteTestCasesById.has(localTestCase.id) && localTestCase.filePath) {
-      fs.rmSync(localTestCase.filePath);
+      fs.rmSync(localTestCase.filePath, { force: true });
 
       const dirPath = path.dirname(localTestCase.filePath);
       removeEmptyDirectoriesRecursively(dirPath, rootFolderPath);
