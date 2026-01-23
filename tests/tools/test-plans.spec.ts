@@ -34,15 +34,22 @@ describe("test-plans", () => {
         response: mock(),
       });
 
-      const result = await getTestPlan({ id: testPlanId });
+      const result = await getTestPlan({
+        id: testPlanId,
+        testTargetId: "test-target-123",
+      });
 
-      expect(client.GET).toHaveBeenCalledWith("/apiKey/beta/test-plans/{id}", {
-        params: {
-          path: {
-            id: testPlanId,
+      expect(client.GET).toHaveBeenCalledWith(
+        "/apiKey/beta/test-targets/{testTargetId}/test-plans/{id}",
+        {
+          params: {
+            path: {
+              id: testPlanId,
+              testTargetId: "test-target-123",
+            },
           },
         },
-      });
+      );
       expect(handleError).toHaveBeenCalledWith(undefined);
       expect(result).toEqual(mockTestPlan);
     });
@@ -56,9 +63,9 @@ describe("test-plans", () => {
         response: mock(),
       });
 
-      await expect(getTestPlan({ id: testPlanId })).rejects.toThrow(
-        `No test plan with id ${testPlanId} found`,
-      );
+      await expect(
+        getTestPlan({ id: testPlanId, testTargetId: "test-target-123" }),
+      ).rejects.toThrow(`No test plan with id ${testPlanId} found`);
       expect(handleError).toHaveBeenCalledWith({ message: "Not found" });
     });
   });
