@@ -16,6 +16,7 @@ import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
 } from "../helpers";
+import { logger } from "../logger";
 import {
   getEnvironments,
   getPlaywrightCode,
@@ -91,7 +92,7 @@ const prepareDirectories = async (
       const appDir = dirname(nodeModule.filename);
       packageRootDir = getPackageRootLevel(appDir);
     } else {
-      console.warn("package was not installed as valid nodeJS module");
+      logger.warn("package was not installed as valid nodeJS module");
       packageRootDir = process.cwd();
     }
   }
@@ -169,17 +170,17 @@ const runTests = async ({
     command += " --ui";
   }
 
-  console.log(`executing command : '${command}'`);
+  logger.info(`executing command : '${command}'`);
 
   const { stderr } = await promisify(exec)(command, {
     cwd: packageRootDir,
   });
 
   if (stderr) {
-    console.error(stderr);
+    logger.error(stderr);
     process.exit(1);
   } else {
-    console.log(`success, you can find your artifacts at ${outputDir}`);
+    logger.info(`success, you can find your artifacts at ${outputDir}`);
   }
 };
 

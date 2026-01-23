@@ -5,13 +5,13 @@ import path from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Config, loadConfig, resetConfig } from "../src/config";
+import { mockLogger } from "./setup";
 
 vi.mock("fs/promises");
 const mockedFs = vi.mocked(fs);
 
 describe("Config", () => {
   beforeEach(() => {
-    console.error = vi.fn();
     resetConfig();
   });
 
@@ -68,7 +68,7 @@ describe("Config", () => {
       const result = await loadConfig();
 
       expect(result).toEqual({});
-      expect(console.error).not.toHaveBeenCalled();
+      expect(mockLogger.error).not.toHaveBeenCalled();
     });
 
     it("should error and exit when config file does not exist and force is true", async () => {
@@ -89,7 +89,7 @@ describe("Config", () => {
       await expect(loadConfig(MOCK_FORCE_OPTION)).rejects.toThrow(
         "Process exit with code: 1",
       );
-      expect(console.error).toHaveBeenCalled();
+      expect(mockLogger.error).toHaveBeenCalled();
       expect(mockExit).toHaveBeenCalledWith(1);
 
       mockExit.mockRestore();

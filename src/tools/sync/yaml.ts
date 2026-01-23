@@ -4,6 +4,7 @@ import path from "path";
 
 import yaml from "yaml";
 
+import { logger } from "../../logger";
 import { PushTestTargetBody } from "../../schemas/octomindExternalAPI";
 import { SyncTestCase, TestTargetSyncData } from "./types";
 
@@ -58,7 +59,7 @@ export const writeYaml = async (
   destination?: string,
 ): Promise<void> => {
   cleanupFilesystem({
-    newTestCases: data.testCases,
+    remoteTestCases: data.testCases,
     destination,
   });
 
@@ -177,9 +178,11 @@ const collectYamlFiles = (startDir: string): string[] => {
   return files;
 };
 
-export const readTestCasesFromDir = (startDir: string): SyncTestCase[] => {
+export const readTestCasesFromDir = (
+  startDir: string,
+): Array<SyncTestCase & { filePath?: string }> => {
   const yamlFiles = collectYamlFiles(startDir);
-  const testCases: SyncTestCase[] = [];
+  const testCases: Array<SyncTestCase & { filePath: string }> = [];
   for (const file of yamlFiles) {
     try {
       const content = fs.readFileSync(file, "utf8");
@@ -187,14 +190,14 @@ export const readTestCasesFromDir = (startDir: string): SyncTestCase[] => {
       const result = syncTestCaseSchema.safeParse(raw);
 
       if (result.success) {
-        testCases.push(result.data);
+        testCases.push({ ...result.data, filePath: file });
       } else {
-        console.warn(
+        logger.warn(
           `Failed to read test case from ${file}: ${result.error.message}`,
         );
       }
     } catch {
-      console.error(`Failed to read test case from ${file}`);
+      logger.error(`Failed to read test case from ${file}`);
     }
   }
 
@@ -210,20 +213,35 @@ export const loadTestCase = (testCasePath: string): SyncTestCase => {
   }
 };
 
+export const removeEmptyDirectoriesRecursively = (
+  dirPath: string,
+  rootFolderPath: string,
+): void => {
+  if (dirPath === rootFolderPath || !fs.existsSync(dirPath)) {
+    return;
+  }
+
+  const remainingFiles = fs.readdirSync(dirPath);
+  if (remainingFiles.length === 0) {
+    fs.rmdirSync(dirPath);
+    removeEmptyDirectoriesRecursively(path.dirname(dirPath), rootFolderPath);
+  }
+};
+
 export const cleanupFilesystem = ({
-  newTestCases,
+  remoteTestCases,
   destination,
 }: {
-  newTestCases: SyncTestCase[];
+  remoteTestCases: SyncTestCase[];
   destination: string | undefined;
 }) => {
   const rootFolderPath = destination ?? process.cwd();
 
-  const existingtestCases = readTestCasesFromDir(rootFolderPath);
+  const localTestCases = readTestCasesFromDir(rootFolderPath);
 
-  const existingTestCasesById = new Map(
-    existingtestCases.map((tc) => [tc.id, tc]),
-  );
+  const localTestCasesById = new Map(localTestCases.map((tc) => [tc.id, tc]));
+
+  const remoteTestCasesById = new Map(remoteTestCases.map((tc) => [tc.id, tc]));
 
   // There is generally a bigger issue here:
   // We need a better check what changed locally.
@@ -231,20 +249,17 @@ export const cleanupFilesystem = ({
   // Then you pull, and you local changes will just be deleted.
   // Same applies for changing the dependency, as it will be in a different folder. We also don't clean up these folders properly.
 
-  for (const testCase of newTestCases) {
-    const existingTestCase = existingTestCasesById.get(testCase.id);
-    if (existingTestCase) {
-      const existingTestCasePath = buildFilename(
-        existingTestCase,
-        rootFolderPath,
-      );
+  for (const remoteTestCase of remoteTestCases) {
+    const localTestCase = localTestCasesById.get(remoteTestCase.id);
+    if (localTestCase) {
+      const localTestCasePath = buildFilename(localTestCase, rootFolderPath);
       const oldFolderPath = path.join(
         rootFolderPath,
-        existingTestCasePath.replace(/\.yaml$/, ""),
+        localTestCasePath.replace(/\.yaml$/, ""),
       );
-      const oldFilePath = path.join(rootFolderPath, existingTestCasePath);
+      const oldFilePath = path.join(rootFolderPath, localTestCasePath);
 
-      if (existingTestCase.description !== testCase.description) {
+      if (localTestCase.description !== remoteTestCase.description) {
         if (fs.existsSync(oldFilePath)) {
           fs.unlinkSync(oldFilePath);
         }
@@ -253,6 +268,15 @@ export const cleanupFilesystem = ({
           fs.rmSync(oldFolderPath, { recursive: true, force: true });
         }
       }
+    }
+  }
+  for (const localTestCase of localTestCases) {
+    // If the local test case is not in the remote test cases, remove it
+    if (!remoteTestCasesById.has(localTestCase.id) && localTestCase.filePath) {
+      fs.rmSync(localTestCase.filePath, { force: true });
+
+      const dirPath = path.dirname(localTestCase.filePath);
+      removeEmptyDirectoriesRecursively(dirPath, rootFolderPath);
     }
   }
 };

@@ -13,6 +13,7 @@ import {
 } from "./completion";
 import { executeLocalTestCases, runDebugtopus } from "./debugtopus";
 import { resolveTestTargetId } from "./helpers";
+import { configureLogger } from "./logger";
 import { startPrivateLocationWorker, stopPLW } from "./plw";
 import {
   batchGeneration,
@@ -77,7 +78,9 @@ const createCommandWithCommonOptions = (
     .option("-j, --json", "Output raw JSON response") as CompletableCommand;
 };
 
-export const buildCmd = (): CompletableCommand => {
+export const buildCmd = async (): Promise<CompletableCommand> => {
+  await configureLogger();
+
   const program = new CompletableCommand();
 
   program

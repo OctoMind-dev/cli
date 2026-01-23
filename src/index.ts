@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
 import { buildCmd } from "./cli";
+import { logger } from "./logger";
 
-buildCmd().parse();
+void buildCmd()
+  .then((res) => res.parse())
+  .catch(logger.error);

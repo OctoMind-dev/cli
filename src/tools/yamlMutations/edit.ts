@@ -7,6 +7,7 @@ import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
 } from "../../helpers";
+import { logger } from "../../logger";
 import { BASE_URL, client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
@@ -84,7 +85,7 @@ export const edit = async (options: EditOptions): Promise<void> => {
 
   await open(localEditingUrl.href);
 
-  console.log(
+  logger.info(
     `Navigating to local editing url, open it manually if a browser didn't open already: ${localEditingUrl}`,
   );
 
@@ -95,7 +96,7 @@ export const edit = async (options: EditOptions): Promise<void> => {
   );
 
   if (editResult === "cancelled") {
-    console.log("Cancelled editing test case, exiting");
+    logger.info("Cancelled editing test case, exiting");
     return;
   }
 
@@ -108,6 +109,6 @@ export const edit = async (options: EditOptions): Promise<void> => {
     yaml.stringify(editResult),
   );
 
-  console.log(`Edited test case successfully`);
-  console.log(diff);
+  logger.info(`Edited test case successfully`);
+  logger.info(diff);
 };

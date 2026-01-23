@@ -7,6 +7,7 @@ import {
   getGitContext,
   parseGitRemote,
 } from "../../../src/tools/sync/git";
+import { mockLogger } from "../../setup";
 
 vi.mock("simple-git");
 
@@ -17,30 +18,27 @@ describe("git", () => {
     mockGit = mock<SimpleGit>();
     vi.mocked(simpleGit).mockReturnValue(mockGit);
     mockGit.raw.mockResolvedValue("refs/remotes/origin/main");
-    console.error = vi.fn();
   });
 
   describe("getDefaultBranch", () => {
     it("should fallback if both origin and symbolic ref fail", async () => {
-      console.warn = vi.fn();
       mockGit.raw.mockResolvedValue("");
       mockGit.remote.mockResolvedValue("");
 
       const defaultBranch = await getDefaultBranch();
 
       expect(defaultBranch).toEqual("refs/heads/main");
-      expect(console.warn).toHaveBeenCalled();
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
 
     it("should fallback if both origin and symbolic ref do not return anything and origin throws", async () => {
-      console.warn = vi.fn();
       mockGit.raw.mockResolvedValue("");
       mockGit.remote.mockRejectedValue("");
 
       const defaultBranch = await getDefaultBranch();
 
       expect(defaultBranch).toEqual("refs/heads/main");
-      expect(console.warn).toHaveBeenCalled();
+      expect(mockLogger.warn).toHaveBeenCalled();
     });
   });
 

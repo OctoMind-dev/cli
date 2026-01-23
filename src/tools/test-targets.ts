@@ -4,6 +4,7 @@ import ora from "ora";
 
 import { OCTOMIND_FOLDER_NAME } from "../constants";
 import { confirmAction, findOctomindFolder } from "../helpers";
+import { logger } from "../logger";
 import { getUrl } from "../url";
 import { client, handleError, ListOptions, logJson } from "./client";
 import { push } from "./sync/push";
@@ -49,7 +50,7 @@ export const listTestTargets = async (options: ListOptions): Promise<void> => {
     return;
   }
 
-  console.log("Test Targets:");
+  logger.info("Test Targets:");
 
   for (let idx = 0; idx < testTargets.length; idx++) {
     const testTarget = testTargets[idx];
@@ -57,9 +58,9 @@ export const listTestTargets = async (options: ListOptions): Promise<void> => {
       testTargets.length.toString().length + 2,
     );
     const paddingString = " ".repeat(idxString.length);
-    console.log(`${idxString}ID: ${testTarget.id}`);
-    console.log(`${paddingString}App: ${testTarget.app}`);
-    console.log(
+    logger.info(`${idxString}ID: ${testTarget.id}`);
+    logger.info(`${paddingString}App: ${testTarget.app}`);
+    logger.info(
       `${paddingString}${await getUrl({
         testTargetId: testTarget.id,
         entityType: "test-target",
@@ -103,7 +104,7 @@ export const pullTestTarget = async (
     path.join(process.cwd(), OCTOMIND_FOLDER_NAME);
   await writeYaml(data, destination);
 
-  console.log("Test Target pulled successfully");
+  logger.info("Test Target pulled successfully");
 };
 
 export const pushTestTarget = async (
@@ -129,7 +130,7 @@ export const pushTestTarget = async (
       `Push local changes to test target "${testTarget.app}" with id "${testTarget.id}"?`,
     );
     if (!confirmed) {
-      console.log("Push cancelled.");
+      logger.info("Push cancelled.");
       return;
     }
   }

@@ -8,6 +8,7 @@ import { findOctomindFolder } from "../../src/helpers";
 import { client, handleError } from "../../src/tools/client";
 import { buildFilename, readTestCasesFromDir } from "../../src/tools/sync/yaml";
 import { deleteTestCase } from "../../src/tools/test-cases";
+import { mockLogger } from "../setup";
 
 vi.mock("../../src/tools/client");
 vi.mock("../../src/helpers");
@@ -18,7 +19,6 @@ describe("test-cases", () => {
 
   beforeEach(() => {
     clientDELETE = vi.mocked(client.DELETE);
-    console.log = vi.fn();
   });
 
   describe("deleteTestCase via API", () => {
@@ -36,7 +36,7 @@ describe("test-cases", () => {
         testCaseId: "test-case-id",
       });
       expect(handleError).toHaveBeenCalledWith(undefined);
-      expect(console.log).toHaveBeenCalledWith(
+      expect(mockLogger.info).toHaveBeenCalledWith(
         "Test Case deleted successfully",
       );
     });
@@ -84,7 +84,7 @@ describe("test-cases", () => {
         testCaseId,
       });
 
-      expect(console.log).toHaveBeenCalledWith(
+      expect(mockLogger.info).toHaveBeenCalledWith(
         "Test Case deleted successfully",
       );
       await expect(fsPromises.access(filePath)).rejects.toThrow();
@@ -98,7 +98,7 @@ describe("test-cases", () => {
         testCaseId: "non-existent-id",
       });
 
-      expect(console.log).toHaveBeenCalledWith(
+      expect(mockLogger.info).toHaveBeenCalledWith(
         `No test case with id non-existent-id found in folder ${tmpDir}`,
       );
       expect(clientDELETE).not.toHaveBeenCalled();

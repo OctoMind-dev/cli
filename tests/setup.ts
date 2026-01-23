@@ -8,8 +8,18 @@ vi.mock("ora", () => ({
   })),
 }));
 
-beforeEach(() => {
-  console.log = vi.fn();
-  console.warn = vi.fn();
-  console.error = vi.fn();
-});
+export const mockLogger = {
+  info: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+  debug: vi.fn(),
+  log: vi.fn(),
+  success: vi.fn(),
+};
+
+vi.mock("../src/logger", () => ({
+  logger: mockLogger,
+  configureLogger: vi.fn(),
+}));
+
+vi.mock("@logtape/logtape");
