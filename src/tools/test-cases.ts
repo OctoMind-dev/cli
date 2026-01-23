@@ -127,14 +127,23 @@ export const getTestCases = async (
   options: GetTestCasesOptions,
 ): Promise<TestCasesResponse> => {
   if (options.bearerToken) {
-    const res = await fetch(
+    const url = new URL(
       `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/test-cases`,
-      {
-        headers: {
-          Authorization: `Bearer ${options.bearerToken}`,
-        },
-      },
     );
+    if (options.status || options.runStatus) {
+      url.searchParams.set(
+        "filter",
+        JSON.stringify({
+          status: options.status,
+          runStatus: options.runStatus,
+        }),
+      );
+    }
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${options.bearerToken}`,
+      },
+    });
     if (res.ok) {
       const response = await res.json();
       return response;
