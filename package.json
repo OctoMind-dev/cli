@@ -64,7 +64,7 @@
     "@types/which": "3.0.4",
     "genversion": "3.2.0",
     "openapi-typescript": "7.10.1",
-    "orval": "8.0.2",
+    "orval": "8.0.3",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vite-tsconfig-paths": "6.0.4",
