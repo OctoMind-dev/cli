@@ -16,8 +16,8 @@ vi.mock("../src/config", () => ({
 describe("CLI", () => {
   let program: Command;
 
-  beforeEach(() => {
-    program = buildCmd();
+  beforeEach(async () => {
+    program = await buildCmd();
     program.exitOverride((err) => {
       throw err;
     });

@@ -4,6 +4,7 @@ import path from "path";
 
 import yaml from "yaml";
 
+import { logger } from "../../logger";
 import { PushTestTargetBody } from "../../schemas/octomindExternalAPI";
 import { SyncTestCase, TestTargetSyncData } from "./types";
 
@@ -191,12 +192,12 @@ export const readTestCasesFromDir = (
       if (result.success) {
         testCases.push({ ...result.data, filePath: file });
       } else {
-        console.warn(
+        logger.warn(
           `Failed to read test case from ${file}: ${result.error.message}`,
         );
       }
     } catch {
-      console.error(`Failed to read test case from ${file}`);
+      logger.error(`Failed to read test case from ${file}`);
     }
   }
 

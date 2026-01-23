@@ -9,6 +9,7 @@ import {
   findOctomindFolder,
   getAbsoluteFilePathInOctomindRoot,
 } from "../../helpers";
+import { logger } from "../../logger";
 import { BASE_URL, client, handleError } from "../client";
 import { checkForConsistency } from "../sync/consistency";
 import { draftPush } from "../sync/push";
@@ -75,7 +76,7 @@ const openBrowser = async ({
 
   await open(localEditingUrl.href);
 
-  console.log(
+  logger.info(
     `Navigating to local url, open it manually if a browser didn't open already: ${localEditingUrl}`,
   );
 };
@@ -88,7 +89,7 @@ const writeOutput = async ({
   createResult: SyncTestCase | "cancelled";
 }): Promise<void> => {
   if (createResult === "cancelled") {
-    console.log("Cancelled editing test case, exiting");
+    logger.info("Cancelled editing test case, exiting");
     return;
   }
 
@@ -101,8 +102,8 @@ const writeOutput = async ({
     yaml.stringify(createResult),
   );
 
-  console.log(`Created test case successfully`);
-  console.log(diff);
+  logger.info(`Created test case successfully`);
+  logger.info(diff);
 };
 
 export const create = async (options: CreateOptions): Promise<void> => {
