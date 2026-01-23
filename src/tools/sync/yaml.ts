@@ -181,7 +181,7 @@ export const readTestCasesFromDir = (
   startDir: string,
 ): Array<SyncTestCase & { filePath?: string }> => {
   const yamlFiles = collectYamlFiles(startDir);
-  const testCases: Array<SyncTestCase & { filePath?: string }> = [];
+  const testCases: Array<SyncTestCase & { filePath: string }> = [];
   for (const file of yamlFiles) {
     try {
       const content = fs.readFileSync(file, "utf8");
@@ -272,7 +272,7 @@ export const cleanupFilesystem = ({
   for (const localTestCase of localTestCases) {
     // If the local test case is not in the remote test cases, remove it
     if (!remoteTestCasesById.has(localTestCase.id) && localTestCase.filePath) {
-      fs.rmSync(localTestCase.filePath, { recursive: true, force: true });
+      fs.rmSync(localTestCase.filePath);
 
       const dirPath = path.dirname(localTestCase.filePath);
       removeEmptyDirectoriesRecursively(dirPath, rootFolderPath);
