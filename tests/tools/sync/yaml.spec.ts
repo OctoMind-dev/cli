@@ -10,6 +10,7 @@ import {
   buildFolderName,
   cleanupFilesystem,
   readTestCasesFromDir,
+  removeEmptyDirectoriesRecursively,
 } from "../../../src/tools/sync/yaml";
 import { createMockSyncTestCase } from "../../mocks";
 
@@ -186,11 +187,9 @@ describe("yaml", () => {
       fs.mkdirSync(path.join(tmpDir, "test1"));
 
       const testCase = createMockSyncTestCase();
-      fs.writeFileSync(
-        path.join(tmpDir, "test1", "test.yaml"),
-        yaml.stringify(testCase),
-      );
-      expect(readTestCasesFromDir(tmpDir)).toEqual([testCase]);
+      const filePath = path.join(tmpDir, "test1", "test.yaml");
+      fs.writeFileSync(filePath, yaml.stringify(testCase));
+      expect(readTestCasesFromDir(tmpDir)).toEqual([{ ...testCase, filePath }]);
     });
 
     it("should skip invalid test cases and log an error", () => {
@@ -229,7 +228,7 @@ describe("yaml", () => {
       };
 
       cleanupFilesystem({
-        newTestCases: [updatedTestCase],
+        remoteTestCases: [updatedTestCase],
         destination: tmpDir,
       });
 
@@ -266,11 +265,196 @@ describe("yaml", () => {
       };
 
       cleanupFilesystem({
-        newTestCases: [updatedTestCase],
+        remoteTestCases: [updatedTestCase],
         destination: tmpDir,
       });
 
       expect(fs.existsSync(oldFolderPath)).toBe(false);
+    });
+
+    it("should remove local test case files that no longer exist remotely", () => {
+      const localTestCase = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Local test case",
+      });
+      const remoteTestCase = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Remote test case",
+      });
+
+      const localFilePath = path.join(
+        tmpDir,
+        buildFilename(localTestCase, tmpDir),
+      );
+      fs.writeFileSync(localFilePath, yaml.stringify(localTestCase));
+
+      expect(fs.existsSync(localFilePath)).toBe(true);
+
+      cleanupFilesystem({
+        remoteTestCases: [remoteTestCase],
+        destination: tmpDir,
+      });
+
+      expect(fs.existsSync(localFilePath)).toBe(false);
+    });
+
+    it("should remove empty directories after removing local test cases", () => {
+      const parentTestCase = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Parent test case",
+      });
+      const childTestCase = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Child test case",
+        dependencyId: parentTestCase.id,
+      });
+
+      const parentDir = path.join(tmpDir, "parentTestCase");
+      fs.mkdirSync(parentDir, { recursive: true });
+
+      const childFilePath = path.join(
+        parentDir,
+        buildFilename(childTestCase, tmpDir),
+      );
+      fs.writeFileSync(
+        path.join(tmpDir, buildFilename(parentTestCase, tmpDir)),
+        yaml.stringify(parentTestCase),
+      );
+      fs.writeFileSync(childFilePath, yaml.stringify(childTestCase));
+
+      expect(fs.existsSync(parentDir)).toBe(true);
+      expect(fs.existsSync(childFilePath)).toBe(true);
+
+      cleanupFilesystem({
+        remoteTestCases: [parentTestCase],
+        destination: tmpDir,
+      });
+
+      expect(fs.existsSync(childFilePath)).toBe(false);
+      expect(fs.existsSync(parentDir)).toBe(false);
+    });
+
+    it("should not remove directories that still contain files", () => {
+      const parentTestCase = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Parent test case",
+      });
+      const childTestCase1 = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Child test case 1",
+        dependencyId: parentTestCase.id,
+      });
+      const childTestCase2 = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Child test case 2",
+        dependencyId: parentTestCase.id,
+      });
+
+      const parentDir = path.join(tmpDir, "parentTestCase");
+      fs.mkdirSync(parentDir, { recursive: true });
+
+      const childFilePath1 = path.join(
+        parentDir,
+        buildFilename(childTestCase1, tmpDir),
+      );
+      const childFilePath2 = path.join(
+        parentDir,
+        buildFilename(childTestCase2, tmpDir),
+      );
+      fs.writeFileSync(
+        path.join(tmpDir, buildFilename(parentTestCase, tmpDir)),
+        yaml.stringify(parentTestCase),
+      );
+      fs.writeFileSync(childFilePath1, yaml.stringify(childTestCase1));
+      fs.writeFileSync(childFilePath2, yaml.stringify(childTestCase2));
+
+      expect(fs.existsSync(parentDir)).toBe(true);
+
+      cleanupFilesystem({
+        remoteTestCases: [parentTestCase, childTestCase2],
+        destination: tmpDir,
+      });
+
+      expect(fs.existsSync(childFilePath1)).toBe(false);
+      expect(fs.existsSync(childFilePath2)).toBe(true);
+      expect(fs.existsSync(parentDir)).toBe(true);
+    });
+  });
+
+  describe("removeEmptyDirectoriesRecursively", () => {
+    it("should remove a single empty directory", () => {
+      const emptyDir = path.join(tmpDir, "emptyDir");
+      fs.mkdirSync(emptyDir);
+
+      expect(fs.existsSync(emptyDir)).toBe(true);
+
+      removeEmptyDirectoriesRecursively(emptyDir, tmpDir);
+
+      expect(fs.existsSync(emptyDir)).toBe(false);
+    });
+
+    it("should recursively remove nested empty directories", () => {
+      const level1 = path.join(tmpDir, "level1");
+      const level2 = path.join(level1, "level2");
+      const level3 = path.join(level2, "level3");
+
+      fs.mkdirSync(level3, { recursive: true });
+
+      expect(fs.existsSync(level1)).toBe(true);
+      expect(fs.existsSync(level2)).toBe(true);
+      expect(fs.existsSync(level3)).toBe(true);
+
+      removeEmptyDirectoriesRecursively(level3, tmpDir);
+
+      expect(fs.existsSync(level3)).toBe(false);
+      expect(fs.existsSync(level2)).toBe(false);
+      expect(fs.existsSync(level1)).toBe(false);
+    });
+
+    it("should stop at root folder path", () => {
+      const subDir = path.join(tmpDir, "subDir");
+      fs.mkdirSync(subDir);
+
+      removeEmptyDirectoriesRecursively(subDir, tmpDir);
+
+      expect(fs.existsSync(subDir)).toBe(false);
+      expect(fs.existsSync(tmpDir)).toBe(true);
+    });
+
+    it("should not remove directories that contain files", () => {
+      const level1 = path.join(tmpDir, "level1");
+      const level2 = path.join(level1, "level2");
+
+      fs.mkdirSync(level2, { recursive: true });
+      fs.writeFileSync(path.join(level1, "file.txt"), "content");
+
+      removeEmptyDirectoriesRecursively(level2, tmpDir);
+
+      expect(fs.existsSync(level2)).toBe(false);
+      expect(fs.existsSync(level1)).toBe(true);
+    });
+
+    it("should handle non-existent directories gracefully", () => {
+      const nonExistent = path.join(tmpDir, "nonExistent");
+
+      expect(() =>
+        removeEmptyDirectoriesRecursively(nonExistent, tmpDir),
+      ).not.toThrow();
+    });
+
+    it("should not remove directories with subdirectories that contain files", () => {
+      const level1 = path.join(tmpDir, "level1");
+      const level2 = path.join(level1, "level2");
+      const level3 = path.join(level2, "level3");
+
+      fs.mkdirSync(level3, { recursive: true });
+      fs.writeFileSync(path.join(level2, "file.txt"), "content");
+
+      removeEmptyDirectoriesRecursively(level3, tmpDir);
+
+      expect(fs.existsSync(level3)).toBe(false);
+      expect(fs.existsSync(level2)).toBe(true);
+      expect(fs.existsSync(level1)).toBe(true);
     });
   });
 });
