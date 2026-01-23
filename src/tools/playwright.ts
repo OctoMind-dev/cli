@@ -1,3 +1,4 @@
+import { logger } from "../logger";
 import { BASE_URL, client, handleError } from "./client";
 
 export const getPlaywrightConfig = async (options: {
@@ -12,6 +13,7 @@ export const getPlaywrightConfig = async (options: {
   bearerToken?: string;
 }): Promise<string> => {
   if (options.bearerToken) {
+    logger.debug("Using bearer token for config");
     const params = new URLSearchParams({
       ...(options.environmentId && { environmentId: options.environmentId }),
       ...(options.url && { url: options.url }),
@@ -81,6 +83,7 @@ export const getPlaywrightCode = async (options: {
   bearerToken?: string;
 }): Promise<string> => {
   if (options.bearerToken) {
+    logger.debug("Using bearer token for test code");
     const params = new URLSearchParams({
       source: "debugtopus",
       executionUrl: options.executionUrl,

@@ -42,6 +42,7 @@ export const getEnvironments = async (
   options: GetEnvironmentsOptions,
 ): Promise<EnvironmentResponse[]> => {
   if (options.bearerToken) {
+    logger.debug("Using bearer token for environments");
     const res = await fetch(
       `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/environments`,
       {

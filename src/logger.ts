@@ -51,6 +51,10 @@ export const configureLogger = async (): Promise<void> =>
         sinks: ["console"],
         lowestLevel: "warning",
       },
-      { category: "octomind", lowestLevel: "debug", sinks: ["console"] },
+      {
+        category: "octomind",
+        lowestLevel: (process.env.LOG_LEVEL as LogLevel) || "warning",
+        sinks: ["console"],
+      },
     ],
   });
