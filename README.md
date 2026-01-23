@@ -42,7 +42,7 @@ This way even entityIds like environmentIds or testCaseIds will be autocompleted
 
 # octomind
 
-Octomind cli tool. Version: 4.4.0. Additional documentation see https://octomind.dev/docs/api-reference/
+Octomind cli tool. Version: 4.5.0. Additional documentation see https://octomind.dev/docs/api-reference/
 
 **Usage:** `octomind [options] [command]`
 
@@ -184,7 +184,7 @@ Delete an environment
 
 ## debug
 
-run test cases against local build
+run test cases against local build. can also be authenticated with a bearer token so no need to provide an api key
 
 **Usage:** `debug [options]`
 
@@ -204,6 +204,7 @@ run test cases against local build
 | `--browser [CHROMIUM, FIREFOX, SAFARI]` | Browser type | No | CHROMIUM |
 | `--breakpoint [DESKTOP, MOBILE, TABLET]` | Breakpoint | No | DESKTOP |
 | `--run-status [ON, OFF]` | only run test cases that are either ON or OFF | No |  |
+| `-b, --bearer-token [token]` | Bearer token for authentication (instead of api key) | No |  |
 
 ## execute
 

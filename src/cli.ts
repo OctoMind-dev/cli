@@ -116,7 +116,9 @@ export const buildCmd = async (): Promise<CompletableCommand> => {
     .completer(testTargetIdCompleter)
     .completer(testCaseIdCompleter)
     .completer(optionsCompleter)
-    .description("run test cases against local build")
+    .description(
+      "run test cases against local build. can also be authenticated with a bearer token so no need to provide an api key",
+    )
     .helpGroup("execute")
     .requiredOption("-u, --url <url>", "url the tests should run against")
     .option(
@@ -146,6 +148,10 @@ export const buildCmd = async (): Promise<CompletableCommand> => {
     .option(
       "--run-status [ON, OFF]",
       "only run test cases that are either ON or OFF",
+    )
+    .option(
+      "-b, --bearer-token [token]",
+      "Bearer token for authentication (instead of api key)",
     )
     .action(addTestTargetWrapper(runDebugtopus));
 
