@@ -57,10 +57,12 @@ export const writeSingleTestCaseYaml = async (
 export const writeYaml = async (
   data: TestTargetSyncData,
   destination?: string,
+  partialSync = false,
 ): Promise<void> => {
   cleanupFilesystem({
     remoteTestCases: data.testCases,
     destination,
+    partialSync,
   });
 
   for (const testCase of data.testCases) {
@@ -231,9 +233,11 @@ export const removeEmptyDirectoriesRecursively = (
 export const cleanupFilesystem = ({
   remoteTestCases,
   destination,
+  partialSync,
 }: {
   remoteTestCases: SyncTestCase[];
   destination: string | undefined;
+  partialSync: boolean;
 }) => {
   const rootFolderPath = destination ?? process.cwd();
 
@@ -270,13 +274,18 @@ export const cleanupFilesystem = ({
       }
     }
   }
-  for (const localTestCase of localTestCases) {
-    // If the local test case is not in the remote test cases, remove it
-    if (!remoteTestCasesById.has(localTestCase.id) && localTestCase.filePath) {
-      fs.rmSync(localTestCase.filePath, { force: true });
+  if (!partialSync) {
+    for (const localTestCase of localTestCases) {
+      // If the local test case is not in the remote test cases, remove it
+      if (
+        !remoteTestCasesById.has(localTestCase.id) &&
+        localTestCase.filePath
+      ) {
+        fs.rmSync(localTestCase.filePath, { force: true });
 
-      const dirPath = path.dirname(localTestCase.filePath);
-      removeEmptyDirectoriesRecursively(dirPath, rootFolderPath);
+        const dirPath = path.dirname(localTestCase.filePath);
+        removeEmptyDirectoriesRecursively(dirPath, rootFolderPath);
+      }
     }
   }
 };

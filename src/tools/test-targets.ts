@@ -70,7 +70,7 @@ export const listTestTargets = async (options: ListOptions): Promise<void> => {
 };
 
 export const pullTestTarget = async (
-  options: { testTargetId: string } & ListOptions,
+  options: { testTargetId: string; testPlanId?: string } & ListOptions,
 ): Promise<void> => {
   const { data, error } = await client.GET(
     "/apiKey/beta/test-targets/{testTargetId}/pull",
@@ -79,6 +79,11 @@ export const pullTestTarget = async (
         path: {
           testTargetId: options.testTargetId,
         },
+        query: options.testPlanId
+          ? {
+              testPlanId: options.testPlanId,
+            }
+          : undefined,
       },
     },
   );
@@ -97,7 +102,7 @@ export const pullTestTarget = async (
   const destination =
     (await findOctomindFolder()) ??
     path.join(process.cwd(), OCTOMIND_FOLDER_NAME);
-  await writeYaml(data, destination);
+  await writeYaml(data, destination, !!options.testPlanId);
 
   logger.info("Test Target pulled successfully");
 };
