@@ -210,7 +210,12 @@ describe("playwright", () => {
       } as Response);
 
       await expect(
-        getPlaywrightCode({ testTargetId, testCaseId, executionUrl, bearerToken }),
+        getPlaywrightCode({
+          testTargetId,
+          testCaseId,
+          executionUrl,
+          bearerToken,
+        }),
       ).rejects.toThrow("no test code found. error: Forbidden");
     });
   });

@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { BASE_URL, client } from "../../src/tools/client";
 import {
-  getEnvironments,
   type GetEnvironmentsOptions,
+  getEnvironments,
 } from "../../src/tools/environments";
 import { createMockEnvironment } from "../mocks";
 
