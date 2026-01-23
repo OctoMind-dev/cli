@@ -12,10 +12,6 @@ vi.mock("../../src/tools/client");
 global.fetch = vi.fn();
 
 describe("environments", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe("getEnvironments", () => {
     const testTargetId = "test-target-id";
     const mockEnvironments = [

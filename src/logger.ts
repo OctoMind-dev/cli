@@ -9,6 +9,31 @@ import {
 
 export const logger = getLogger("octomind");
 
+const validLogLevels: LogLevel[] = [
+  "trace",
+  "debug",
+  "info",
+  "warning",
+  "error",
+  "fatal",
+];
+
+export const getLogLevel = (
+  level: string | undefined,
+  defaultLevel: LogLevel = "warning",
+): LogLevel => {
+  if (!level) {
+    return defaultLevel;
+  }
+
+  const normalizedLevel = level.toLowerCase();
+  if (validLogLevels.includes(normalizedLevel as LogLevel)) {
+    return normalizedLevel as LogLevel;
+  }
+
+  return defaultLevel;
+};
+
 const ansiColors = {
   red: "\x1B[31m",
   green: "\x1B[32m",
@@ -53,7 +78,7 @@ export const configureLogger = async (): Promise<void> =>
       },
       {
         category: "octomind",
-        lowestLevel: (process.env.LOG_LEVEL as LogLevel) || "warning",
+        lowestLevel: getLogLevel(process.env.LOG_LEVEL),
         sinks: ["console"],
       },
     ],

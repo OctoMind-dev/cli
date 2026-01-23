@@ -14,22 +14,24 @@ export const getPlaywrightConfig = async (options: {
 }): Promise<string> => {
   if (options.bearerToken) {
     logger.debug("Using bearer token for config");
-    const params = new URLSearchParams({
-      ...(options.environmentId && { environmentId: options.environmentId }),
-      ...(options.url && { url: options.url }),
-      ...(options.outputDir && { outputDir: options.outputDir }),
-      ...(options.headless !== undefined && {
-        headless: options.headless.toString(),
-      }),
-      ...(options.bypassProxy !== undefined && {
-        bypassProxy: options.bypassProxy.toString(),
-      }),
-      ...(options.browser && { browser: options.browser }),
-      ...(options.breakpoint && { breakpoint: options.breakpoint }),
-    });
+    const params = {
+      environmentId: options.environmentId,
+      url: options.url,
+      outputDir: options.outputDir,
+      headless: options.headless?.toString(),
+      bypassProxy: options.bypassProxy?.toString(),
+      browser: options.browser,
+      breakpoint: options.breakpoint,
+    };
+
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== undefined),
+    ) as Record<string, string>;
+
+    const searchParams = new URLSearchParams(filteredParams);
 
     const response = await fetch(
-      `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/config?${params.toString()}`,
+      `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/config?${searchParams.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${options.bearerToken}`,
@@ -84,14 +86,20 @@ export const getPlaywrightCode = async (options: {
 }): Promise<string> => {
   if (options.bearerToken) {
     logger.debug("Using bearer token for test code");
-    const params = new URLSearchParams({
+    const params = {
       source: "debugtopus",
       executionUrl: options.executionUrl,
-      ...(options.environmentId && { environmentId: options.environmentId }),
-    });
+      environmentId: options.environmentId,
+    };
+
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(([, value]) => value !== undefined),
+    ) as Record<string, string>;
+
+    const searchParams = new URLSearchParams(filteredParams);
 
     const response = await fetch(
-      `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/test-cases/${options.testCaseId}/code?${params.toString()}`,
+      `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/test-cases/${options.testCaseId}/code?${searchParams.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${options.bearerToken}`,
