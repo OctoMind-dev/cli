@@ -230,6 +230,7 @@ describe("yaml", () => {
       cleanupFilesystem({
         remoteTestCases: [updatedTestCase],
         destination: tmpDir,
+        partialSync: false,
       });
 
       expect(fs.existsSync(oldFilePath)).toBe(false);
@@ -267,6 +268,7 @@ describe("yaml", () => {
       cleanupFilesystem({
         remoteTestCases: [updatedTestCase],
         destination: tmpDir,
+        partialSync: false,
       });
 
       expect(fs.existsSync(oldFolderPath)).toBe(false);
@@ -293,6 +295,7 @@ describe("yaml", () => {
       cleanupFilesystem({
         remoteTestCases: [remoteTestCase],
         destination: tmpDir,
+        partialSync: false,
       });
 
       expect(fs.existsSync(localFilePath)).toBe(false);
@@ -328,6 +331,7 @@ describe("yaml", () => {
       cleanupFilesystem({
         remoteTestCases: [parentTestCase],
         destination: tmpDir,
+        partialSync: false,
       });
 
       expect(fs.existsSync(childFilePath)).toBe(false);
@@ -373,11 +377,47 @@ describe("yaml", () => {
       cleanupFilesystem({
         remoteTestCases: [parentTestCase, childTestCase2],
         destination: tmpDir,
+        partialSync: false,
       });
 
       expect(fs.existsSync(childFilePath1)).toBe(false);
       expect(fs.existsSync(childFilePath2)).toBe(true);
       expect(fs.existsSync(parentDir)).toBe(true);
+    });
+
+    it("should not remove local test cases when partialSync is true", () => {
+      const localTestCase = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Local test case",
+      });
+      const remoteTestCase = createMockSyncTestCase({
+        id: crypto.randomUUID(),
+        description: "Remote test case",
+      });
+
+      const localFilePath = path.join(
+        tmpDir,
+        buildFilename(localTestCase, tmpDir),
+      );
+      const remoteFilePath = path.join(
+        tmpDir,
+        buildFilename(remoteTestCase, tmpDir),
+      );
+
+      fs.writeFileSync(localFilePath, yaml.stringify(localTestCase));
+      fs.writeFileSync(remoteFilePath, yaml.stringify(remoteTestCase));
+
+      expect(fs.existsSync(localFilePath)).toBe(true);
+      expect(fs.existsSync(remoteFilePath)).toBe(true);
+
+      cleanupFilesystem({
+        remoteTestCases: [remoteTestCase],
+        destination: tmpDir,
+        partialSync: true,
+      });
+
+      expect(fs.existsSync(localFilePath)).toBe(true);
+      expect(fs.existsSync(remoteFilePath)).toBe(true);
     });
   });
 

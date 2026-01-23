@@ -102,7 +102,7 @@ export const pullTestTarget = async (
   const destination =
     (await findOctomindFolder()) ??
     path.join(process.cwd(), OCTOMIND_FOLDER_NAME);
-  await writeYaml(data, destination);
+  await writeYaml(data, destination, !!options.testPlanId);
 
   logger.info("Test Target pulled successfully");
 };
