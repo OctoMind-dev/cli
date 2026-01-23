@@ -41,6 +41,7 @@ export type DebugtopusOptions = {
   browser?: "CHROMIUM" | "FIREFOX" | "SAFARI";
   breakpoint?: "DESKTOP" | "MOBILE" | "TABLET";
   runStatus?: "ON" | "OFF";
+  bearerToken?: string;
 };
 
 const getPackageRootLevel = (appDir: string): string => {
@@ -224,6 +225,7 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     testTargetId: options.testTargetId,
     url: options.url,
     environmentId: options.environmentId,
+    bearerToken: options.bearerToken,
   };
 
   let testCasesWithCode: TestCaseCodeWithId[] = [];
@@ -293,6 +295,7 @@ export const runDebugtopus = async (options: DebugtopusOptions) => {
     bypassProxy: options.bypassProxy,
     browser: options.browser,
     breakpoint: options.breakpoint,
+    bearerToken: options.bearerToken,
   });
 
   if (!config) {
