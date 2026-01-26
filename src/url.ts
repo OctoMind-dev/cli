@@ -14,7 +14,6 @@ export const getUrl = async (
     | { testCaseId: string; entityType: "discovery" }
     | { batchGenerationId: string; entityType: "batch-generation" },
 ): Promise<string> => {
-  const relevantBaseUrl = new URL(BASE_URL).origin;
   const config = await loadConfig();
   const configuredTestTargetId = config.testTargetId;
   if (!configuredTestTargetId && input.entityType !== "test-target") {
@@ -22,16 +21,16 @@ export const getUrl = async (
   }
   switch (input.entityType) {
     case "test-case":
-      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testcases?testCaseId=${input.testCaseId}`;
+      return `${BASE_URL}/testtargets/${configuredTestTargetId}/testcases?testCaseId=${input.testCaseId}`;
     case "test-target":
-      return `${relevantBaseUrl}/testtargets/${input.testTargetId}`;
+      return `${BASE_URL}/testtargets/${input.testTargetId}`;
     case "test-report":
-      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testreports/${input.testReportId}`;
+      return `${BASE_URL}/testtargets/${configuredTestTargetId}/testreports/${input.testReportId}`;
     case "test-result":
-      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testreports/${input.testReportId}/testresults/${input.testResultId}`;
+      return `${BASE_URL}/testtargets/${configuredTestTargetId}/testreports/${input.testReportId}/testresults/${input.testResultId}`;
     case "discovery":
-      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/testcases/${input.testCaseId}`;
+      return `${BASE_URL}/testtargets/${configuredTestTargetId}/testcases/${input.testCaseId}`;
     case "batch-generation":
-      return `${relevantBaseUrl}/testtargets/${configuredTestTargetId}/batch-generations/${input.batchGenerationId}`;
+      return `${BASE_URL}/testtargets/${configuredTestTargetId}/batch-generations/${input.batchGenerationId}`;
   }
 };
