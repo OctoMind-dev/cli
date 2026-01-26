@@ -69,9 +69,8 @@ const openBrowser = async ({
   versionId: string;
   testTargetId: string;
 }): Promise<void> => {
-  const parsedBaseUrl = URL.parse(BASE_URL);
   const localEditingUrl = new URL(
-    `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${testTargetId}/testcases/${versionId}/localEdit`,
+    `${BASE_URL}/testtargets/${testTargetId}/testcases/${versionId}/localEdit`,
   );
 
   await open(localEditingUrl.href);

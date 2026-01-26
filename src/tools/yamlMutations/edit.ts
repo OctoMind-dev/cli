@@ -75,9 +75,8 @@ export const edit = async (options: EditOptions): Promise<void> => {
   }
   const { versionId, testResultId } = syncData;
 
-  const parsedBaseUrl = URL.parse(BASE_URL);
   const localEditingUrl = new URL(
-    `${parsedBaseUrl?.protocol}//${parsedBaseUrl?.host}/testtargets/${options.testTargetId}/testcases/${versionId}/localEdit`,
+    `${BASE_URL}/testtargets/${options.testTargetId}/testcases/${versionId}/localEdit`,
   );
   if (testResultId) {
     localEditingUrl.searchParams.set("testResultId", testResultId);
