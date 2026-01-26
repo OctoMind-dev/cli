@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@logtape/logtape':
-        specifier: 2.0.1
-        version: 2.0.1
+        specifier: 2.0.2
+        version: 2.0.2
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -489,8 +489,8 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
-  '@logtape/logtape@2.0.1':
-    resolution: {integrity: sha512-NcxVG7HsG8+ykDmzHunp2bGvI45OvSCFp1MXr9hJFUNzOF02tEYpSjO5i9ghRfygiITmIPh+59uPVQSZmj5Rmg==}
+  '@logtape/logtape@2.0.2':
+    resolution: {integrity: sha512-cveUBLbCMFkvkLycP/2vNWvywl47JcJbazHIju94/QNGboZ/jyYAgZIm0ZXezAOx3eIz8OG1EOZ5CuQP3+2FQg==}
 
   '@noble/hashes@2.0.1':
     resolution: {integrity: sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==}
@@ -2073,7 +2073,7 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@logtape/logtape@2.0.1': {}
+  '@logtape/logtape@2.0.2': {}
 
   '@noble/hashes@2.0.1': {}
 
