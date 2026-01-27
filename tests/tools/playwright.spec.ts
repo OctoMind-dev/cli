@@ -86,7 +86,7 @@ describe("playwright", () => {
       });
 
       expect(fetch).toHaveBeenCalledWith(
-        `${BASE_URL}/bearer/v1/test-targets/${testTargetId}/config?${expectedParams.toString()}`,
+        `${BASE_URL}/api/bearer/v1/test-targets/${testTargetId}/config?${expectedParams.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${bearerToken}`,
@@ -179,7 +179,7 @@ describe("playwright", () => {
       });
 
       expect(fetch).toHaveBeenCalledWith(
-        `${BASE_URL}/bearer/v1/test-targets/${testTargetId}/test-cases/${testCaseId}/code?${expectedParams.toString()}`,
+        `${BASE_URL}/api/bearer/v1/test-targets/${testTargetId}/test-cases/${testCaseId}/code?${expectedParams.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${bearerToken}`,

@@ -51,7 +51,7 @@ describe("environments", () => {
       const result = await getEnvironments(options);
 
       expect(fetch).toHaveBeenCalledWith(
-        `${BASE_URL}/bearer/v1/test-targets/${testTargetId}/environments`,
+        `${BASE_URL}/api/bearer/v1/test-targets/${testTargetId}/environments`,
         {
           headers: {
             Authorization: `Bearer ${bearerToken}`,

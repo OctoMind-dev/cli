@@ -6,7 +6,7 @@ import { logger } from "../logger";
 import { version } from "../version";
 
 export const BASE_URL =
-  process.env.OCTOMIND_API_URL || "https://app.octomind.dev/api";
+  process.env.OCTOMIND_API_URL || "https://app.octomind.dev";
 type ErrorResponse =
   | components["schemas"]["ZodResponse"]
   | string
@@ -14,7 +14,9 @@ type ErrorResponse =
   | { status: "has dependencies"; dependencyIds: string[] }
   | undefined;
 
-const client: Client<paths> = createClient<paths>({ baseUrl: BASE_URL });
+const client: Client<paths> = createClient<paths>({
+  baseUrl: `${BASE_URL}/api`,
+});
 
 export const createClientFromUrlAndApiKey = ({
   baseUrl,

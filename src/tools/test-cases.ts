@@ -128,7 +128,7 @@ export const getTestCases = async (
 ): Promise<TestCasesResponse> => {
   if (options.bearerToken) {
     const url = new URL(
-      `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/test-cases`,
+      `${BASE_URL}/api/bearer/v1/test-targets/${options.testTargetId}/test-cases`,
     );
     if (options.status || options.runStatus) {
       url.searchParams.set(

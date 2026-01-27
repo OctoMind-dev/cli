@@ -31,7 +31,7 @@ export const getPlaywrightConfig = async (options: {
     const searchParams = new URLSearchParams(filteredParams);
 
     const response = await fetch(
-      `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/config?${searchParams.toString()}`,
+      `${BASE_URL}/api/bearer/v1/test-targets/${options.testTargetId}/config?${searchParams.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${options.bearerToken}`,
@@ -99,7 +99,7 @@ export const getPlaywrightCode = async (options: {
     const searchParams = new URLSearchParams(filteredParams);
 
     const response = await fetch(
-      `${BASE_URL}/bearer/v1/test-targets/${options.testTargetId}/test-cases/${options.testCaseId}/code?${searchParams.toString()}`,
+      `${BASE_URL}/api/bearer/v1/test-targets/${options.testTargetId}/test-cases/${options.testCaseId}/code?${searchParams.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${options.bearerToken}`,
