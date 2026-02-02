@@ -5,9 +5,10 @@ vi.unmock("../src/logger");
 import { getLogLevel } from "../src/logger";
 
 describe("logger", () => {
+  const defaultLevel = "info";
   describe("getLogLevel", () => {
     it("should return default level when no level is provided", () => {
-      expect(getLogLevel(undefined)).toBe("warning");
+      expect(getLogLevel(undefined)).toBe(defaultLevel);
     });
 
     it("should return custom default level when provided", () => {
@@ -36,10 +37,10 @@ describe("logger", () => {
     });
 
     it("should return default level for invalid log levels", () => {
-      expect(getLogLevel("invalid")).toBe("warning");
-      expect(getLogLevel("")).toBe("warning");
-      expect(getLogLevel("verbose")).toBe("warning");
-      expect(getLogLevel("critical")).toBe("warning");
+      expect(getLogLevel("invalid")).toBe(defaultLevel);
+      expect(getLogLevel("")).toBe(defaultLevel);
+      expect(getLogLevel("verbose")).toBe(defaultLevel);
+      expect(getLogLevel("critical")).toBe(defaultLevel);
     });
 
     it("should return custom default level for invalid log levels", () => {

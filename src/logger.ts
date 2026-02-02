@@ -20,7 +20,7 @@ const validLogLevels: LogLevel[] = [
 
 export const getLogLevel = (
   level: string | undefined,
-  defaultLevel: LogLevel = "warning",
+  defaultLevel: LogLevel = "info",
 ): LogLevel => {
   if (!level) {
     return defaultLevel;
