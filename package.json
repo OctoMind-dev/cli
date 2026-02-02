@@ -42,7 +42,7 @@
     "@logtape/logtape": "2.0.2",
     "@playwright/test": "1.57.0",
     "@types/shell-quote": "1.7.5",
-    "commander": "14.0.2",
+    "commander": "14.0.3",
     "diff": "8.0.3",
     "open": "11.0.0",
     "openapi-fetch": "0.15.0",

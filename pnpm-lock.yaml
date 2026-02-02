@@ -18,8 +18,8 @@ importers:
         specifier: 1.7.5
         version: 1.7.5
       commander:
-        specifier: 14.0.2
-        version: 14.0.2
+        specifier: 14.0.3
+        version: 14.0.3
       diff:
         specifier: 8.0.3
         version: 8.0.3
@@ -943,8 +943,8 @@ packages:
   colorette@1.4.0:
     resolution: {integrity: sha512-Y2oEozpomLn7Q3HFP7dpww7AtMJplbM9lGZP6RDfHqmbeRjiwRg4n6VM6j4KLmRke85uWEI7JqF17f3pqdRA0g==}
 
-  commander@14.0.2:
-    resolution: {integrity: sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==}
+  commander@14.0.3:
+    resolution: {integrity: sha512-H+y0Jo/T1RZ9qPP4Eh1pkcQcLRglraJaSLoyOtHxu6AapkjWVCy2Sit1QQ4x3Dng8qDlSsZEet7g5Pq06MvTgw==}
     engines: {node: '>=20'}
 
   commander@7.2.0:
@@ -1895,9 +1895,9 @@ snapshots:
   '@biomejs/cli-win32-x64@2.3.13':
     optional: true
 
-  '@commander-js/extra-typings@14.0.0(commander@14.0.2)':
+  '@commander-js/extra-typings@14.0.0(commander@14.0.3)':
     dependencies:
-      commander: 14.0.2
+      commander: 14.0.3
 
   '@esbuild/aix-ppc64@0.27.0':
     optional: true
@@ -2543,7 +2543,7 @@ snapshots:
 
   colorette@1.4.0: {}
 
-  commander@14.0.2: {}
+  commander@14.0.3: {}
 
   commander@7.2.0: {}
 
@@ -3004,7 +3004,7 @@ snapshots:
 
   orval@8.2.0(typescript@5.9.3):
     dependencies:
-      '@commander-js/extra-typings': 14.0.0(commander@14.0.2)
+      '@commander-js/extra-typings': 14.0.0(commander@14.0.3)
       '@orval/angular': 8.2.0(typescript@5.9.3)
       '@orval/axios': 8.2.0(typescript@5.9.3)
       '@orval/core': 8.2.0(typescript@5.9.3)
@@ -3021,7 +3021,7 @@ snapshots:
       '@scalar/openapi-types': 0.5.3
       chalk: 5.6.2
       chokidar: 5.0.0
-      commander: 14.0.2
+      commander: 14.0.3
       enquirer: 2.4.1
       execa: 9.6.1
       find-up: 8.0.0
