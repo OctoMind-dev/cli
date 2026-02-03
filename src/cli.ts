@@ -410,6 +410,10 @@ export const buildCmd = async (): Promise<CompletableCommand> => {
       "-p, --test-plan-id [id]",
       "Optional test plan ID to filter test cases",
     )
+    .option(
+      "-r, --test-report-id [id]",
+      "Optional test report ID to only pull test case auto-fixes from a specific test report",
+    )
     .action(addTestTargetWrapper(pullTestTarget));
 
   // noinspection RequiredAttributes
