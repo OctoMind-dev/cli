@@ -46,7 +46,7 @@
     "diff": "8.0.3",
     "open": "11.0.0",
     "openapi-fetch": "0.15.0",
-    "ora": "9.2.0",
+    "ora": "9.3.0",
     "otplib": "13.2.1",
     "shell-quote": "1.8.3",
     "simple-git": "3.30.0",
