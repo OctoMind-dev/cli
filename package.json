@@ -64,7 +64,7 @@
     "@types/unzipper": "0.10.11",
     "@types/which": "3.0.4",
     "genversion": "3.2.0",
-    "openapi-typescript": "7.12.0",
+    "openapi-typescript": "7.13.0",
     "orval": "8.3.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
